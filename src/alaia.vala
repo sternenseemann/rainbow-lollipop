@@ -4,13 +4,12 @@ using Clutter;
 using WebKit;
 
 namespace alaia {
-    class TrackList : Clutter.Actor {
+    class TrackList : Clutter.Rectangle {
         public TrackList(Clutter.Actor stage) {
-  //          super();
             this.add_constraint(
                 new Clutter.BindConstraint(stage, Clutter.BindCoordinate.SIZE,0)
             );
-//           this.set_color(Clutter.Color.from_string("#3338"));
+            this.color = Clutter.Color.from_string("#333B");
             stage.add_child(this);
         }
     }
