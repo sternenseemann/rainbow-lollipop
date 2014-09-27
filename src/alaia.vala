@@ -3,39 +3,203 @@ using Gdk;
 using GtkClutter;
 using Clutter;
 using WebKit;
+using Gee;
 
 namespace alaia {
+    class TrackColorSource : GLib.Object {
+        private static Gee.ArrayList<string> colors;
+        private static int state = 0;
+        private static bool initialized = false;
+        
+        public static void init() {
+            if (!TrackColorSource.initialized) {
+                stdout.printf("init");
+                TrackColorSource.colors = new Gee.ArrayList<string>();
+                TrackColorSource.colors.add("#f00");
+                TrackColorSource.colors.add("#ff0");
+                TrackColorSource.colors.add("#0f0");
+                TrackColorSource.colors.add("#0ff");
+                TrackColorSource.colors.add("#00f");
+                TrackColorSource.colors.add("#f0f");
+                TrackColorSource.initialized = true;
+            }
+        }
+
+        public static Clutter.Color get_color() {
+            TrackColorSource.init();
+            var color = TrackColorSource.colors.get(TrackColorSource.state);
+            if (++TrackColorSource.state == TrackColorSource.colors.size) {
+                TrackColorSource.state = 0;
+            }
+            stdout.printf("colort: %s\n", color);
+            return Clutter.Color.from_string(color);
+        }
+    }   
+
+    class Track : Clutter.Rectangle {
+        private Clutter.Actor stage;
+        public Track(Clutter.Actor tl) {
+            this.add_constraint(
+                new Clutter.BindConstraint(tl, Clutter.BindCoordinate.WIDTH, 0)
+            );
+            this.color = TrackColorSource.get_color();
+            this.height = 150;
+            this.y = 150;
+            this.opacity = 0xEE;
+            this.visible = true;
+            this.transitions_completed.connect(do_transitions_completed);
+            tl.add_child(this); 
+        }
+        private void do_transitions_completed() {
+            if (this.opacity == 0x00) {
+                this.visible = false;
+            }
+        }
+        public void emerge() {
+            this.visible = true;
+            this.save_easing_state();
+            this.opacity = 0xE0;
+            this.restore_easing_state();
+        }
+        public void disappear() {
+            this.save_easing_state();
+            this.opacity = 0x00;
+            this.restore_easing_state();
+        }
+    }
+
+    class EmptyTrack : Track {
+        private Gtk.Entry url_entry;
+        private Gtk.Button enter_button;
+        private Gtk.HBox hbox;
+        private GtkClutter.Actor actor; 
+
+        public EmptyTrack(Clutter.Actor stage) {
+            base(stage);
+            this.url_entry = new Gtk.Entry();
+            this.enter_button = new Gtk.Button.with_label("Go");
+            this.hbox = new Gtk.HBox(false, 5);
+            this.color = Clutter.Color.from_string("#555");
+            this.hbox.pack_start(this.url_entry,true);
+            this.hbox.pack_start(this.enter_button,false);
+            this.actor = new GtkClutter.Actor.with_contents(this.hbox);
+            
+            this.actor.add_constraint(
+                new Clutter.BindConstraint(this, Clutter.BindCoordinate.WIDTH, 0)
+            );
+            this.actor.add_constraint(
+                new Clutter.BindConstraint(this, Clutter.BindCoordinate.Y, 62)  
+            );
+            
+            this.actor.height=25;
+            //this.actor.y = 150;
+            this.actor.visible = true;
+            this.actor.transitions_completed.connect(do_transitions_completed);
+            this.actor.show_all();
+
+            stage.add_child(this.actor);
+            
+        }
+
+        private void do_transitions_completed() {
+            if (this.actor.opacity == 0x00) {
+                this.actor.visible=false;
+            }
+        }
+
+        public void emerge() {
+            base.emerge();
+            this.actor.visible = true;
+            this.actor.save_easing_state();
+            this.actor.opacity = 0xE0;
+            this.actor.restore_easing_state();
+        }
+
+        public void disappear() {
+            base.disappear();
+            this.actor.save_easing_state();
+            this.actor.opacity = 0x00;
+            this.actor.restore_easing_state();
+        }
+        
+    }
+
+    class HistoryTrack : Track {
+        public HistoryTrack(Clutter.Actor stage, string url) {
+            base(stage);
+        }
+    }
+
     class TrackList : Clutter.Rectangle {
+        private Gee.ArrayList<Track> tracks;
+        private Clutter.Actor stage;
+
         public TrackList(Clutter.Actor stage) {
+            this.tracks = new Gee.ArrayList<Track>();
+            this.stage = stage;
+            
             this.add_constraint(
                 new Clutter.BindConstraint(stage, Clutter.BindCoordinate.SIZE,0)
             );
             this.color = Clutter.Color.from_string("#121212");
-            this.set_reactive(true);
-            this.set_opacity(0x00);
-            this.button_press_event.connect(do_button_press_event);
-            this.key_press_event.connect(do_key_press_event);
+            this.reactive=true;
+            this.opacity = 0x00;
+            this.visible = false;
+            this.transitions_completed.connect(do_transitions_completed);
             stage.add_child(this);
+            this.add_empty_track();
         }
 
-        public bool do_key_press_event(Clutter.KeyEvent e) {
+        public void add_track(string url) {
+            this.tracks.insert(this.tracks.size-1, new HistoryTrack(this.stage, url));
+        }
+
+        private void add_empty_track() {
+            this.tracks.insert(this.tracks.size,new EmptyTrack(this.stage));
+        }
+
+        /*public bool do_key_press_event(Clutter.KeyEvent e) {
             stdout.printf("buttonpressed\n");
             stdout.printf("%ui\n",e.keyval);
             return true;
-        }
-        [CCode (instance_pos = -1)]
+        }*/
+    
+        /*[CCode (instance_pos = -1)]
         public bool do_button_press_event(Clutter.ButtonEvent e) {
             stdout.printf("trcklist\n");
             return true;
+        }*/
+
+        private void do_transitions_completed() {
+            if (this.opacity == 0x00) {
+                this.visible = false;
+            }
         }
         
         public void emerge() {
+            foreach (Track t in this.tracks){
+                try {
+                    var et = (EmptyTrack)t;
+                    et.emerge();
+                } catch {
+                    t.emerge();
+                }
+            }
+            this.visible = true;
             this.save_easing_state();
             this.opacity = 0xE0;
             this.restore_easing_state();
         }
 
         public void disappear() {
+            foreach (Track t in this.tracks){
+                try {
+                    var et = (EmptyTrack)t;
+                    et.disappear();
+                } catch {
+                    t.disappear();
+                }
+            }
             this.save_easing_state();
             this.opacity = 0x00;
             this.restore_easing_state();
@@ -56,11 +220,6 @@ namespace alaia {
         
         private AppState state;
 
-        public bool do_test_event(Gdk.EventButton e) {
-            stdout.printf("foobar\n");
-            return true;
-        }
-
         public Application()  {
             GLib.Object(
                 application_id : "de.grindhold.alaia",
@@ -69,7 +228,6 @@ namespace alaia {
             );
             
             this.web = new WebKit.WebView();
-            this.web.button_press_event.connect(do_test_event);
             this.webact = new GtkClutter.Actor.with_contents(this.web);
 
             this.win = new GtkClutter.Window();
@@ -89,7 +247,7 @@ namespace alaia {
             this.tracklist = new TrackList(stage);
 
             this.win.show_all();
-            this.web.open("http://spurdospaer.de");
+            this.web.open("https://blog.fefe.de");
             Gtk.main();
         }
         
@@ -102,7 +260,7 @@ namespace alaia {
             return true;
         }
 
-        public bool  do_key_press_event(Gdk.EventKey e) {
+        public bool do_key_press_event(Gdk.EventKey e) {
             stdout.printf("%u\n",e.keyval);
             stdout.printf("%s\n",e.str);
             switch (this.state) {
@@ -111,23 +269,21 @@ namespace alaia {
                         case Gdk.Key.Tab:
                             this.tracklist.emerge();
                             this.state = AppState.TRACKLIST;
-                            break;
-                        default:
                             return true;
+                        default:
+                            return false;
                     }
-                    break;
                 case AppState.TRACKLIST:
                     switch (e.keyval) {
                         case Gdk.Key.Tab:
                             this.tracklist.disappear();
                             this.state = AppState.NORMAL;
-                            break;
-                        default:
                             return true;
+                        default:
+                            return false;
                     }
-                    break;
             }
-            return true;
+            return false;
         }
         
         public static int main(string[] args) {
