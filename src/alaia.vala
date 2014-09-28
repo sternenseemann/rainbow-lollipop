@@ -73,15 +73,18 @@ namespace alaia {
         private Gtk.Button enter_button;
         private Gtk.HBox hbox;
         private GtkClutter.Actor actor; 
+        private TrackList tracklist;
 
-        public EmptyTrack(Clutter.Actor stage) {
+        public EmptyTrack(Clutter.Actor stage, TrackList tl) {
             base(stage);
+            this.tracklist = tl;
             this.url_entry = new Gtk.Entry();
             this.enter_button = new Gtk.Button.with_label("Go");
             this.hbox = new Gtk.HBox(false, 5);
             this.color = Clutter.Color.from_string("#555");
             this.hbox.pack_start(this.url_entry,true);
             this.hbox.pack_start(this.enter_button,false);
+            this.url_entry.activate.connect(do_activate);
             this.actor = new GtkClutter.Actor.with_contents(this.hbox);
             
             this.actor.add_constraint(
@@ -99,6 +102,10 @@ namespace alaia {
 
             stage.add_child(this.actor);
             
+        }
+
+        private void do_activate() {
+            this.tracklist.add_track(this.url_entry.get_text());
         }
 
         private void do_transitions_completed() {
@@ -125,16 +132,24 @@ namespace alaia {
     }
 
     class HistoryTrack : Track {
-        public HistoryTrack(Clutter.Actor stage, string url) {
+        private WebKit.WebView web;
+        private string url;
+
+        public HistoryTrack(Clutter.Actor stage, string url, WebView web) {
             base(stage);
+            this.web = web;
+            this.web.open(url);
+            this.url = url;
         }
     }
 
     class TrackList : Clutter.Rectangle {
         private Gee.ArrayList<Track> tracks;
         private Clutter.Actor stage;
+        private WebKit.WebView web;
 
-        public TrackList(Clutter.Actor stage) {
+        public TrackList(Clutter.Actor stage, WebView web) {
+            this.web = web;
             this.tracks = new Gee.ArrayList<Track>();
             this.stage = stage;
             
@@ -151,11 +166,11 @@ namespace alaia {
         }
 
         public void add_track(string url) {
-            this.tracks.insert(this.tracks.size-1, new HistoryTrack(this.stage, url));
+            this.tracks.insert(this.tracks.size-1, new HistoryTrack(this.stage, url, this.web));
         }
 
         private void add_empty_track() {
-            this.tracks.insert(this.tracks.size,new EmptyTrack(this.stage));
+            this.tracks.insert(this.tracks.size,new EmptyTrack(this.stage, this));
         }
 
         /*public bool do_key_press_event(Clutter.KeyEvent e) {
@@ -244,7 +259,7 @@ namespace alaia {
             //stage.key_press_event.connect(do_key_press_event);
             stage.button_press_event.connect(do_button_press_event);
 
-            this.tracklist = new TrackList(stage);
+            this.tracklist = new TrackList(stage, this.web);
 
             this.win.show_all();
             this.web.open("https://blog.fefe.de");
