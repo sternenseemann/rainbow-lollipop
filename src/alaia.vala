@@ -15,12 +15,12 @@ namespace alaia {
             if (!TrackColorSource.initialized) {
                 stdout.printf("init");
                 TrackColorSource.colors = new Gee.ArrayList<string>();
-                TrackColorSource.colors.add("#f00");
-                TrackColorSource.colors.add("#ff0");
-                TrackColorSource.colors.add("#0f0");
-                TrackColorSource.colors.add("#0ff");
-                TrackColorSource.colors.add("#00f");
-                TrackColorSource.colors.add("#f0f");
+                TrackColorSource.colors.add("#500");
+                TrackColorSource.colors.add("#550");
+                TrackColorSource.colors.add("#050");
+                TrackColorSource.colors.add("#055");
+                TrackColorSource.colors.add("#005");
+                TrackColorSource.colors.add("#505");
                 TrackColorSource.initialized = true;
             }
         }
@@ -31,12 +31,12 @@ namespace alaia {
             if (++TrackColorSource.state == TrackColorSource.colors.size) {
                 TrackColorSource.state = 0;
             }
-            stdout.printf("colort: %s\n", color);
             return Clutter.Color.from_string(color);
         }
     }   
 
     class Track : Clutter.Rectangle {
+        private const uint8 OPACITY = 0xE0;
         private Clutter.Actor stage;
         public Track(Clutter.Actor tl) {
             this.add_constraint(
@@ -45,8 +45,8 @@ namespace alaia {
             this.color = TrackColorSource.get_color();
             this.height = 150;
             this.y = 150;
-            this.opacity = 0xEE;
-            this.visible = true;
+            this.opacity = Application.S().state == AppState.TRACKLIST ? Track.OPACITY : 0x00;
+            this.visible = Application.S().state == AppState.TRACKLIST;
             this.transitions_completed.connect(do_transitions_completed);
             tl.add_child(this); 
         }
@@ -58,7 +58,7 @@ namespace alaia {
         public void emerge() {
             this.visible = true;
             this.save_easing_state();
-            this.opacity = 0xE0;
+            this.opacity = Track.OPACITY;
             this.restore_easing_state();
         }
         public void disappear() {
@@ -95,10 +95,9 @@ namespace alaia {
             );
             
             this.actor.height=25;
-            //this.actor.y = 150;
-            this.actor.visible = true;
             this.actor.transitions_completed.connect(do_transitions_completed);
             this.actor.show_all();
+            this.actor.visible = false;
 
             stage.add_child(this.actor);
             
@@ -114,7 +113,7 @@ namespace alaia {
             }
         }
 
-        public void emerge() {
+        public new void emerge() {
             base.emerge();
             this.actor.visible = true;
             this.actor.save_easing_state();
@@ -122,7 +121,7 @@ namespace alaia {
             this.actor.restore_easing_state();
         }
 
-        public void disappear() {
+        public new void disappear() {
             base.disappear();
             this.actor.save_easing_state();
             this.actor.opacity = 0x00;
@@ -192,12 +191,11 @@ namespace alaia {
         }
         
         public void emerge() {
-            foreach (Track t in this.tracks){
-                try {
-                    var et = (EmptyTrack)t;
-                    et.emerge();
-                } catch {
-                    t.emerge();
+            foreach (Track t in this.tracks) {
+                if (t is EmptyTrack) {
+                    (t as EmptyTrack).emerge();
+                } else {
+                    (t as HistoryTrack).emerge();
                 }
             }
             this.visible = true;
@@ -208,11 +206,10 @@ namespace alaia {
 
         public void disappear() {
             foreach (Track t in this.tracks){
-                try {
-                    var et = (EmptyTrack)t;
-                    et.disappear();
-                } catch {
-                    t.disappear();
+                if (t is EmptyTrack) {
+                    (t as EmptyTrack).disappear();
+                } else {
+                    (t as HistoryTrack).disappear();
                 }
             }
             this.save_easing_state();
@@ -227,13 +224,21 @@ namespace alaia {
     }
 
     class Application : Gtk.Application {
+        private static Application app;
+
         private GtkClutter.Window win;
         private WebKit.WebView web;
         private GtkClutter.Actor webact;
 
         private TrackList tracklist;
         
-        private AppState state;
+        private AppState _state;
+
+        public AppState state {
+            get {
+                return this._state;
+            }
+        }
 
         public Application()  {
             GLib.Object(
@@ -278,12 +283,12 @@ namespace alaia {
         public bool do_key_press_event(Gdk.EventKey e) {
             stdout.printf("%u\n",e.keyval);
             stdout.printf("%s\n",e.str);
-            switch (this.state) {
+            switch (this._state) {
                 case AppState.NORMAL:
                     switch (e.keyval) {
                         case Gdk.Key.Tab:
                             this.tracklist.emerge();
-                            this.state = AppState.TRACKLIST;
+                            this._state = AppState.TRACKLIST;
                             return true;
                         default:
                             return false;
@@ -292,7 +297,7 @@ namespace alaia {
                     switch (e.keyval) {
                         case Gdk.Key.Tab:
                             this.tracklist.disappear();
-                            this.state = AppState.NORMAL;
+                            this._state = AppState.NORMAL;
                             return true;
                         default:
                             return false;
@@ -300,12 +305,16 @@ namespace alaia {
             }
             return false;
         }
+
+        public static Application S() {
+            return Application.app;
+        }
         
         public static int main(string[] args) {
             if (GtkClutter.init(ref args) != Clutter.InitError.SUCCESS){
                 stdout.printf("Could not initialize GtkClutter");
             }
-            new Application();
+            Application.app = new Application();
             return 0;
         }
     }
