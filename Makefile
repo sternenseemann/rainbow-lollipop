@@ -2,6 +2,8 @@
 
 # src files. ein find . -name *.vala sollte auch gehen
 SRC = src/alaia.vala \
+      src/tracks.vala \
+      src/nodes.vala \
 
 # LIBS werden fuer valac und gcc aufgeloest. VALALIBS und CLIBS
 # jeweils nur fuer valac und gcc.
