@@ -33,7 +33,21 @@ namespace alaia {
             }
             return Clutter.Color.from_string(color);
         }
-    }   
+    }
+
+    class TrackCloseButton : Clutter.Rectangle {
+        private Track track;
+        private Clutter.Actor stage;
+
+        public TrackCloseButton (Clutter.Actor stage, Track track) {
+            this.button_press_event.connect(do_button_press_event);
+        }
+
+        private bool do_button_press_event (Clutter.ButtonEvent e) {
+            //delete this.track;
+            return false;
+        }
+    }
 
     class Track : Clutter.Rectangle {
         private const uint8 OPACITY = 0xE0;
@@ -304,6 +318,8 @@ namespace alaia {
                 register_session : true
             );
             
+            this._state = AppState.TRACKLIST;
+
             this.web = new WebKit.WebView();
             this.webact = new GtkClutter.Actor.with_contents(this.web);
 
@@ -324,7 +340,7 @@ namespace alaia {
             this.tracklist = new TrackList(stage, this.web);
 
             this.win.show_all();
-            this.web.open("https://blog.fefe.de");
+            this.tracklist.emerge();
         }
         
         public void do_delete() {
