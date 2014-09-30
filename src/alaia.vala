@@ -38,7 +38,19 @@ namespace alaia {
     class Track : Clutter.Rectangle {
         private const uint8 OPACITY = 0xE0;
         private Clutter.Actor stage;
-        public Track(Clutter.Actor tl) {
+
+        private Track? previous;
+        private weak Track? next;
+ 
+        public Track(Clutter.Actor tl, Track? prv, Track? nxt) {
+            this.previous = prv;
+            this.next = nxt;
+            if (this.previous != null) {
+                this.previous.next = this;
+            }
+            if (this.next != null) {
+                this.next.previous = this;
+            }
             this.add_constraint(
                 new Clutter.BindConstraint(tl, Clutter.BindCoordinate.WIDTH, 0)
             );
@@ -48,8 +60,17 @@ namespace alaia {
             this.opacity = Application.S().state == AppState.TRACKLIST ? Track.OPACITY : 0x00;
             this.visible = Application.S().state == AppState.TRACKLIST;
             this.transitions_completed.connect(do_transitions_completed);
-            tl.add_child(this); 
+            tl.add_child(this);
+            this.get_last_track().recalculate_y();
         }
+
+        ~Track(){
+            this.next.previous = this.previous;
+            this.previous.next = this.next;
+
+            this.get_last_track().recalculate_y();
+        }
+
         private void do_transitions_completed() {
             if (this.opacity == 0x00) {
                 this.visible = false;
@@ -66,6 +87,27 @@ namespace alaia {
             this.opacity = 0x00;
             this.restore_easing_state();
         }
+
+        private int calculate_height(){
+            //TODO: implement
+            return 150;
+        }
+
+        private Track get_first_track() {
+            return this.previous == null ? this : this.previous.get_first_track();
+        }
+
+        private Track get_last_track() {
+            return this.next == null ? this : this.next.get_last_track();
+        }
+
+        public int recalculate_y(){
+            this.save_easing_state();
+            int offset = this.previous != null ? this.previous.recalculate_y() : 0;
+            this.y = offset;
+            this.restore_easing_state();
+            return this.calculate_height() + offset;
+        }
     }
 
     class EmptyTrack : Track {
@@ -75,8 +117,8 @@ namespace alaia {
         private GtkClutter.Actor actor; 
         private TrackList tracklist;
 
-        public EmptyTrack(Clutter.Actor stage, TrackList tl) {
-            base(stage);
+        public EmptyTrack(Clutter.Actor stage, Track? prv, Track? nxt, TrackList tl) {
+            base(stage, prv, nxt);
             this.tracklist = tl;
             this.url_entry = new Gtk.Entry();
             this.enter_button = new Gtk.Button.with_label("Go");
@@ -134,8 +176,8 @@ namespace alaia {
         private WebKit.WebView web;
         private string url;
 
-        public HistoryTrack(Clutter.Actor stage, string url, WebView web) {
-            base(stage);
+        public HistoryTrack(Clutter.Actor stage, Track? prv, Track? nxt, string url, WebView web) {
+            base(stage,prv,nxt);
             this.web = web;
             this.web.open(url);
             this.url = url;
@@ -165,11 +207,26 @@ namespace alaia {
         }
 
         public void add_track(string url) {
-            this.tracks.insert(this.tracks.size-1, new HistoryTrack(this.stage, url, this.web));
+            Track? next = null;
+            Track? previous = null;
+
+            if (this.tracks.size >= 1) {
+                next = this.tracks.get(this.tracks.size-1);
+            }
+
+            if (this.tracks.size >= 2) {
+                previous = this.tracks.get(this.tracks.size-2);
+            }
+
+            this.tracks.insert(this.tracks.size-1, 
+                new HistoryTrack(this.stage, previous, next, url, this.web)
+            );
         }
 
         private void add_empty_track() {
-            this.tracks.insert(this.tracks.size,new EmptyTrack(this.stage, this));
+            this.tracks.insert(this.tracks.size,
+                new EmptyTrack(this.stage, null, null,  this)
+            );
         }
 
         /*public bool do_key_press_event(Clutter.KeyEvent e) {
@@ -268,7 +325,6 @@ namespace alaia {
 
             this.win.show_all();
             this.web.open("https://blog.fefe.de");
-            Gtk.main();
         }
         
         public void do_delete() {
@@ -315,6 +371,7 @@ namespace alaia {
                 stdout.printf("Could not initialize GtkClutter");
             }
             Application.app = new Application();
+            Gtk.main();
             return 0;
         }
     }
