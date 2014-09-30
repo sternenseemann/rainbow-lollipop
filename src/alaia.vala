@@ -69,8 +69,7 @@ namespace alaia {
                 new Clutter.BindConstraint(tl, Clutter.BindCoordinate.WIDTH, 0)
             );
             this.color = TrackColorSource.get_color();
-            this.height = 150;
-            this.y = 150;
+            this.height = this.calculate_height();
             this.opacity = Application.S().state == AppState.TRACKLIST ? Track.OPACITY : 0x00;
             this.visible = Application.S().state == AppState.TRACKLIST;
             this.transitions_completed.connect(do_transitions_completed);
@@ -154,9 +153,8 @@ namespace alaia {
             this.actor.transitions_completed.connect(do_transitions_completed);
             this.actor.show_all();
             this.actor.visible = false;
-
+            this.y = stage.height/2-75;
             stage.add_child(this.actor);
-            
         }
 
         private void do_activate() {
@@ -175,6 +173,7 @@ namespace alaia {
             this.actor.save_easing_state();
             this.actor.opacity = 0xE0;
             this.actor.restore_easing_state();
+            this.url_entry.grab_focus();
         }
 
         public new void disappear() {
@@ -189,12 +188,18 @@ namespace alaia {
     class HistoryTrack : Track {
         private WebKit.WebView web;
         private string url;
+        
+        private Node? current_node;
 
         public HistoryTrack(Clutter.Actor stage, Track? prv, Track? nxt, string url, WebView web) {
             base(stage,prv,nxt);
             this.web = web;
             this.web.open(url);
             this.url = url;
+        }
+
+        private new int calculate_height() {
+            return 150;
         }
     }
 
