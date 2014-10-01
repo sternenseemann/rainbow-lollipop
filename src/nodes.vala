@@ -8,6 +8,9 @@ namespace alaia {
         private HistoryTrack track;
         private Clutter.Actor stage;
         private float xpos;
+        private Gdk.Pixbuf favicon;
+        private Gdk.Pixbuf snapshot;
+        private Clutter.Actor favactor;
 
         private string _url;
 
@@ -47,8 +50,27 @@ namespace alaia {
             );
             this.reactive = true;
             this.button_press_event.connect(do_button_press_event);
+
+            this.favactor = new Clutter.Actor();
+            this.favactor.height=25;
+            this.favactor.width=25;
+            this.favactor.add_constraint (
+                new Clutter.BindConstraint(this, Clutter.BindCoordinate.POSITION, 25)
+            );
             stage.add_child(this);
-            this.track.get_last_track().recalculate_y();
+            stage.add_child(this.favactor);
+            this.track.get_last_track().recalculate_y(0);
+        }
+
+        public void set_favicon(Gdk.Pixbuf px) {
+            var img = new Clutter.Image();
+            img.set_data(px.get_pixels(),
+                           px.has_alpha ? Cogl.PixelFormat.RGBA_8888 : Cogl.PixelFormat.RGB_888,
+                           px.width,
+                           px.height,
+                           px.rowstride);
+            this.favactor.content = img;
+            stdout.printf("iconfoo\n");
         }
 
         public void do_x_offset(GLib.Object t, ParamSpec p) {
