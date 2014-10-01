@@ -6,7 +6,6 @@ using WebKit;
 using Gee;
 
 namespace alaia {
-
     enum AppState {
         NORMAL,
         TRACKLIST

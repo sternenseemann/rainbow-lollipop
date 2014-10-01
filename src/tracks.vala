@@ -50,7 +50,9 @@ namespace alaia {
 
         private Track? previous;
         private weak Track? next;
- 
+
+        private float ypos;
+
         public Track(Clutter.Actor tl, Track? prv, Track? nxt) {
             this.previous = prv;
             this.next = nxt;
@@ -67,17 +69,18 @@ namespace alaia {
             this.height = this.calculate_height();
             this.opacity = Application.S().state == AppState.TRACKLIST ? Track.OPACITY : 0x00;
             this.visible = Application.S().state == AppState.TRACKLIST;
+            this.notify.connect(do_y_offset);
             this.transitions_completed.connect(do_transitions_completed);
             tl.add_child(this);
             this.stage = tl;
-            this.get_last_track().recalculate_y();
+            this.get_last_track().recalculate_y(0);
         }
 
         ~Track(){
             this.next.previous = this.previous;
             this.previous.next = this.next;
 
-            this.get_last_track().recalculate_y();
+            this.get_last_track().recalculate_y(0);
         }
 
         private void do_transitions_completed() {
@@ -85,6 +88,13 @@ namespace alaia {
                 this.visible = false;
             }
         }
+
+        private void do_y_offset(GLib.Object t, ParamSpec p) {
+            if (p.name == "y-offset") {
+                this.get_last_track().recalculate_y((t as HistoryTrack).y_offset);
+            }
+        }        
+
         public void emerge() {
             this.visible = true;
             this.save_easing_state();
@@ -107,12 +117,12 @@ namespace alaia {
             return this.next == null ? this : this.next.get_last_track();
         }
 
-        public int recalculate_y(){
+        public int recalculate_y(float y_offset){
             this.save_easing_state();
-            int offset = this.previous != null ? this.previous.recalculate_y() : 0;
-            this.y = offset;
+            this.ypos = this.previous != null ? this.previous.recalculate_y(y_offset) : 0;
+            this.y = this.ypos + y_offset;
             this.restore_easing_state();
-            return this.calculate_height() + offset;
+            return this.calculate_height() + (int)this.ypos;
         }
     }
 
@@ -146,7 +156,7 @@ namespace alaia {
             this.actor.transitions_completed.connect(do_transitions_completed);
             this.actor.show_all();
             this.actor.visible = false;
-            this.y = stage.height/2-75;
+            this.y = this.get_stage().get_height()/2-75;
             stage.add_child(this.actor);
         }
 
@@ -189,7 +199,7 @@ namespace alaia {
         private string url;
         private TrackList tracklist;
 
-        private bool x_tracking;
+        private bool tracking;
         private float x_delta;
         private float _x_offset;
         public float x_offset {
@@ -200,6 +210,16 @@ namespace alaia {
                 return this._x_offset;
             }
         }
+        private float y_delta;
+        private float _y_offset;
+        public float y_offset {
+            set {
+                this._y_offset = value;
+            }
+            get {
+                return this._y_offset;
+            }
+        } 
 
         private Node? _current_node;
         public Node? current_node {
@@ -222,7 +242,7 @@ namespace alaia {
             this._current_node = this.first_node;
             this.url = url;
 
-            this.x_tracking = false;
+            this.tracking = false;
             this.x_delta = 0;
             this.reactive = true;
             this.button_press_event.connect(do_button_press_event);
@@ -233,22 +253,24 @@ namespace alaia {
 
         private bool do_button_press_event(Clutter.ButtonEvent e){
             if (e.button == Gdk.BUTTON_MIDDLE) {
-                this.x_tracking = true;
+                this.tracking = true;
                 this.x_delta = e.x - this._x_offset;
+                this.y_delta = e.y - this._y_offset;
             }
             return true;
         }
 
         private bool do_button_release_event(Clutter.ButtonEvent e) {
             if (e.button == Gdk.BUTTON_MIDDLE) {
-                this.x_tracking = false;
+                this.tracking = false;
             }
             return true;
         }
 
         private bool do_motion_event(Clutter.MotionEvent e) {
-            if (this.x_tracking) {
+            if (this.tracking) {
                 this.x_offset = e.x-x_delta;
+                this.y_offset = e.y-y_delta;
             }
             return true;
         }

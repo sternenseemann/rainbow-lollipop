@@ -78,5 +78,4 @@ namespace alaia {
             return r;
         }
     }
-
 }
