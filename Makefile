@@ -24,7 +24,7 @@ TARGET = alaia
 ######################################################
 # haende weg. alles andere wird automatisch gemacht !!
 ######################################################
-
+ 
 CFLAGS = $(shell pkg-config --cflags --libs glib-2.0 gobject-2.0)
 ifneq ($(LIBS), )
 CFLAGS += $(shell pkg-config --cflags --libs $(LIBS))
@@ -32,33 +32,56 @@ endif
 ifneq ($(CLIBS), )
 CFLAGS += $(shell pkg-config --cflags --libs $(CLIBS))
 endif
-CFILES = $(patsubst %.vala, %.c, $(SRC))
-OBJ = $(patsubst %.vala, %.o, $(SRC))
-VAPIFILES=$(patsubst %.vala, %.vapi, $(SRC))
+
+BUILDFOLDER = .build
+VAPIFOLDER = $(BUILDFOLDER)/vapifiles
+CFOLDER = $(BUILDFOLDER)/cfiles
+OFOLDER = $(BUILDFOLDER)/ofiles
+
+#CFILES = $(patsubst %.vala, %.c, $(SRC))
+#OBJ = $(patsubst %.vala, %.o, $(SRC))
+#VAPIFILES = $(patsubst %.vala, %.vapi, $(SRC))
+	
+
+CFILES = $(addprefix $(CFOLDER)/, $(patsubst %.vala, %.c, $(SRC)))
+OBJ = $(addprefix $(OFOLDER)/, $(patsubst %.vala, %.o, $(SRC)))
+VAPIFILES= $(addprefix $(VAPIFOLDER)/, $(patsubst %.vala, %.vapi, $(SRC)))
+
+
+MKDIR_P = mkdir -p
+
+
+
+
+FOLDERS = $(VAPIFOLDER) $(CFOLDER) $(OFOLDER)
+
 
 info:
 	@echo "clean - clean"
 	@echo "all   - all"
 
+$(FOLDERS):
+	$(MKDIR_P) $(FOLDERS)
+
 clean:
+	rm -rf $(BUILDFOLDER)
 	rm -f $(TARGET)
-	rm -f `find . -name "*.o"`
-	rm -f `find . -name "*.c"`
-	rm -f `find . -name "*.vapi"`
 
-%.vapi: %.vala
-	valac --fast-vapi=$*.vapi $*.vala && touch $*.vapi
+$(VAPIFOLDER)/%.vapi: %.vala
+	@if [ $(@D) != "." ]; then $(MKDIR_P) $(@D); fi
+	valac --fast-vapi=$@ $< && touch $@
+#       valac --fast-vapi=$*.vapi $*.vala && touch $*.vapi
 
-%.c: %.vala 	
-	valac -C $*.vala $(VFLAGS) $(addprefix --use-fast-vapi=, $(patsubst $*.vapi, , $(VAPIFILES))) $(addprefix --pkg , $(VALALIBS)) $(addprefix --pkg , $(LIBS)) && touch $*.c
+$(CFOLDER)/%.c: %.vala  
+	@if [ $(@D) != "." ]; then $(MKDIR_P) $(@D); fi  
+	valac -C $*.vala $(VFLAGS) $(addprefix --use-fast-vapi=, $(patsubst $(VAPIFOLDER)/$(*).vapi, , $(VAPIFILES))) $(addprefix --pkg , $(VALALIBS)) $(addprefix --pkg , $(LIBS)) && mv $*.c $@ && touch $@
 
-%.o: %.c
-	$(CC) $*.c -c -o $*.o $(CFLAGS) && touch $*.o
+$(OFOLDER)/%.o: $(CFOLDER)/%.c
+	@if [ $(@D) != "." ]; then $(MKDIR_P) $(@D); fi
+	$(CC) $< -c -o $@ $(CFLAGS) && touch $@
 
-$(TARGET): $(VAPIFILES) $(CFILES) $(OBJ)
+$(TARGET): $(FOLDERS) $(VAPIFILES) $(CFILES) $(OBJ)
 	$(CC) $(CFLAGS) $(OBJ) -o $(TARGET) && touch $(TARGET)
 
 all: $(TARGET)
-
-
 

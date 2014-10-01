@@ -1,9 +1,4 @@
-*.pyc
-__pycache__
 .*.sw*
-
-src/*.c
-src/*.vapi
-src/*.o
+.build
 
 alaia
