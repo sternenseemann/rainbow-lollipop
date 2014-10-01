@@ -39,6 +39,7 @@ namespace alaia {
             this._state = AppState.TRACKLIST;
 
             this.web = new WebKit.WebView();
+            this.web.load_committed.connect(do_load_committed);
             this.webact = new GtkClutter.Actor.with_contents(this.web);
 
             this.win = new GtkClutter.Window();
@@ -60,6 +61,10 @@ namespace alaia {
             this.win.show_all();
             this.tracklist.emerge();
         }
+
+        public void do_load_committed(WebFrame wf) {
+            this.tracklist.log_call(wf);
+        }
         
         public void do_delete() {
             Gtk.main_quit();
@@ -71,8 +76,6 @@ namespace alaia {
         }
 
         public bool do_key_press_event(Gdk.EventKey e) {
-            stdout.printf("%u\n",e.keyval);
-            stdout.printf("%s\n",e.str);
             switch (this._state) {
                 case AppState.NORMAL:
                     switch (e.keyval) {

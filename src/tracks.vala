@@ -46,7 +46,7 @@ namespace alaia {
 
     class Track : Clutter.Rectangle {
         private const uint8 OPACITY = 0xE0;
-        private Clutter.Actor stage;
+        protected Clutter.Actor stage;
 
         private Track? previous;
         private weak Track? next;
@@ -69,6 +69,7 @@ namespace alaia {
             this.visible = Application.S().state == AppState.TRACKLIST;
             this.transitions_completed.connect(do_transitions_completed);
             tl.add_child(this);
+            this.stage = tl;
             this.get_last_track().recalculate_y();
         }
 
@@ -185,16 +186,24 @@ namespace alaia {
         private string url;
         
         private Node? current_node;
+        private Node first_node;
 
         public HistoryTrack(Clutter.Actor stage, Track? prv, Track? nxt, string url, WebView web) {
             base(stage,prv,nxt);
             this.web = web;
             this.web.open(url);
+            this.first_node = new Node(stage, this, url, null);
+            this.current_node = this.first_node;
             this.url = url;
         }
 
         private new int calculate_height() {
             return 150;
+        }
+
+        public void log_call(WebFrame wf) {
+            var nn = new Node(this.stage, this, wf.get_uri(), this.current_node);
+            this.current_node = nn;
         }
     }
 
@@ -202,6 +211,7 @@ namespace alaia {
         private Gee.ArrayList<Track> tracks;
         private Clutter.Actor stage;
         private WebKit.WebView web;
+        private HistoryTrack? current_track;
 
         public TrackList(Clutter.Actor stage, WebView web) {
             this.web = web;
@@ -232,9 +242,10 @@ namespace alaia {
                 previous = this.tracks.get(this.tracks.size-2);
             }
 
-            this.tracks.insert(this.tracks.size-1, 
-                new HistoryTrack(this.stage, previous, next, url, this.web)
-            );
+            var nt = new HistoryTrack(this.stage, previous, next, url, this.web);
+            this.tracks.insert(this.tracks.size-1, nt);
+            
+            this.current_track = nt;
         }
 
         private void add_empty_track() {
@@ -254,6 +265,12 @@ namespace alaia {
             stdout.printf("trcklist\n");
             return true;
         }*/
+
+        public void log_call(WebKit.WebFrame wf) {
+            if (this.current_track != null) {
+                this.current_track.log_call(wf);
+            }
+        }
 
         private void do_transitions_completed() {
             if (this.opacity == 0x00) {
