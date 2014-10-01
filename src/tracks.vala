@@ -189,6 +189,18 @@ namespace alaia {
         private string url;
         private TrackList tracklist;
 
+        private bool x_tracking;
+        private float x_delta;
+        private float _x_offset;
+        public float x_offset {
+            set {
+                this._x_offset = value;
+            }
+            get {
+                return this._x_offset;
+            }
+        }
+
         private Node? _current_node;
         public Node? current_node {
             get {
@@ -209,7 +221,36 @@ namespace alaia {
             this.first_node = new Node(stage, this, url, null);
             this._current_node = this.first_node;
             this.url = url;
+
+            this.x_tracking = false;
+            this.x_delta = 0;
+            this.reactive = true;
+            this.button_press_event.connect(do_button_press_event);
+            this.button_release_event.connect(do_button_release_event);
+            this.motion_event.connect(do_motion_event);
             this.notify.connect(do_notify);
+        }
+
+        private bool do_button_press_event(Clutter.ButtonEvent e){
+            if (e.button == Gdk.BUTTON_MIDDLE) {
+                this.x_tracking = true;
+                this.x_delta = e.x - this._x_offset;
+            }
+            return true;
+        }
+
+        private bool do_button_release_event(Clutter.ButtonEvent e) {
+            if (e.button == Gdk.BUTTON_MIDDLE) {
+                this.x_tracking = false;
+            }
+            return true;
+        }
+
+        private bool do_motion_event(Clutter.MotionEvent e) {
+            if (this.x_tracking) {
+                this.x_offset = e.x-x_delta;
+            }
+            return true;
         }
 
         private void do_notify(GLib.Object self, GLib.ParamSpec p) {
