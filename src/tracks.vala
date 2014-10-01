@@ -44,7 +44,7 @@ namespace alaia {
         }
     }
 
-    class Track : Clutter.Rectangle {
+    abstract class Track : Clutter.Rectangle {
         private const uint8 OPACITY = 0xE0;
         protected Clutter.Actor stage;
 
@@ -97,16 +97,13 @@ namespace alaia {
             this.restore_easing_state();
         }
 
-        private int calculate_height(){
-            //TODO: implement
-            return 150;
-        }
+        protected abstract int calculate_height();
 
         private Track get_first_track() {
             return this.previous == null ? this : this.previous.get_first_track();
         }
 
-        private Track get_last_track() {
+        public Track get_last_track() {
             return this.next == null ? this : this.next.get_last_track();
         }
 
@@ -163,6 +160,12 @@ namespace alaia {
             }
         }
 
+        protected override int calculate_height(){
+            //TODO: implement
+            stdout.printf("wrong method\n");
+            return 150;
+        }
+
         public new void emerge() {
             base.emerge();
             this.actor.visible = true;
@@ -185,7 +188,7 @@ namespace alaia {
         private WebKit.WebView web;
         private string url;
         private TrackList tracklist;
-        
+
         private Node? _current_node;
         public Node? current_node {
             get {
@@ -206,10 +209,24 @@ namespace alaia {
             this.first_node = new Node(stage, this, url, null);
             this._current_node = this.first_node;
             this.url = url;
+            this.notify.connect(do_notify);
         }
 
-        private new int calculate_height() {
-            return 150;
+        private void do_notify(GLib.Object self, GLib.ParamSpec p) {
+            if (p.name == "current_node") {
+                stdout.printf("changednode to %s\n", this._current_node.url);
+                this.web.open(this._current_node.url);
+            }
+        }
+
+        public void load_page(Node n) {
+            this.web.open(n.url);
+        }
+
+        protected override int calculate_height() {
+            int h = 150+(100*(this.first_node.get_splits()));
+            this.height = h;
+            return h;
         }
 
         public void log_call(WebFrame wf) {
