@@ -5,13 +5,19 @@ namespace alaia {
         public static const uint8 COL_MULTIPLIER = 15;
         private Gee.ArrayList<Node> next;
         private Node? previous;
-        private Track track;
+        private HistoryTrack track;
         private Clutter.Actor stage;
 
-        private string url;
+        private string _url;
 
-        public Node(Clutter.Actor stage, Track track, string url, Node? prv) {
-            this.url = url;
+        public string url {
+            get {
+                return this._url;
+            }
+        }
+
+        public Node(Clutter.Actor stage, HistoryTrack track, string url, Node? prv) {
+            this._url = url;
             this.previous = prv;
             this.next = new Gee.ArrayList<Node>();
             this.track = track;
@@ -30,7 +36,14 @@ namespace alaia {
             this.add_constraint(
                 new Clutter.BindConstraint(track, Clutter.BindCoordinate.Y,37)
             );
+            this.button_press_event.connect(do_button_press_event);
             stage.add_child(this);
+        }
+    
+        private bool do_button_press_event(Clutter.ButtonEvent e) {
+            stdout.printf("beenis\n");
+            this.track.current_node = this;
+            return true;
         }
 
         public int get_splits() {

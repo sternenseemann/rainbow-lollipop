@@ -184,16 +184,27 @@ namespace alaia {
     class HistoryTrack : Track {
         private WebKit.WebView web;
         private string url;
+        private TrackList tracklist;
         
-        private Node? current_node;
+        private Node? _current_node;
+        public Node? current_node {
+            get {
+                return this._current_node;
+            }
+            set {
+                this.tracklist.current_track = this;
+                this._current_node = value;
+            }
+        }
         private Node first_node;
 
-        public HistoryTrack(Clutter.Actor stage, Track? prv, Track? nxt, string url, WebView web) {
+        public HistoryTrack(Clutter.Actor stage, Track? prv, Track? nxt, TrackList tl, string url, WebView web) {
             base(stage,prv,nxt);
             this.web = web;
+            this.tracklist = tl;
             this.web.open(url);
             this.first_node = new Node(stage, this, url, null);
-            this.current_node = this.first_node;
+            this._current_node = this.first_node;
             this.url = url;
         }
 
@@ -202,8 +213,10 @@ namespace alaia {
         }
 
         public void log_call(WebFrame wf) {
-            var nn = new Node(this.stage, this, wf.get_uri(), this.current_node);
-            this.current_node = nn;
+            if (wf.get_uri() != this._current_node.url) {
+                var nn = new Node(this.stage, this, wf.get_uri(), this._current_node);
+                this._current_node = nn;
+            }
         }
     }
 
@@ -211,7 +224,18 @@ namespace alaia {
         private Gee.ArrayList<Track> tracks;
         private Clutter.Actor stage;
         private WebKit.WebView web;
-        private HistoryTrack? current_track;
+        
+        public HistoryTrack? current_track {
+            get {
+                return this._current_track;
+            }
+            set {
+                this._current_track = value;
+            }
+            
+        }
+
+        private HistoryTrack? _current_track;
 
         public TrackList(Clutter.Actor stage, WebView web) {
             this.web = web;
@@ -242,10 +266,10 @@ namespace alaia {
                 previous = this.tracks.get(this.tracks.size-2);
             }
 
-            var nt = new HistoryTrack(this.stage, previous, next, url, this.web);
+            var nt = new HistoryTrack(this.stage, previous, next, this, url, this.web);
             this.tracks.insert(this.tracks.size-1, nt);
             
-            this.current_track = nt;
+            this._current_track = nt;
         }
 
         private void add_empty_track() {
@@ -267,8 +291,8 @@ namespace alaia {
         }*/
 
         public void log_call(WebKit.WebFrame wf) {
-            if (this.current_track != null) {
-                this.current_track.log_call(wf);
+            if (this._current_track != null) {
+                this._current_track.log_call(wf);
             }
         }
 

@@ -54,7 +54,7 @@ namespace alaia {
             stage.add_child(this.webact);
             stage.set_reactive(true);
             //stage.key_press_event.connect(do_key_press_event);
-            stage.button_press_event.connect(do_button_press_event);
+            //stage.button_press_event.connect(do_button_press_event);
 
             this.tracklist = new TrackList(stage, this.web);
 
@@ -72,7 +72,7 @@ namespace alaia {
 
         public bool do_button_press_event(Clutter.ButtonEvent e) {
             stdout.printf("foobar\n");
-            return true;
+            return false;
         }
 
         public bool do_key_press_event(Gdk.EventKey e) {
