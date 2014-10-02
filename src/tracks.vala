@@ -91,7 +91,7 @@ namespace alaia {
 
         private void do_y_offset(GLib.Object t, ParamSpec p) {
             if (p.name == "y-offset") {
-                this.get_last_track().recalculate_y((t as HistoryTrack).y_offset);
+                this.get_last_track().recalculate_y((t as HistoryTrack).y_offset,false);
             }
         }        
 
@@ -117,11 +117,13 @@ namespace alaia {
             return this.next == null ? this : this.next.get_last_track();
         }
 
-        public int recalculate_y(float y_offset){
-            this.save_easing_state();
-            this.ypos = this.previous != null ? this.previous.recalculate_y(y_offset) : 0;
+        public int recalculate_y(float y_offset, bool animated=true){
+            if (animated) 
+                this.save_easing_state();
+            this.ypos = this.previous != null ? this.previous.recalculate_y(y_offset,animated) : 0;
             this.y = this.ypos + y_offset;
-            this.restore_easing_state();
+            if (animated)
+                this.restore_easing_state();
             return this.calculate_height() + (int)this.ypos;
         }
     }
