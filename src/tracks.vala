@@ -171,8 +171,6 @@ namespace alaia {
         }
 
         protected override int calculate_height(){
-            //TODO: implement
-            stdout.printf("wrong method\n");
             return 150;
         }
 
@@ -256,28 +254,33 @@ namespace alaia {
                 this.tracking = true;
                 this.x_delta = e.x - this._x_offset;
                 this.y_delta = e.y - this._y_offset;
+                return true;
+            } else {
+                return false;
             }
-            return true;
         }
 
         private bool do_button_release_event(Clutter.ButtonEvent e) {
             if (e.button == Gdk.BUTTON_MIDDLE) {
                 this.tracking = false;
+                return true;
+            } else {
+                return false;
             }
-            return true;
         }
 
         private bool do_motion_event(Clutter.MotionEvent e) {
             if (this.tracking) {
                 this.x_offset = e.x-x_delta;
                 this.y_offset = e.y-y_delta;
+                return true;
+            } else {
+                return false;
             }
-            return true;
         }
 
         private void do_notify(GLib.Object self, GLib.ParamSpec p) {
             if (p.name == "current_node") {
-                stdout.printf("changednode to %s\n", this._current_node.url);
                 this.web.open(this._current_node.url);
             }
         }

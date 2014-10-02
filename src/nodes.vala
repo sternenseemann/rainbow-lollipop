@@ -50,12 +50,12 @@ namespace alaia {
             );
             this.reactive = true;
             this.button_press_event.connect(do_button_press_event);
+            this.motion_event.connect((x) => {return false;});
 
             this.favactor = new Clutter.Actor();
-            this.favactor.height=25;
-            this.favactor.width=25;
+            this.favactor.height=this.favactor.width=24;
             this.favactor.add_constraint (
-                new Clutter.BindConstraint(this, Clutter.BindCoordinate.POSITION, 25)
+                new Clutter.BindConstraint(this, Clutter.BindCoordinate.POSITION, 26)
             );
             stage.add_child(this);
             stage.add_child(this.favactor);
@@ -70,7 +70,6 @@ namespace alaia {
                            px.height,
                            px.rowstride);
             this.favactor.content = img;
-            stdout.printf("iconfoo\n");
         }
 
         public void do_x_offset(GLib.Object t, ParamSpec p) {
@@ -78,11 +77,15 @@ namespace alaia {
                 this.x = this.xpos + (t as HistoryTrack).x_offset;
             }
         }
-    
+        
         private bool do_button_press_event(Clutter.ButtonEvent e) {
-            this.track.current_node = this;
-            this.track.load_page(this);
-            return true;
+            if (e.button == Gdk.BUTTON_PRIMARY) {
+                this.track.current_node = this;
+                this.track.load_page(this);
+                return true;
+            } else {
+                return false;
+            }
         }
 
         private Node first_node() {
