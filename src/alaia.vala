@@ -52,8 +52,6 @@ namespace alaia {
             );
             stage.add_child(this.webact);
             stage.set_reactive(true);
-            //stage.key_press_event.connect(do_key_press_event);
-            //stage.button_press_event.connect(do_button_press_event);
 
             this.tracklist = new TrackList(stage, this.web);
 

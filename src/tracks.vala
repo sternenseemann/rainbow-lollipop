@@ -366,18 +366,6 @@ namespace alaia {
             );
         }
 
-        /*public bool do_key_press_event(Clutter.KeyEvent e) {
-            stdout.printf("buttonpressed\n");
-            stdout.printf("%ui\n",e.keyval);
-            return true;
-        }*/
-    
-        /*[CCode (instance_pos = -1)]
-        public bool do_button_press_event(Clutter.ButtonEvent e) {
-            stdout.printf("trcklist\n");
-            return true;
-        }*/
-
         public void log_call(WebKit.WebFrame wf) {
             if (this._current_track != null) {
                 this._current_track.log_call(wf);
