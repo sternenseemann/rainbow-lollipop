@@ -299,10 +299,12 @@ namespace alaia {
             if (wf.get_uri() != this._current_node.url) {
                 var nn = new Node(this.stage, this, wf.get_uri(), this._current_node);
                 this._current_node = nn;
-                this.web.icon_loaded.connect((b) => {
-                    this._current_node.set_favicon(this.web.get_icon_pixbuf());
-                });
+                this.web.icon_loaded.connect(do_icon_loaded);
             }
+        }
+        private void do_icon_loaded(string b) {
+            this._current_node.set_favicon(this.web.get_icon_pixbuf());
+            this.web.icon_loaded.disconnect(do_icon_loaded);
         }
     }
 
