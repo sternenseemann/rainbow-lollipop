@@ -5,6 +5,7 @@ namespace alaia {
     private float col_h2f(int col) {
         return (float)col/255;
     }
+
     private int rnd(float f) {
         int i = (int)f;
         float d = f - (float)i;
@@ -73,6 +74,7 @@ namespace alaia {
     }
 
     class NodeHighlight : Clutter.Actor {
+        private const double STROKE_WIDTH = 5.0;
         private Clutter.Canvas c;
         private Node parent;
 
@@ -100,19 +102,39 @@ namespace alaia {
                               col_h2f(this.parent.color.blue)*2,
                               1);
             cr.set_line_width(5.0);
-            cr.arc(38,38,33,0,2*Math.PI);
+            cr.arc(Node.HEIGHT/2,Node.HEIGHT/2,Node.HEIGHT/2-(int)STROKE_WIDTH,0,2*Math.PI);
             cr.stroke();
             cr.set_source_rgba(col_h2f(this.parent.color.red),
                               col_h2f(this.parent.color.green),
                               col_h2f(this.parent.color.blue),
                               0.5);
-            cr.arc(38,38,33,0,2*Math.PI);
+            cr.arc(Node.HEIGHT/2,Node.HEIGHT/2,Node.HEIGHT/2,0,2*Math.PI);
             cr.fill();
             return true;
         }
     }
-    class Node : Clutter.Rectangle {
+    
+    class NodeConstraint : Clutter.Constraint {
+        private Node previous;
+
+        public NodeConstraint(Node previous) {
+            this.previous = previous;
+        }
+
+        public override void update_allocation(Clutter.Actor a, Clutter.ActorBox alloc){
+            stdout.printf("lel %d\n",this.previous.index_nextnode((Node)a));
+            alloc.x1 = this.previous.x+Node.HEIGHT+Track.SPACING;
+            alloc.x2 = this.previous.x+Track.SPACING+2*Node.HEIGHT;
+            stdout.printf("y1 %f\n",this.previous.y+this.previous.index_nextnode((Node)a)*(Node.HEIGHT+Track.SPACING));
+            alloc.y1 = this.previous.y+this.previous.index_nextnode((Node)a)*(Node.HEIGHT+Track.SPACING);
+            alloc.y2 = alloc.y1+Node.HEIGHT;
+        }
+    }
+
+    class Node : Clutter.Actor {
         public static const uint8 COL_MULTIPLIER = 15;
+        public static const uint8 HEIGHT = 0x40;
+        public static const uint8 FAVICON_SIZE = 32;
         private Gee.ArrayList<Node> next;
         private Node? previous;
         private HistoryTrack track;
@@ -122,6 +144,10 @@ namespace alaia {
         private Gdk.Pixbuf snapshot;
         private Clutter.Actor favactor;
         private NodeHighlight highlight;
+        
+        public Clutter.Color color {
+            get;set;
+        }
 
         private string _url;
 
@@ -133,7 +159,6 @@ namespace alaia {
         }
 
         public Node(Clutter.Actor stage, HistoryTrack track, string url, Node? prv) {
-            int y_offset = 37;
             this._url = url;
             this.previous = prv;
             this.next = new Gee.ArrayList<Node>();
@@ -143,30 +168,27 @@ namespace alaia {
             this.xpos = 100;
             this.x = this.xpos;
             if (prv != null){
-                stdout.printf("in here prvblock\n");
-                this.x = this.xpos =prv.x;
-                this.save_easing_state();
-                this.x = this.xpos = prv.x+100;
-                this.y = this.track.current_node.y;
-                this.restore_easing_state();
                 this.previous.next.add(this);
-                y_offset += (this.first_node().get_splits())*100;
+                this.add_constraint(
+                    new NodeConstraint(prv)
+                );   
                 new Connector(previous,this);
+            } else {
+                this.add_constraint(
+                    new Clutter.BindConstraint(track, Clutter.BindCoordinate.Y,Track.SPACING)
+                );
             }
-            this.height = 75;
-            this.width = 75;
+            this.height = Node.HEIGHT;
+            this.width = Node.HEIGHT;
             this.color = track.get_color().lighten();
-            this.color = this.get_color().lighten();
-            this.add_constraint(
-                new Clutter.BindConstraint(track, Clutter.BindCoordinate.Y,y_offset)
-            );
+            this.color = this.color.lighten();
             this.reactive = true;
             this.motion_event.connect((x) => {return false;});
 
             this.favactor = new Clutter.Actor();
-            this.favactor.height=this.favactor.width=24;
+            this.favactor.height=this.favactor.width=FAVICON_SIZE;
             this.favactor.add_constraint (
-                new Clutter.BindConstraint(this, Clutter.BindCoordinate.POSITION, 26)
+                new Clutter.BindConstraint(this, Clutter.BindCoordinate.POSITION, Node.HEIGHT/2-FAVICON_SIZE/2)
             );
             this.visible= false;
             this.highlight = new NodeHighlight(this);
@@ -174,7 +196,7 @@ namespace alaia {
             stage.add_child(this);
             stage.add_child(this.highlight);
             stage.add_child(this.favactor);
-            this.track.get_last_track().recalculate_y(0);
+            //this.track.get_last_track().recalculate_y(0);
         }
 
         public void set_favicon(Gdk.Pixbuf px) {
@@ -205,6 +227,17 @@ namespace alaia {
 
         private Node first_node() {
             return this.previous == null ? this : this.previous.first_node();
+        }
+
+        public int index_nextnode(Node n) {
+            int i = 0;
+            foreach (Node x in this.next) {
+                if (x == n){
+                    return i;
+                }
+                i++;
+            }
+            return 3;
         }
 
         public int get_splits() {

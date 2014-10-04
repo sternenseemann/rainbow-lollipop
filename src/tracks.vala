@@ -46,6 +46,8 @@ namespace alaia {
 
     abstract class Track : Clutter.Rectangle {
         private const uint8 OPACITY = 0xE0;
+        public const uint8 HEIGHT = 0x80;
+        public const uint8 SPACING = 0x10;
         protected Clutter.Actor stage;
 
         private Track? previous;
@@ -151,14 +153,14 @@ namespace alaia {
                 new Clutter.BindConstraint(this, Clutter.BindCoordinate.WIDTH, 0)
             );
             this.actor.add_constraint(
-                new Clutter.BindConstraint(this, Clutter.BindCoordinate.Y, 62)  
+                new Clutter.BindConstraint(this, Clutter.BindCoordinate.Y, Track.HEIGHT/2-this.actor.height/2)  
             );
             
             this.actor.height=25;
             this.actor.transitions_completed.connect(do_transitions_completed);
             this.actor.show_all();
             this.actor.visible = false;
-            this.y = this.get_stage().get_height()/2-75;
+            this.y = this.get_stage().get_height()/2-Track.HEIGHT;
             stage.add_child(this.actor);
         }
 
@@ -173,7 +175,7 @@ namespace alaia {
         }
 
         protected override int calculate_height(){
-            return 150;
+            return Track.HEIGHT;
         }
 
         public new void emerge() {
@@ -292,7 +294,7 @@ namespace alaia {
         }
 
         protected override int calculate_height() {
-            int h = 150+(100*(this.first_node.get_splits()));
+            int h = Track.HEIGHT+((Node.HEIGHT+Track.SPACING)*(this.first_node.get_splits()));
             this.height = h;
             return h;
         }
