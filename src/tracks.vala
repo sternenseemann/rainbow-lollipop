@@ -10,12 +10,12 @@ namespace alaia {
             if (!TrackColorSource.initialized) {
                 stdout.printf("init");
                 TrackColorSource.colors = new Gee.ArrayList<string>();
-                TrackColorSource.colors.add("#500");
                 TrackColorSource.colors.add("#550");
                 TrackColorSource.colors.add("#050");
                 TrackColorSource.colors.add("#055");
                 TrackColorSource.colors.add("#005");
                 TrackColorSource.colors.add("#505");
+                TrackColorSource.colors.add("#500");
                 TrackColorSource.initialized = true;
             }
         }
