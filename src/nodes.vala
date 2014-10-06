@@ -66,8 +66,12 @@ namespace alaia {
                               col_h2f(this.previous.color.blue)*2,
                               1);
             cr.set_line_width(2.0);
-            cr.move_to(0,0);
-            cr.rel_curve_to(w,0,0,h-2,w,h-2);
+            cr.move_to(0,1);
+            if (h < Node.HEIGHT) {
+                cr.rel_line_to(w,0);
+            } else {
+                cr.rel_curve_to(w,0,0,h-2,w,h-2);
+            }
             cr.stroke();
             return true;
         } 
