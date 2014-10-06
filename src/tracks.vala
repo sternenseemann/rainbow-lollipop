@@ -230,7 +230,9 @@ namespace alaia {
             }
             set {
                 this.tracklist.current_track = this;
+                this._current_node.toggle_highlight();
                 this._current_node = value;
+                this._current_node.toggle_highlight();
             }
         }
         private Node first_node;
@@ -308,7 +310,9 @@ namespace alaia {
         public void log_call(WebFrame wf) {
             if (wf.get_uri() != this._current_node.url) {
                 var nn = new Node(this.stage, this, wf.get_uri(), this._current_node);
+                this._current_node.toggle_highlight();
                 this._current_node = nn;
+                this._current_node.toggle_highlight();
                 this.web.icon_loaded.connect(do_icon_loaded);
             }
         }

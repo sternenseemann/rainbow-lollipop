@@ -253,17 +253,36 @@ namespace alaia {
             //this.track.get_last_track().recalculate_y(0);
         }
 
+        private bool is_current_node = false;
+
+        public void toggle_highlight() {
+            this.is_current_node = !this.is_current_node;
+            if (this.is_current_node) {
+                this.highlight.save_easing_state();
+                this.highlight.opacity = 0xFF;
+                this.highlight.restore_easing_state();
+            } else {
+                this.highlight.save_easing_state();
+                this.highlight.opacity = 0x00;
+                this.highlight.restore_easing_state();
+            }
+        }
+
         private bool do_enter_event(Clutter.CrossingEvent e) {
-            this.highlight.save_easing_state();
-            this.highlight.opacity = 0xFF;
-            this.highlight.restore_easing_state();
+            if (!this.is_current_node) {
+                this.highlight.save_easing_state();
+                this.highlight.opacity = 0xFF;
+                this.highlight.restore_easing_state();
+            }
             return true;
         }
 
         private bool do_leave_event(Clutter.CrossingEvent e) {
-            this.highlight.save_easing_state();
-            this.highlight.opacity = 0x00;
-            this.highlight.restore_easing_state();
+            if (!this.is_current_node) {
+                this.highlight.save_easing_state();
+                this.highlight.opacity = 0x00;
+                this.highlight.restore_easing_state();
+            }
             return true;
         }
 
@@ -335,6 +354,12 @@ namespace alaia {
             this.bullet.save_easing_state();
             this.bullet.opacity = 0xE0;
             this.bullet.restore_easing_state();
+            if (this.is_current_node) {
+                this.highlight.visible = true;
+                this.highlight.save_easing_state();
+                this.highlight.opacity = 0xFF;
+                this.highlight.restore_easing_state();
+            }
 #endif
         }
 
@@ -347,6 +372,9 @@ namespace alaia {
             this.bullet.save_easing_state();
             this.bullet.opacity = 0x00;
             this.bullet.restore_easing_state();
+            this.highlight.save_easing_state();
+            this.highlight.opacity = 0x000;
+            this.highlight.restore_easing_state();
 #endif
         }
     }
