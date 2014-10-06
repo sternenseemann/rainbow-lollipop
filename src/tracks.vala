@@ -247,10 +247,16 @@ namespace alaia {
             this.tracking = false;
             this.x_delta = 0;
             this.reactive = true;
+            this.leave_event.connect(do_leave_event);
             this.button_press_event.connect(do_button_press_event);
             this.button_release_event.connect(do_button_release_event);
             this.motion_event.connect(do_motion_event);
             this.notify.connect(do_notify);
+        }
+
+        private bool do_leave_event(Clutter.CrossingEvent e) {
+            this.tracking = false;
+            return true;
         }
 
         private bool do_button_press_event(Clutter.ButtonEvent e){
