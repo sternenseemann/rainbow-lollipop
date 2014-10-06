@@ -77,12 +77,55 @@ namespace alaia {
         } 
     }
 
-    class NodeHighlight : Clutter.Actor {
-        private const double STROKE_WIDTH = 5.0;
+    class NodeHighlight  : Clutter.Actor {
         private Clutter.Canvas c;
         private Node parent;
 
         public NodeHighlight(Node parent) {
+            this.parent = parent;
+            this.c = new Clutter.Canvas();
+            this.content = this.c;
+            this.reactive = true;
+            this.opacity = 0x33;
+            this.set_size(rnd(parent.width)+20, rnd(parent.height)+20);
+            this.c.set_size(rnd(parent.width)+20, rnd(parent.height)+20);
+            this.c.draw.connect(do_draw);
+            this.add_constraint(
+                new Clutter.BindConstraint(parent, Clutter.BindCoordinate.POSITION,0)
+            );
+            this.c.invalidate();
+        }
+
+        public bool do_draw(Cairo.Context cr, int w, int h) {
+            cr.set_source_rgba(0,0,0,0);
+            cr.set_operator(Cairo.Operator.SOURCE);
+            cr.paint();
+            cr.set_operator(Cairo.Operator.OVER);
+            var glow = new Cairo.Pattern.radial(Node.HEIGHT/2,Node.HEIGHT/2,2,
+                                                Node.HEIGHT/2,Node.HEIGHT/4,100);
+            glow.add_color_stop_rgba(0.0,
+                                     col_h2f(this.parent.color.red)*2,
+                                     col_h2f(this.parent.color.green)*2,
+                                     col_h2f(this.parent.color.blue)*2,
+                                     1.0);
+            glow.add_color_stop_rgba(1.0,
+                                     col_h2f(this.parent.color.red),
+                                     col_h2f(this.parent.color.green),
+                                     col_h2f(this.parent.color.blue),
+                                     0.0);
+            cr.arc(Node.HEIGHT/2,Node.HEIGHT/2,Node.HEIGHT/2,0,2*Math.PI);
+            cr.set_source(glow);
+            cr.fill();
+            return true;
+        }
+    }
+
+    class NodeBullet : Clutter.Actor {
+        private const double STROKE_WIDTH = 5.0;
+        private Clutter.Canvas c;
+        private Node parent;
+
+        public NodeBullet(Node parent) {
             this.parent = parent;
             this.c = new Clutter.Canvas();
             this.content = c;
@@ -148,6 +191,7 @@ namespace alaia {
         private Gdk.Pixbuf favicon;
         private Gdk.Pixbuf snapshot;
         private Clutter.Actor favactor;
+        private NodeBullet bullet;
         private NodeHighlight highlight;
         
         public Clutter.Color color {
@@ -188,7 +232,7 @@ namespace alaia {
             this.color = track.get_color().lighten();
             this.color = this.color.lighten();
             this.reactive = true;
-            this.motion_event.connect((x) => {return false;});
+            //this.motion_event.connect((x) => {return false;});
 
             this.favactor = new Clutter.Actor();
             this.favactor.height=this.favactor.width=FAVICON_SIZE;
@@ -196,13 +240,31 @@ namespace alaia {
                 new Clutter.BindConstraint(this, Clutter.BindCoordinate.POSITION, Node.HEIGHT/2-FAVICON_SIZE/2)
             );
             this.visible= false;
+            this.bullet = new NodeBullet(this);
             this.highlight = new NodeHighlight(this);
-            this.highlight.button_press_event.connect(do_button_press_event);
+            this.bullet.button_press_event.connect(do_button_press_event);
             this.transitions_completed.connect(do_transitions_completed);
+            this.bullet.enter_event.connect(do_enter_event);
+            this.bullet.leave_event.connect(do_leave_event);
             stage.add_child(this);
             stage.add_child(this.highlight);
+            stage.add_child(this.bullet);
             stage.add_child(this.favactor);
             //this.track.get_last_track().recalculate_y(0);
+        }
+
+        private bool do_enter_event(Clutter.CrossingEvent e) {
+            this.highlight.save_easing_state();
+            this.highlight.opacity = 0xFF;
+            this.highlight.restore_easing_state();
+            return true;
+        }
+
+        private bool do_leave_event(Clutter.CrossingEvent e) {
+            this.highlight.save_easing_state();
+            this.highlight.opacity = 0x00;
+            this.highlight.restore_easing_state();
+            return true;
         }
 
         private void do_transitions_completed() {
@@ -269,10 +331,10 @@ namespace alaia {
             foreach (Node n in this.next) {
                 n.emerge();
             }
-            this.highlight.visible = true;
-            this.highlight.save_easing_state();
-            this.highlight.opacity = 0xE0;
-            this.highlight.restore_easing_state();
+            this.bullet.visible = true;
+            this.bullet.save_easing_state();
+            this.bullet.opacity = 0xE0;
+            this.bullet.restore_easing_state();
 #endif
         }
 
@@ -282,9 +344,9 @@ namespace alaia {
             foreach (Node n in this.next) {
                 n.disappear();
             }
-            this.highlight.save_easing_state();
-            this.highlight.opacity = 0x00;
-            this.highlight.restore_easing_state();
+            this.bullet.save_easing_state();
+            this.bullet.opacity = 0x00;
+            this.bullet.restore_easing_state();
 #endif
         }
     }
