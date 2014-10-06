@@ -58,8 +58,8 @@ namespace alaia {
             
         }
         public bool do_draw(Cairo.Context cr, int w, int h) {
-            stdout.printf("drawing cairo shit\n");
             cr.set_source_rgba(0,0,0,0);
+            cr.set_operator(Cairo.Operator.SOURCE);
             cr.paint();
             cr.set_source_rgba(col_h2f(this.previous.color.red)*2,
                               col_h2f(this.previous.color.green)*2,
@@ -68,7 +68,6 @@ namespace alaia {
             cr.set_line_width(2.0);
             cr.move_to(0,0);
             cr.rel_curve_to(w,0,0,h-2,w,h-2);
-            //cr.line_to(w,h);
             cr.stroke();
             return true;
         } 
@@ -95,14 +94,15 @@ namespace alaia {
 
 
         public bool do_draw(Cairo.Context cr, int w, int h) {
-            stdout.printf("drawing cairo shit\n");
             cr.set_source_rgba(0,0,0,0);
+            cr.set_operator(Cairo.Operator.SOURCE);
             cr.paint();
             cr.set_source_rgba(col_h2f(this.parent.color.red)*2,
                               col_h2f(this.parent.color.green)*2,
                               col_h2f(this.parent.color.blue)*2,
                               1);
-            cr.set_line_width(5.0);
+            cr.set_operator(Cairo.Operator.OVER);
+            cr.set_line_width(STROKE_WIDTH);
             cr.arc(Node.HEIGHT/2,Node.HEIGHT/2,Node.HEIGHT/2-(int)STROKE_WIDTH,0,2*Math.PI);
             cr.stroke();
             cr.set_source_rgba(col_h2f(this.parent.color.red),
