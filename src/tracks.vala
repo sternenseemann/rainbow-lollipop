@@ -294,7 +294,7 @@ namespace alaia {
         }
 
         protected override int calculate_height() {
-            int h = Track.HEIGHT+((Node.HEIGHT+Track.SPACING)*(this.first_node.get_splits()));
+            int h = Track.SPACING+((Node.HEIGHT+Track.SPACING)*(this.first_node.get_splits()+1));
             this.height = h;
             return h;
         }
