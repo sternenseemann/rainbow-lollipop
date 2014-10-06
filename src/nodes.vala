@@ -28,8 +28,9 @@ namespace alaia {
             alloc.x1 = this.source.x + this.source.width;
             alloc.y1 = this.source.y + this.source.height/2;
             alloc.x2 = this.target.x;
-            a.height = (this.target.y+target.height/2-a.y)+2;
-            (a.content as Clutter.Canvas).set_size(rnd(alloc.x2-alloc.x1), rnd(a.height));
+            alloc.y2 = (this.target.y + this.target.height/2) + 3 ;
+            //a.height = (this.target.y+target.height/2-a.y)+2;
+            (a.content as Clutter.Canvas).set_size(rnd(alloc.x2-alloc.x1), rnd(alloc.y2-alloc.y1));
             a.content.invalidate();
         }
     }
@@ -57,17 +58,17 @@ namespace alaia {
             
         }
         public bool do_draw(Cairo.Context cr, int w, int h) {
-            stdout.printf("drawfoo connector %i %i\n", w,h);
-            cr.set_source_rgba(0,0,0,1);
+            stdout.printf("drawing cairo shit\n");
+            cr.set_source_rgba(0,0,0,0);
             cr.paint();
             cr.set_source_rgba(col_h2f(this.previous.color.red)*2,
                               col_h2f(this.previous.color.green)*2,
                               col_h2f(this.previous.color.blue)*2,
                               1);
-            cr.set_source_rgba(1,1,1,1);
             cr.set_line_width(2.0);
-            //cr.rel_curve_to(this.width,0,0,this.height,this.width,this.height);
-            cr.line_to(w,h);
+            cr.move_to(0,0);
+            cr.rel_curve_to(w,0,0,h-2,w,h-2);
+            //cr.line_to(w,h);
             cr.stroke();
             return true;
         } 
@@ -193,10 +194,17 @@ namespace alaia {
             this.visible= false;
             this.highlight = new NodeHighlight(this);
             this.highlight.button_press_event.connect(do_button_press_event);
+            this.transitions_completed.connect(do_transitions_completed);
             stage.add_child(this);
             stage.add_child(this.highlight);
             stage.add_child(this.favactor);
             //this.track.get_last_track().recalculate_y(0);
+        }
+
+        private void do_transitions_completed() {
+            if (this.opacity == 0x00) {
+                this.visible = false;
+            }
         }
 
         public void set_favicon(Gdk.Pixbuf px) {
@@ -249,6 +257,31 @@ namespace alaia {
                 r += this.next.size - 1;
             }
             return r;
+        }
+
+        public void emerge() {
+#if DEBUG
+#else
+            foreach (Node n in this.next) {
+                n.emerge();
+            }
+            this.highlight.visible = true;
+            this.highlight.save_easing_state();
+            this.highlight.opacity = 0xE0;
+            this.highlight.restore_easing_state();
+#endif
+        }
+
+        public void disappear() {
+#if DEBUG
+#else
+            foreach (Node n in this.next) {
+                n.disappear();
+            }
+            this.highlight.save_easing_state();
+            this.highlight.opacity = 0x00;
+            this.highlight.restore_easing_state();
+#endif
         }
     }
 }

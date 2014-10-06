@@ -310,6 +310,20 @@ namespace alaia {
             this._current_node.set_favicon(this.web.get_icon_pixbuf());
             this.web.icon_loaded.disconnect(do_icon_loaded);
         }
+        
+        public new void emerge() {
+            base.emerge();
+            if (this.first_node != null) {
+                this.first_node.emerge();
+            }
+        }
+
+        public new void disappear() {
+            base.disappear();
+            if (this.first_node != null) {
+                this.first_node.disappear();
+            }
+        }
     }
 
     class TrackList : Clutter.Rectangle {

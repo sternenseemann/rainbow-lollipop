@@ -15,7 +15,7 @@ LIBS = gtk+-3.0 clutter-1.0 clutter-gtk-1.0 webkitgtk-3.0 gee-1.0
 CC = gcc
 
 # Vala compilerflags
-VFLAGS = --thread
+VFLAGS = --thread -D DEBUG
 
 # programmname.
 TARGET = alaia
