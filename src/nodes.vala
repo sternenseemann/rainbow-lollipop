@@ -24,14 +24,18 @@ namespace alaia {
         }
         
         public override void update_allocation(Clutter.Actor a, Clutter.ActorBox alloc) {
-            stdout.printf("%f %f\n%f %f\n",this.source.x, this.source.width, this.source.y, this.source.height);
-            alloc.x1 = this.source.x + this.source.width;
-            alloc.y1 = this.source.y + this.source.height/2;
-            alloc.x2 = this.target.x;
-            alloc.y2 = (this.target.y + this.target.height/2) + 3 ;
-            //a.height = (this.target.y+target.height/2-a.y)+2;
+            var sourcebox = this.source.get_allocation_box();
+            var targetbox = this.target.get_allocation_box();
+
+            alloc.x1 = sourcebox.x2;
+            alloc.y1 = sourcebox.y1 + this.source.height/2;
+            alloc.x2 = targetbox.x1;
+            alloc.y2 = (targetbox.y1 + this.target.height/2) + 3 ;
+            if (alloc.y2-alloc.y1 < (float)Connector.STROKE_WIDTH) {
+                alloc.y2 = alloc.y1+(float)Connector.STROKE_WIDTH;
+            }
+            alloc.clamp_to_pixel();
             (a.content as Clutter.Canvas).set_size(rnd(alloc.x2-alloc.x1), rnd(alloc.y2-alloc.y1));
-            a.content.invalidate();
         }
     }
     
@@ -39,6 +43,7 @@ namespace alaia {
         private Clutter.Canvas c;
         private Node previous;
         private Node next;
+        public const double STROKE_WIDTH = 2.0;
 
         public Connector(Node previous, Node next) {
             this.previous = previous;
@@ -65,12 +70,12 @@ namespace alaia {
                               col_h2f(this.previous.color.green)*2,
                               col_h2f(this.previous.color.blue)*2,
                               1);
-            cr.set_line_width(2.0);
+            cr.set_line_width(STROKE_WIDTH);
             cr.move_to(0,1);
             if (h < Node.HEIGHT) {
                 cr.rel_line_to(w,0);
             } else {
-                cr.rel_curve_to(w,0,0,h-2,w,h-2);
+                cr.rel_curve_to(w,0,0,h-STROKE_WIDTH,w,h-STROKE_WIDTH);
             }
             cr.stroke();
             return true;
@@ -176,6 +181,7 @@ namespace alaia {
             stdout.printf("y1 %f\n",this.previous.y+this.previous.index_nextnode((Node)a)*(Node.HEIGHT+Track.SPACING));
             alloc.y1 = this.previous.y+this.previous.index_nextnode((Node)a)*(Node.HEIGHT+Track.SPACING);
             alloc.y2 = alloc.y1+Node.HEIGHT;
+            alloc.clamp_to_pixel();
         }
     }
 
