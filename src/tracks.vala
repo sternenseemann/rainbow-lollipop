@@ -165,7 +165,11 @@ namespace alaia {
         }
 
         private void do_activate() {
-            this.tracklist.add_track(this.url_entry.get_text());
+            var url = this.url_entry.get_text();
+            if (!url.has_prefix("http://") && !url.has_prefix("https://")) {
+                url = "http://" + url;
+            }
+            this.tracklist.add_track(url);
         }
 
         private void do_transitions_completed() {
