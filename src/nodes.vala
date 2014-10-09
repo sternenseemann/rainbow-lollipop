@@ -189,7 +189,7 @@ namespace alaia {
     class Node : Clutter.Actor {
         public static const uint8 COL_MULTIPLIER = 15;
         public static const uint8 HEIGHT = 0x40;
-        public static const uint8 FAVICON_SIZE = 32;
+        public static const uint8 FAVICON_SIZE = 24;
         private Gee.ArrayList<Node> next;
         private Node? previous;
         private HistoryTrack track;
