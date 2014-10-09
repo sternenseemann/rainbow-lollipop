@@ -175,11 +175,12 @@ namespace alaia {
         }
 
         public override void update_allocation(Clutter.Actor a, Clutter.ActorBox alloc){
-            stdout.printf("lel %d\n",this.previous.index_nextnode((Node)a));
-            alloc.x1 = this.previous.x+Node.HEIGHT+Track.SPACING;
-            alloc.x2 = this.previous.x+Track.SPACING+2*Node.HEIGHT;
-            stdout.printf("y1 %f\n",this.previous.y+this.previous.index_nextnode((Node)a)*(Node.HEIGHT+Track.SPACING));
-            alloc.y1 = this.previous.y+this.previous.index_nextnode((Node)a)*(Node.HEIGHT+Track.SPACING);
+            var previousbox = this.previous.get_allocation_box();
+            int node_index = this.previous.index_nextnode((Node) a);
+            int splits_until = this.previous.get_splits_until(node_index);
+            alloc.x1 = previousbox.x1+Node.HEIGHT+Track.SPACING;
+            alloc.x2 = previousbox.x1+Track.SPACING+2*Node.HEIGHT;
+            alloc.y1 = previousbox.y1+(splits_until+node_index)*(Node.HEIGHT+Track.SPACING);
             alloc.y2 = alloc.y1+Node.HEIGHT;
             alloc.clamp_to_pixel();
         }
@@ -346,6 +347,14 @@ namespace alaia {
             }
             if (this.next.size > 1) {
                 r += this.next.size - 1;
+            }
+            return r;
+        }
+
+        public int get_splits_until(int index) {
+            int r = 0;
+            for (int i = 0; i < index; i++) {
+                r += this.next.get(i).get_splits();
             }
             return r;
         }
