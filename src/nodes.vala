@@ -166,6 +166,62 @@ namespace alaia {
             return true;
         }
     }
+
+    class Tooltip : Clutter.Rectangle {
+        private const uint8 OPACITY = 0xAF;
+        private const string COLOR = "#121212";
+        protected Clutter.Text textactor;
+        private Clutter.Actor par;
+        public Tooltip(Clutter.Actor stage, Clutter.Actor par, string text) {
+            this.par = par;
+            this.color = Clutter.Color.from_string(Tooltip.COLOR);
+            this.textactor = new Clutter.Text.with_text("Terminus 9", text);
+            this.width = this.textactor.width+2;
+            this.height = this.textactor.height+2;
+            this.opacity = Tooltip.OPACITY;
+            this.textactor.add_constraint(
+                new Clutter.BindConstraint(this, Clutter.BindCoordinate.POSITION, 1)
+            );
+            this.transitions_completed.connect(do_transitions_completed); 
+            stage.add_child(this);
+            stage.add_child(this.textactor);
+
+        }
+
+        public void emerge() {
+            this.visible = true;
+            this.textactor.visible = true;
+            this.save_easing_state();
+            this.textactor.save_easing_state();
+            this.opacity = Tooltip.OPACITY;
+            this.textactor.opacity = 0xFF;
+            this.restore_easing_state();
+            this.textactor.restore_easing_state();
+        }
+
+        private void do_transitions_completed() {
+            if (this.opacity == 0x00) {
+                this.visible = false;
+                this.textactor.visible = false;
+            }
+        }
+
+        public void disappear() {
+            this.save_easing_state();
+            this.textactor.save_easing_state();
+            this.opacity = 0x00;
+            this.textactor.opacity = 0x00;
+            this.restore_easing_state();
+            this.textactor.restore_easing_state();
+        }
+    }
+
+    class NodeTooltip : Tooltip {
+        public NodeTooltip (Clutter.Actor stage, Node node, string text) {
+            base(stage, node, text);
+            this.textactor.color = node.get_track().get_color().lighten().lighten();
+        }
+    }
     
     class NodeConstraint : Clutter.Constraint {
         private Node previous;
@@ -200,6 +256,7 @@ namespace alaia {
         private Clutter.Actor favactor;
         private NodeBullet bullet;
         private NodeHighlight highlight;
+        private NodeTooltip url_tooltip;
         
         public Clutter.Color color {
             get;set;
@@ -247,6 +304,13 @@ namespace alaia {
                 new Clutter.BindConstraint(this, Clutter.BindCoordinate.POSITION, Node.HEIGHT/2-FAVICON_SIZE/2)
             );
             this.visible= false;
+            this.url_tooltip = new NodeTooltip(stage, this, this._url);
+            this.url_tooltip.add_constraint(
+                new Clutter.AlignConstraint(this, Clutter.AlignAxis.X_AXIS,-100)
+            );
+            this.url_tooltip.add_constraint(
+                new Clutter.BindConstraint(this, Clutter.BindCoordinate.Y,-16)
+            );
             this.bullet = new NodeBullet(this);
             this.highlight = new NodeHighlight(this);
             this.bullet.button_press_event.connect(do_button_press_event);
@@ -257,7 +321,11 @@ namespace alaia {
             stage.add_child(this.highlight);
             stage.add_child(this.bullet);
             stage.add_child(this.favactor);
-            //this.track.get_last_track().recalculate_y(0);
+            this.track.get_last_track().recalculate_y(0);
+        }
+
+        public Track get_track() {
+            return this.track;
         }
 
         private bool is_current_node = false;
@@ -281,6 +349,7 @@ namespace alaia {
                 this.highlight.opacity = 0xFF;
                 this.highlight.restore_easing_state();
             }
+            this.url_tooltip.emerge();
             return true;
         }
 
@@ -290,6 +359,7 @@ namespace alaia {
                 this.highlight.opacity = 0x00;
                 this.highlight.restore_easing_state();
             }
+            this.url_tooltip.disappear();
             return true;
         }
 
@@ -360,8 +430,6 @@ namespace alaia {
         }
 
         public void emerge() {
-#if DEBUG
-#else
             foreach (Node n in this.next) {
                 n.emerge();
             }
@@ -375,12 +443,10 @@ namespace alaia {
                 this.highlight.opacity = 0xFF;
                 this.highlight.restore_easing_state();
             }
-#endif
         }
 
         public void disappear() {
-#if DEBUG
-#else
+            this.url_tooltip.disappear();
             foreach (Node n in this.next) {
                 n.disappear();
             }
@@ -390,7 +456,6 @@ namespace alaia {
             this.highlight.save_easing_state();
             this.highlight.opacity = 0x000;
             this.highlight.restore_easing_state();
-#endif
         }
     }
 }
