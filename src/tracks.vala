@@ -124,6 +124,9 @@ namespace alaia {
                 this.save_easing_state();
             this.ypos = this.previous != null ? this.previous.recalculate_y(y_offset,animated) : 0;
             this.y = this.ypos + y_offset;
+            if (this is HistoryTrack) {
+                (this as HistoryTrack).set_yoff(y_offset);
+            }
             if (animated)
                 this.restore_easing_state();
             return this.calculate_height() + (int)this.ypos;
@@ -225,7 +228,10 @@ namespace alaia {
             get {
                 return this._y_offset;
             }
-        } 
+        }
+        public void set_yoff(float yo) {
+            this._y_offset = yo;
+        }
 
         private Node? _current_node;
         public Node? current_node {
