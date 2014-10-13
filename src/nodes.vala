@@ -27,8 +27,8 @@ namespace alaia {
             var sourcebox = this.source.get_allocation_box();
             var targetbox = this.target.get_allocation_box();
 
-            alloc.x1 = sourcebox.x2;
-            alloc.y1 = sourcebox.y1 + this.source.height/2;
+            alloc.x1 = Node.HEIGHT;
+            alloc.y1 = Node.HEIGHT/2;
             alloc.x2 = targetbox.x1;
             alloc.y2 = (targetbox.y1 + this.target.height/2) + 3 ;
             if (alloc.y2-alloc.y1 < (float)Connector.STROKE_WIDTH) {
@@ -52,14 +52,14 @@ namespace alaia {
             this.content = c;
             this.set_size(10,10);
             this.c.set_size(10,10);
-            this.x = previous.x+previous.width;
-            this.y = previous.y+previous.height;
+            this.x = Node.HEIGHT/2+Track.SPACING;
+            this.y = 0;
             this.c.draw.connect(do_draw);
             this.add_constraint(
                 new ConnectorConstraint(previous, next)
             );
             this.c.invalidate();
-            this.previous.get_stage().add_child(this);
+            previous.add_child(this);
             
         }
         public bool do_draw(Cairo.Context cr, int w, int h) {
@@ -92,11 +92,6 @@ namespace alaia {
             this.opacity = 0x00;
             this.restore_easing_state();
         } 
-
-        private void do_transitions_completed() {
-            if (this.opacity == 0x00)
-                this.visible = false;
-        }
     }
 
     class NodeHighlight  : Clutter.Actor {
@@ -112,9 +107,8 @@ namespace alaia {
             this.set_size(rnd(parent.width)+20, rnd(parent.height)+20);
             this.c.set_size(rnd(parent.width)+20, rnd(parent.height)+20);
             this.c.draw.connect(do_draw);
-            this.add_constraint(
-                new Clutter.BindConstraint(parent, Clutter.BindCoordinate.POSITION,0)
-            );
+            this.x = 0;
+            this.y = 0;
             this.c.invalidate();
         }
 
@@ -150,14 +144,13 @@ namespace alaia {
         public NodeBullet(Node parent) {
             this.parent = parent;
             this.c = new Clutter.Canvas();
+            this.x = 0;
+            this.y = 0;
             this.content = c;
             this.reactive=true;
             this.set_size(rnd(parent.width), rnd(parent.height));
             this.c.set_size(rnd(parent.width), rnd(parent.height));
             this.c.draw.connect(do_draw);
-            this.add_constraint(
-                new Clutter.BindConstraint(parent, Clutter.BindCoordinate.ALL,0)
-            );
             this.c.invalidate();
         }
 
@@ -189,20 +182,17 @@ namespace alaia {
         private const string COLOR = "#121212";
         protected Clutter.Text textactor;
         private Clutter.Actor par;
-        public Tooltip(Clutter.Actor stage, Clutter.Actor par, string text) {
+        public Tooltip(Clutter.Actor par, string text) {
             this.par = par;
             this.color = Clutter.Color.from_string(Tooltip.COLOR);
             this.textactor = new Clutter.Text.with_text("Terminus 9", text);
             this.width = this.textactor.width+2;
             this.height = this.textactor.height+2;
             this.opacity = Tooltip.OPACITY;
-            this.textactor.add_constraint(
-                new Clutter.BindConstraint(this, Clutter.BindCoordinate.POSITION, 1)
-            );
+            this.textactor.x = 1;
+            this.textactor.y = 1;
             this.transitions_completed.connect(do_transitions_completed); 
-            stage.add_child(this);
-            stage.add_child(this.textactor);
-
+            this.add_child(this.textactor);
         }
 
         public void emerge() {
@@ -234,40 +224,18 @@ namespace alaia {
     }
 
     class NodeTooltip : Tooltip {
-        public NodeTooltip (Clutter.Actor stage, Node node, string text) {
-            base(stage, node, text);
+        public NodeTooltip (Node node, string text) {
+            base(node, text);
             this.textactor.color = node.get_track().get_background_color().lighten().lighten();
         }
     }
     
-    class NodeConstraint : Clutter.Constraint {
-        private Node previous;
-
-        public NodeConstraint(Node previous) {
-            this.previous = previous;
-        }
-
-        public override void update_allocation(Clutter.Actor a, Clutter.ActorBox alloc){
-            var previousbox = this.previous.get_allocation_box();
-            int node_index = this.previous.index_nextnode((Node) a);
-            int splits_until = this.previous.get_splits_until(node_index);
-            alloc.x1 = previousbox.x1+Node.HEIGHT+Track.SPACING;
-            alloc.x2 = previousbox.x1+Track.SPACING+2*Node.HEIGHT;
-            alloc.y1 = previousbox.y1+(splits_until+node_index)*(Node.HEIGHT+Track.SPACING);
-            alloc.y2 = alloc.y1+Node.HEIGHT;
-            alloc.clamp_to_pixel();
-        }
-    }
-
     class Node : Clutter.Actor {
         public static const uint8 COL_MULTIPLIER = 15;
         public static const uint8 HEIGHT = 0x40;
         public static const uint8 FAVICON_SIZE = 24;
-        private Gee.ArrayList<Node> next;
-        private Node? previous;
+        private Gee.ArrayList<Node> childnodes; //special list only for nodes
         private HistoryTrack track;
-        private Clutter.Actor stage;
-        private float xpos;
         private Gdk.Pixbuf favicon;
         private Gdk.Pixbuf snapshot;
         private Clutter.Actor favactor;
@@ -289,25 +257,25 @@ namespace alaia {
             }
         }
 
-        public Node(Clutter.Actor stage, HistoryTrack track, string url, Node? prv) {
+        public Node(HistoryTrack track, string url, Node? par) {
             this._url = url;
-            this.previous = prv;
-            this.next = new Gee.ArrayList<Node>();
+            if (par != null) {
+                par.add_child(this);
+                par.childnodes.add(this);
+            } else {
+                track.add_child(this);
+            }
+            this.childnodes = new Gee.ArrayList<Node>();
             this.track = track;
             this.track.notify.connect(do_x_offset);
-            this.stage = stage;
-            this.xpos = 100;
-            this.x = this.xpos;
-            if (prv != null){
-                this.previous.next.add(this);
-                this.add_constraint(
-                    new NodeConstraint(prv)
-                );   
-                this.connector = new Connector(previous,this);
-            } else {
-                this.add_constraint(
-                    new Clutter.BindConstraint(track, Clutter.BindCoordinate.Y,Track.SPACING)
-                );
+            this.x =  0;
+            this.y = Track.SPACING;
+            this.save_easing_state();
+            this.x = 80;
+            this.y = Track.SPACING; 
+            this.restore_easing_state();
+            if (par != null){
+                this.connector = new Connector(par,this);
             }
             this.height = Node.HEIGHT;
             this.width = Node.HEIGHT;
@@ -318,18 +286,13 @@ namespace alaia {
 
             this.favactor = new Clutter.Actor();
             this.favactor.height=this.favactor.width=FAVICON_SIZE;
-            this.favactor.add_constraint (
-                new Clutter.BindConstraint(this, Clutter.BindCoordinate.POSITION, Node.HEIGHT/2-FAVICON_SIZE/2)
-            );
-            this.visible= false;
-            this.url_tooltip = new NodeTooltip(stage, this, this._url);
-            //float url_tooltip_x_offset = -(Node.HEIGHT/2)-(this.url_tooltip.width/2);
-            this.url_tooltip.add_constraint(
-                new Clutter.AlignConstraint(this, Clutter.AlignAxis.X_AXIS,0)
-            );
-            this.url_tooltip.add_constraint(
-                new Clutter.BindConstraint(this, Clutter.BindCoordinate.Y,-16)
-            );
+            this.favactor.x = this.width/2-this.favactor.width/2;
+            this.favactor.y = this.height/2-this.favactor.height/2;
+            this.visible= true;
+            this.url_tooltip = new NodeTooltip(this, this._url);
+            this.add_child(this.url_tooltip);
+            this.url_tooltip.x = -this.url_tooltip.width/2+Node.HEIGHT/2;
+            this.url_tooltip.y = -this.url_tooltip.height;
             this.bullet = new NodeBullet(this);
             this.highlight = new NodeHighlight(this);
             this.bullet.button_press_event.connect(do_button_press_event);
@@ -337,14 +300,11 @@ namespace alaia {
             this.bullet.enter_event.connect(do_enter_event);
             this.bullet.leave_event.connect(do_leave_event);
 
-            /*this.bullet.scale_x = 0.5;
-            this.highlight.scale_x = 0.5;
-            this.scale_x = 0.5;*/
-
-            stage.add_child(this);
-            stage.add_child(this.highlight);
-            stage.add_child(this.bullet);
-            stage.add_child(this.favactor);
+            this.add_child(this.highlight);
+            this.add_child(this.bullet);
+            this.add_child(this.favactor);
+            this.recalculate_y();
+            this.get_root_node().recalculate_y();
             (this.track.get_parent().get_last_child() as Track).recalculate_y(0);
         }
 
@@ -352,7 +312,32 @@ namespace alaia {
             return this.track;
         }
 
+        public Node get_root_node() {
+            if (this.get_parent() is Node) {
+                return (this.get_parent() as Node).get_root_node();
+            } else {
+                return this;
+            }
+        }
+
         private bool is_current_node = false;
+
+        public void recalculate_y() {
+            Node prv = (this.get_parent() as Node);
+            if (this.get_parent() == this.track){
+                stdout.printf("returning bcuz is parint\n");
+                return;
+            }
+            int node_index = prv.index_of_child((Node) this);
+            int splits_until = prv.get_splits_until(node_index);
+            stdout.printf("\n\n>>>> index: %d\n>>>> splits until: %d\n\n",node_index,splits_until);
+            this.save_easing_state();
+            this.y = (splits_until+node_index)*(Node.HEIGHT+Track.SPACING);
+            this.restore_easing_state();
+            foreach (Node n in this.childnodes) {
+                n.recalculate_y();
+            }
+        }
 
         public void toggle_highlight() {
             this.is_current_node = !this.is_current_node;
@@ -405,8 +390,8 @@ namespace alaia {
         }
 
         public void do_x_offset(GLib.Object t, ParamSpec p) {
-            if (p.name == "x-offset") {
-                this.x = this.xpos + (t as HistoryTrack).x_offset;
+            if (p.name == "x-offset" && this.get_parent() == t) {
+                this.x = (t as HistoryTrack).x_offset;
             }
         }
         
@@ -420,28 +405,19 @@ namespace alaia {
             }
         }
 
-        private Node first_node() {
-            return this.previous == null ? this : this.previous.first_node();
-        }
+        
 
-        public int index_nextnode(Node n) {
-            int i = 0;
-            foreach (Node x in this.next) {
-                if (x == n){
-                    return i;
-                }
-                i++;
-            }
-            return 3;
+        public int index_of_child(Node n) {
+            return this.childnodes.index_of(n);
         }
 
         public int get_splits() {
             int r = 0;
-            foreach (Node n in this.next) {
+            foreach (Node n in this.childnodes) {
                 r += n.get_splits();
             }
-            if (this.next.size > 1) {
-                r += this.next.size - 1;
+            if (this.childnodes.size > 1) {
+                r += this.childnodes.size-1;
             }
             return r;
         }
@@ -449,14 +425,14 @@ namespace alaia {
         public int get_splits_until(int index) {
             int r = 0;
             for (int i = 0; i < index; i++) {
-                r += this.next.get(i).get_splits();
+                r += (this.childnodes.get(i) as Node).get_splits();
             }
             return r;
         }
 
         public void emerge() {
-            foreach (Node n in this.next) {
-                n.emerge();
+            foreach (Clutter.Actor n in this.get_children()) {
+                (n as Node).emerge();
             }
             this.bullet.visible = true;
             this.bullet.save_easing_state();
@@ -477,8 +453,8 @@ namespace alaia {
 
         public void disappear() {
             this.url_tooltip.disappear();
-            foreach (Node n in this.next) {
-                n.disappear();
+            foreach (Clutter.Actor n in this.get_children()) {
+                (n as Node).disappear();
             }
             this.bullet.save_easing_state();
             this.bullet.opacity = 0x00;

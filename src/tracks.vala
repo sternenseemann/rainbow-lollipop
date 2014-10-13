@@ -48,11 +48,10 @@ namespace alaia {
         private const uint8 OPACITY = 0xE0;
         public const uint8 HEIGHT = 0x80;
         public const uint8 SPACING = 0x10;
-        protected Clutter.Actor stage;
 
         private float ypos;
 
-        public Track(Clutter.Actor tl) {
+        public Track(TrackList tl) {
             this.add_constraint(
                 new Clutter.BindConstraint(tl, Clutter.BindCoordinate.WIDTH, 0)
             );
@@ -62,7 +61,6 @@ namespace alaia {
             this.visible = Application.S().state == AppState.TRACKLIST;
             this.notify.connect(do_y_offset);
             this.transitions_completed.connect(do_transitions_completed);
-            this.stage = tl;
             (this.get_parent().get_last_child() as Track).recalculate_y(0);
         }
 
@@ -119,8 +117,8 @@ namespace alaia {
         private GtkClutter.Actor actor; 
         private TrackList tracklist;
 
-        public EmptyTrack(Clutter.Actor stage, TrackList tl) {
-            base(stage);
+        public EmptyTrack(TrackList tl) {
+            base(tl);
             this.tracklist = tl;
             this.url_entry = new Gtk.Entry();
             this.enter_button = new Gtk.Button.with_label("Go");
@@ -134,6 +132,9 @@ namespace alaia {
             this.actor.y = Track.HEIGHT/2-this.actor.height/2;
             this.actor.add_constraint(
                 new Clutter.BindConstraint(this, Clutter.BindCoordinate.WIDTH, 0)
+            );
+            this.add_constraint(
+                new Clutter.BindConstraint(tl, Clutter.BindCoordinate.WIDTH, 0)
             );
             this.actor.transitions_completed.connect(do_transitions_completed);
             this.actor.show_all();
@@ -221,12 +222,12 @@ namespace alaia {
         }
         private Node first_node;
 
-        public HistoryTrack(Clutter.Actor stage, TrackList tl, string url, WebView web) {
-            base(stage);
+        public HistoryTrack(TrackList tl, string url, WebView web) {
+            base(tl);
             this.web = web;
             this.tracklist = tl;
             this.web.open(url);
-            this.first_node = new Node(stage, this, url, null);
+            this.first_node = new Node(this, url, null);
             this._current_node = this.first_node;
             this.url = url;
 
@@ -293,7 +294,7 @@ namespace alaia {
 
         public void log_call(WebFrame wf) {
             if (wf.get_uri() != this._current_node.url) {
-                var nn = new Node(this.stage, this, wf.get_uri(), this._current_node);
+                var nn = new Node(this, wf.get_uri(), this._current_node);
                 this._current_node.toggle_highlight();
                 this._current_node = nn;
                 this._current_node.toggle_highlight();
@@ -353,7 +354,7 @@ namespace alaia {
 
         public void add_track(string url) {
             this.insert_child_at_index(
-                new HistoryTrack(this.stage, this, url, this.web),
+                new HistoryTrack(this, url, this.web),
                 this.get_n_children()-1
             );
             this._current_track = (this.get_child_at_index(this.get_n_children()-1) as HistoryTrack);
@@ -361,7 +362,7 @@ namespace alaia {
 
         private void add_empty_track() {
             this.add_child(
-                new EmptyTrack(this.stage, this)
+                new EmptyTrack(this)
             );
         }
 
