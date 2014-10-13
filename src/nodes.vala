@@ -26,9 +26,7 @@ namespace alaia {
         public override void update_allocation(Clutter.Actor a, Clutter.ActorBox alloc) {
             var sourcebox = this.source.get_allocation_box();
             var targetbox = this.target.get_allocation_box();
-            stdout.printf("%f %f %f %f\n",sourcebox.x1,sourcebox.x2,sourcebox.y1,sourcebox.y2);
-            stdout.printf("%f %f %f %f\n",targetbox.x1,targetbox.x2,targetbox.y1,targetbox.y2);
-            alloc.x1 = sourcebox.x2;
+            alloc.x1 = sourcebox.x2-(this.source.width-this.source.width*(float)this.source.scale_x);
             alloc.y1 = sourcebox.y1+Node.HEIGHT/2;
             alloc.x2 = targetbox.x1;
             alloc.y2 = targetbox.y1+Node.HEIGHT/2+3;
@@ -398,13 +396,18 @@ namespace alaia {
             this.favactor.content = img;
         }
 
+        private double get_nodescale(double x, double width) {
+            return -(GLib.Math.pow(x,2)-width*x)/(GLib.Math.pow((width/2),2));
+        }
+
         public void do_x_offset(GLib.Object t, ParamSpec p) {
             if (p.name == "x-offset") {
                 if (this.previous == null) {
                     this.x = this.track.x_offset;
                 } else {
-                    this.x = this.previous.x + 80;
+                    this.x = this.previous.x + 80 - (this.previous.width-this.previous.width*(float)this.previous.scale_x);
                 }
+                this.scale_x = get_nodescale(this.x, this.get_parent().get_parent().get_parent().width);
             }
         }
         
@@ -417,8 +420,6 @@ namespace alaia {
                 return false;
             }
         }
-
-        
 
         public int index_of_child(Node n) {
             return this.childnodes.index_of(n);
