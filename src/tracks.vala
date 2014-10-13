@@ -30,7 +30,7 @@ namespace alaia {
         }
     }
 
-    class TrackCloseButton : Clutter.Rectangle {
+    class TrackCloseButton : Clutter.Actor {
         private Track track;
         private Clutter.Actor stage;
 
@@ -44,45 +44,30 @@ namespace alaia {
         }
     }
 
-    abstract class Track : Clutter.Rectangle {
+    abstract class Track : Clutter.Actor {
         private const uint8 OPACITY = 0xE0;
         public const uint8 HEIGHT = 0x80;
         public const uint8 SPACING = 0x10;
         protected Clutter.Actor stage;
 
-        private Track? previous;
-        private weak Track? next;
-
         private float ypos;
 
-        public Track(Clutter.Actor tl, Track? prv, Track? nxt) {
-            this.previous = prv;
-            this.next = nxt;
-            if (this.previous != null) {
-                this.previous.next = this;
-            }
-            if (this.next != null) {
-                this.next.previous = this;
-            }
+        public Track(Clutter.Actor tl) {
             this.add_constraint(
                 new Clutter.BindConstraint(tl, Clutter.BindCoordinate.WIDTH, 0)
             );
-            this.color = TrackColorSource.get_color();
+            this.background_color = TrackColorSource.get_color();
             this.height = this.calculate_height();
             this.opacity = Application.S().state == AppState.TRACKLIST ? Track.OPACITY : 0x00;
             this.visible = Application.S().state == AppState.TRACKLIST;
             this.notify.connect(do_y_offset);
             this.transitions_completed.connect(do_transitions_completed);
-            tl.add_child(this);
             this.stage = tl;
-            this.get_last_track().recalculate_y(0);
+            (this.get_parent().get_last_child() as Track).recalculate_y(0);
         }
 
         ~Track(){
-            this.next.previous = this.previous;
-            this.previous.next = this.next;
-
-            this.get_last_track().recalculate_y(0);
+            (this.get_parent().get_last_child() as Track).recalculate_y(0);
         }
 
         private void do_transitions_completed() {
@@ -93,7 +78,8 @@ namespace alaia {
 
         private void do_y_offset(GLib.Object t, ParamSpec p) {
             if (p.name == "y-offset") {
-                this.get_last_track().recalculate_y((t as HistoryTrack).y_offset,false);
+                var last = this.get_parent().get_last_child();
+                (last as Track).recalculate_y((t as HistoryTrack).y_offset,false);
             }
         }        
 
@@ -111,18 +97,11 @@ namespace alaia {
 
         protected abstract int calculate_height();
 
-        private Track get_first_track() {
-            return this.previous == null ? this : this.previous.get_first_track();
-        }
-
-        public Track get_last_track() {
-            return this.next == null ? this : this.next.get_last_track();
-        }
-
         public int recalculate_y(float y_offset, bool animated=true){
+            var previous = (this.get_previous_sibling() as Track);
             if (animated) 
                 this.save_easing_state();
-            this.ypos = this.previous != null ? this.previous.recalculate_y(y_offset,animated) : 0;
+            this.ypos = previous != null ? previous.recalculate_y(y_offset,animated) : 0;
             this.y = this.ypos + y_offset;
             if (this is HistoryTrack) {
                 (this as HistoryTrack).set_yoff(y_offset);
@@ -140,31 +119,26 @@ namespace alaia {
         private GtkClutter.Actor actor; 
         private TrackList tracklist;
 
-        public EmptyTrack(Clutter.Actor stage, Track? prv, Track? nxt, TrackList tl) {
-            base(stage, prv, nxt);
+        public EmptyTrack(Clutter.Actor stage, TrackList tl) {
+            base(stage);
             this.tracklist = tl;
             this.url_entry = new Gtk.Entry();
             this.enter_button = new Gtk.Button.with_label("Go");
             this.hbox = new Gtk.HBox(false, 5);
-            this.color = Clutter.Color.from_string("#555");
+            this.background_color = Clutter.Color.from_string("#555");
             this.hbox.pack_start(this.url_entry,true);
             this.hbox.pack_start(this.enter_button,false);
             this.url_entry.activate.connect(do_activate);
             this.actor = new GtkClutter.Actor.with_contents(this.hbox);
-            
+            this.actor.height=26;
+            this.actor.y = Track.HEIGHT/2-this.actor.height/2;
             this.actor.add_constraint(
                 new Clutter.BindConstraint(this, Clutter.BindCoordinate.WIDTH, 0)
             );
-            this.actor.add_constraint(
-                new Clutter.BindConstraint(this, Clutter.BindCoordinate.Y, Track.HEIGHT/2-this.actor.height/2)  
-            );
-            
-            this.actor.height=25;
             this.actor.transitions_completed.connect(do_transitions_completed);
             this.actor.show_all();
             this.actor.visible = false;
-            this.y = this.get_stage().get_height()/2-Track.HEIGHT;
-            stage.add_child(this.actor);
+            this.add_child(this.actor);
         }
 
         private void do_activate() {
@@ -247,8 +221,8 @@ namespace alaia {
         }
         private Node first_node;
 
-        public HistoryTrack(Clutter.Actor stage, Track? prv, Track? nxt, TrackList tl, string url, WebView web) {
-            base(stage,prv,nxt);
+        public HistoryTrack(Clutter.Actor stage, TrackList tl, string url, WebView web) {
+            base(stage);
             this.web = web;
             this.tracklist = tl;
             this.web.open(url);
@@ -346,8 +320,7 @@ namespace alaia {
         }
     }
 
-    class TrackList : Clutter.Rectangle {
-        private Gee.ArrayList<Track> tracks;
+    class TrackList : Clutter.Actor {
         private Clutter.Actor stage;
         private WebKit.WebView web;
         
@@ -365,42 +338,30 @@ namespace alaia {
 
         public TrackList(Clutter.Actor stage, WebView web) {
             this.web = web;
-            this.tracks = new Gee.ArrayList<Track>();
             this.stage = stage;
             
             this.add_constraint(
                 new Clutter.BindConstraint(stage, Clutter.BindCoordinate.SIZE,0)
             );
-            this.color = Clutter.Color.from_string("#121212");
+            this.background_color = Clutter.Color.from_string("#121212");
             this.reactive=true;
             this.opacity = 0x00;
-            this.visible = false;
+            this.visible = true;
             this.transitions_completed.connect(do_transitions_completed);
-            stage.add_child(this);
             this.add_empty_track();
         }
 
         public void add_track(string url) {
-            Track? next = null;
-            Track? previous = null;
-
-            if (this.tracks.size >= 1) {
-                next = this.tracks.get(this.tracks.size-1);
-            }
-
-            if (this.tracks.size >= 2) {
-                previous = this.tracks.get(this.tracks.size-2);
-            }
-
-            var nt = new HistoryTrack(this.stage, previous, next, this, url, this.web);
-            this.tracks.insert(this.tracks.size-1, nt);
-            
-            this._current_track = nt;
+            this.insert_child_at_index(
+                new HistoryTrack(this.stage, this, url, this.web),
+                this.get_n_children()-1
+            );
+            this._current_track = (this.get_child_at_index(this.get_n_children()-1) as HistoryTrack);
         }
 
         private void add_empty_track() {
-            this.tracks.insert(this.tracks.size,
-                new EmptyTrack(this.stage, null, null,  this)
+            this.add_child(
+                new EmptyTrack(this.stage, this)
             );
         }
 
@@ -417,7 +378,8 @@ namespace alaia {
         }
         
         public void emerge() {
-            foreach (Track t in this.tracks) {
+            for (int i = 0; i < this.get_n_children(); i++) {
+                Track t = (this.get_child_at_index(i) as Track);
                 if (t is EmptyTrack) {
                     (t as EmptyTrack).emerge();
                 } else {
@@ -431,7 +393,8 @@ namespace alaia {
         }
 
         public void disappear() {
-            foreach (Track t in this.tracks){
+            for (int i = 0; i < this.get_n_children(); i++) {
+                Track t = (this.get_child_at_index(i) as Track);
                 if (t is EmptyTrack) {
                     (t as EmptyTrack).disappear();
                 } else {

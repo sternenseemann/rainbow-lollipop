@@ -51,9 +51,10 @@ namespace alaia {
                 stage, Clutter.BindCoordinate.SIZE, 0)
             );
             stage.add_child(this.webact);
-            stage.set_reactive(true);
+            stage.reactive = true;
 
             this.tracklist = new TrackList(stage, this.web);
+            stage.add_child(this.tracklist);
 
             this.win.show_all();
             this.tracklist.emerge();

@@ -236,7 +236,7 @@ namespace alaia {
     class NodeTooltip : Tooltip {
         public NodeTooltip (Clutter.Actor stage, Node node, string text) {
             base(stage, node, text);
-            this.textactor.color = node.get_track().get_color().lighten().lighten();
+            this.textactor.color = node.get_track().get_background_color().lighten().lighten();
         }
     }
     
@@ -311,7 +311,7 @@ namespace alaia {
             }
             this.height = Node.HEIGHT;
             this.width = Node.HEIGHT;
-            this.color = track.get_color().lighten();
+            this.color = track.get_background_color().lighten();
             this.color = this.color.lighten();
             this.reactive = true;
             //this.motion_event.connect((x) => {return false;});
@@ -336,11 +336,16 @@ namespace alaia {
             this.transitions_completed.connect(do_transitions_completed);
             this.bullet.enter_event.connect(do_enter_event);
             this.bullet.leave_event.connect(do_leave_event);
+
+            /*this.bullet.scale_x = 0.5;
+            this.highlight.scale_x = 0.5;
+            this.scale_x = 0.5;*/
+
             stage.add_child(this);
             stage.add_child(this.highlight);
             stage.add_child(this.bullet);
             stage.add_child(this.favactor);
-            this.track.get_last_track().recalculate_y(0);
+            (this.track.get_parent().get_last_child() as Track).recalculate_y(0);
         }
 
         public Track get_track() {
