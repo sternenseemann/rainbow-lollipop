@@ -26,11 +26,12 @@ namespace alaia {
         public override void update_allocation(Clutter.Actor a, Clutter.ActorBox alloc) {
             var sourcebox = this.source.get_allocation_box();
             var targetbox = this.target.get_allocation_box();
-
-            alloc.x1 = Node.HEIGHT;
-            alloc.y1 = Node.HEIGHT/2;
+            stdout.printf("%f %f %f %f\n",sourcebox.x1,sourcebox.x2,sourcebox.y1,sourcebox.y2);
+            stdout.printf("%f %f %f %f\n",targetbox.x1,targetbox.x2,targetbox.y1,targetbox.y2);
+            alloc.x1 = sourcebox.x2;
+            alloc.y1 = sourcebox.y1+Node.HEIGHT/2;
             alloc.x2 = targetbox.x1;
-            alloc.y2 = (targetbox.y1 + this.target.height/2) + 3 ;
+            alloc.y2 = targetbox.y1+Node.HEIGHT/2+3;
             if (alloc.y2-alloc.y1 < (float)Connector.STROKE_WIDTH) {
                 alloc.y2 = alloc.y1+(float)Connector.STROKE_WIDTH;
             }
@@ -59,7 +60,7 @@ namespace alaia {
                 new ConnectorConstraint(previous, next)
             );
             this.c.invalidate();
-            previous.add_child(this);
+            previous.get_track().add_child(this);
             
         }
         public bool do_draw(Cairo.Context cr, int w, int h) {
@@ -234,6 +235,8 @@ namespace alaia {
         public static const uint8 COL_MULTIPLIER = 15;
         public static const uint8 HEIGHT = 0x40;
         public static const uint8 FAVICON_SIZE = 24;
+        private float xpos;
+        private Node previous;
         private Gee.ArrayList<Node> childnodes; //special list only for nodes
         private HistoryTrack track;
         private Gdk.Pixbuf favicon;
@@ -260,18 +263,21 @@ namespace alaia {
         public Node(HistoryTrack track, string url, Node? par) {
             this._url = url;
             if (par != null) {
-                par.add_child(this);
                 par.childnodes.add(this);
-            } else {
-                track.add_child(this);
+                this.previous = par;
+                if (this.previous.childnodes.size-1 > this.previous.index_of_child(this)) {
+                    this.previous.recalculate_nodes();
+                }
+            int node_index = this.previous.index_of_child((Node) this);
             }
+            track.add_child(this);
             this.childnodes = new Gee.ArrayList<Node>();
             this.track = track;
             this.track.notify.connect(do_x_offset);
-            this.x =  0;
+            this.x = par != null ? par.x : 0;
             this.y = Track.SPACING;
             this.save_easing_state();
-            this.x = 80;
+            this.x = this.xpos = par.x+80;
             this.y = Track.SPACING; 
             this.restore_easing_state();
             if (par != null){
@@ -322,17 +328,20 @@ namespace alaia {
 
         private bool is_current_node = false;
 
-        public void recalculate_y() {
-            Node prv = (this.get_parent() as Node);
-            if (this.get_parent() == this.track){
-                stdout.printf("returning bcuz is parint\n");
-                return;
+        public void recalculate_nodes() {
+            foreach (Node n in this.childnodes) {
+                n.recalculate_y();
             }
-            int node_index = prv.index_of_child((Node) this);
-            int splits_until = prv.get_splits_until(node_index);
+        }
+
+        public void recalculate_y() {
+            if (this.previous == null)
+                return;
+            int node_index = this.previous.index_of_child((Node) this);
+            int splits_until = this.previous.get_splits_until(node_index);
             stdout.printf("\n\n>>>> index: %d\n>>>> splits until: %d\n\n",node_index,splits_until);
             this.save_easing_state();
-            this.y = (splits_until+node_index)*(Node.HEIGHT+Track.SPACING);
+            this.y = this.previous.y + (splits_until+node_index)*(Node.HEIGHT+Track.SPACING);
             this.restore_easing_state();
             foreach (Node n in this.childnodes) {
                 n.recalculate_y();
@@ -390,8 +399,12 @@ namespace alaia {
         }
 
         public void do_x_offset(GLib.Object t, ParamSpec p) {
-            if (p.name == "x-offset" && this.get_parent() == t) {
-                this.x = (t as HistoryTrack).x_offset;
+            if (p.name == "x-offset") {
+                if (this.previous == null) {
+                    this.x = this.track.x_offset;
+                } else {
+                    this.x = this.previous.x + 80;
+                }
             }
         }
         
@@ -417,7 +430,7 @@ namespace alaia {
                 r += n.get_splits();
             }
             if (this.childnodes.size > 1) {
-                r += this.childnodes.size-1;
+                r += this.childnodes.size;
             }
             return r;
         }

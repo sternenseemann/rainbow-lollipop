@@ -233,6 +233,7 @@ namespace alaia {
 
             this.tracking = false;
             this.x_delta = 0;
+            this._x_offset = 80;
             this.reactive = true;
             this.leave_event.connect(do_leave_event);
             this.button_press_event.connect(do_button_press_event);
@@ -296,6 +297,7 @@ namespace alaia {
             if (wf.get_uri() != this._current_node.url) {
                 var nn = new Node(this, wf.get_uri(), this._current_node);
                 this._current_node.toggle_highlight();
+                this._current_node.recalculate_y();
                 this._current_node = nn;
                 this._current_node.toggle_highlight();
                 this.web.icon_loaded.connect(do_icon_loaded);
