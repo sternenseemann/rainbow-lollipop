@@ -153,7 +153,6 @@ namespace alaia {
             this.c.invalidate();
         }
 
-
         public bool do_draw(Cairo.Context cr, int w, int h) {
             cr.set_source_rgba(0,0,0,0);
             cr.set_operator(Cairo.Operator.SOURCE);
@@ -176,14 +175,14 @@ namespace alaia {
         }
     }
 
-    class Tooltip : Clutter.Rectangle {
+    class Tooltip : Clutter.Actor {
         private const uint8 OPACITY = 0xAF;
         private const string COLOR = "#121212";
         protected Clutter.Text textactor;
         private Clutter.Actor par;
         public Tooltip(Clutter.Actor par, string text) {
             this.par = par;
-            this.color = Clutter.Color.from_string(Tooltip.COLOR);
+            this.background_color = Clutter.Color.from_string(Tooltip.COLOR);
             this.textactor = new Clutter.Text.with_text("Terminus 9", text);
             this.width = this.textactor.width+2;
             this.height = this.textactor.height+2;
@@ -195,6 +194,7 @@ namespace alaia {
         }
 
         public void emerge() {
+            this.scale_x = 1/this.get_parent().scale_x;
             this.visible = true;
             this.textactor.visible = true;
             this.save_easing_state();
