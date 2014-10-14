@@ -407,7 +407,10 @@ namespace alaia {
                 } else {
                     this.x = this.previous.x + 80 - (this.previous.width-this.previous.width*(float)this.previous.scale_x);
                 }
-                this.scale_x = get_nodescale(this.x, this.get_parent().get_parent().get_parent().width);
+                var pwidth = this.get_parent().get_parent().get_parent().width;
+                var newscale = get_nodescale(this.x, pwidth);
+                if (newscale >=0)
+                    this.scale_x = newscale;
             }
         }
         
