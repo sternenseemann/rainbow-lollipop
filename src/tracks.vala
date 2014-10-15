@@ -249,6 +249,9 @@ namespace alaia {
         }
 
         private bool do_leave_event(Clutter.CrossingEvent e) {
+            if (this.contains(e.related)) {
+                return false;
+            }
             this.tracking = false;
             return true;
         }
