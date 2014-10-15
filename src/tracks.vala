@@ -8,7 +8,6 @@ namespace alaia {
         
         public static void init() {
             if (!TrackColorSource.initialized) {
-                stdout.printf("init");
                 TrackColorSource.colors = new Gee.ArrayList<string>();
                 TrackColorSource.colors.add("#550");
                 TrackColorSource.colors.add("#050");
@@ -228,7 +227,7 @@ namespace alaia {
             this.tracklist = tl;
             this.web.open(url);
             this.first_node = new Node(this, url, null);
-            this._current_node = this.first_node;
+            this.current_node = this.first_node;
             this.url = url;
 
             this.tracking = false;
@@ -359,7 +358,6 @@ namespace alaia {
                 new HistoryTrack(this, url, this.web),
                 this.get_n_children()-1
             );
-            this._current_track = (this.get_child_at_index(this.get_n_children()-1) as HistoryTrack);
         }
 
         private void add_empty_track() {

@@ -266,7 +266,6 @@ namespace alaia {
                 if (this.previous.childnodes.size-1 > this.previous.index_of_child(this)) {
                     this.previous.recalculate_nodes();
                 }
-            int node_index = this.previous.index_of_child((Node) this);
             }
             track.add_child(this);
             this.childnodes = new Gee.ArrayList<Node>();
