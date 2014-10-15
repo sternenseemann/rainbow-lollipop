@@ -51,6 +51,13 @@ namespace alaia {
         private float ypos;
 
         public Track(TrackList tl) {
+            Track last_track = (tl.get_last_child() as Track);
+            if (last_track != null) {
+                this.y = last_track.y;
+                this.save_easing_state();
+                this.y += last_track.height;
+                this.restore_easing_state();
+            }
             this.add_constraint(
                 new Clutter.BindConstraint(tl, Clutter.BindCoordinate.WIDTH, 0)
             );
