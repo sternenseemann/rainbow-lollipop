@@ -187,6 +187,7 @@ namespace alaia {
             this.width = this.textactor.width+2;
             this.height = this.textactor.height+2;
             this.opacity = Tooltip.OPACITY;
+            this.visible = false;
             this.textactor.x = 1;
             this.textactor.y = 1;
             this.transitions_completed.connect(do_transitions_completed); 
