@@ -238,6 +238,7 @@ namespace alaia {
         public static const uint8 COL_MULTIPLIER = 15;
         public static const uint8 HEIGHT = 0x40;
         public static const uint8 FAVICON_SIZE = 24;
+        public static const uint8 SPACING = 0x10;
         private float xpos;
         private Node previous;
         private Gee.ArrayList<Node> childnodes; //special list only for nodes
@@ -279,7 +280,7 @@ namespace alaia {
             this.x = par != null ? par.x : 0;
             this.y = Track.SPACING;
             this.save_easing_state();
-            this.x = this.xpos = par.x+80;
+            this.x = this.xpos = par.x+par.width*(float)par.scale_x+(float)Node.SPACING;
             this.y = Track.SPACING; 
             this.restore_easing_state();
             if (par != null){
