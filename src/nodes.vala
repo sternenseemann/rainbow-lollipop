@@ -388,6 +388,8 @@ namespace alaia {
                 this.visible = false;
                 this.favactor.visible = false;
             }
+            var pwidth = this.get_parent().get_parent().get_parent().width;
+            this.scale_x = this.get_nodescale(this.x, pwidth);
         }
 
         public void set_favicon(Gdk.Pixbuf px) {
