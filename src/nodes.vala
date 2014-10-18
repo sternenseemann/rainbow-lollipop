@@ -183,7 +183,7 @@ namespace alaia {
         public Tooltip(Clutter.Actor par, string text) {
             this.par = par;
             this.background_color = Clutter.Color.from_string(Tooltip.COLOR);
-            this.textactor = new Clutter.Text.with_text("Terminus 9", text);
+            this.textactor = new Clutter.Text.with_text("Monospace Bold 9", text);
             this.width = this.textactor.width+2;
             this.height = this.textactor.height+2;
             this.opacity = Tooltip.OPACITY;
@@ -226,7 +226,11 @@ namespace alaia {
     class NodeTooltip : Tooltip {
         public NodeTooltip (Node node, string text) {
             base(node, text);
-            this.textactor.color = node.get_track().get_background_color().lighten().lighten();
+            var c = node.get_track().get_background_color().lighten();
+            c.red = c.red*50 > 0xFF ? 0xFF : c.red*50;
+            c.green = c.green*50 > 0xFF ? 0xFF : c.green*50;
+            c.blue = c.blue*50 > 0xFF ? 0xFF : c.blue*50;
+            this.textactor.color = c;
         }
     }
     
