@@ -312,8 +312,7 @@ namespace alaia {
             this.add_child(this.highlight);
             this.add_child(this.bullet);
             this.add_child(this.favactor);
-            this.recalculate_y();
-            this.get_root_node().recalculate_y();
+            this.previous.recalculate_y(null);
             (this.track.get_parent().get_last_child() as Track).recalculate_y(0);
         }
 
@@ -321,34 +320,50 @@ namespace alaia {
             return this.track;
         }
 
-        public Node get_root_node() {
-            if (this.get_parent() is Node) {
-                return (this.get_parent() as Node).get_root_node();
-            } else {
-                return this;
-            }
-        }
-
         private bool is_current_node = false;
 
         public void recalculate_nodes() {
             foreach (Node n in this.childnodes) {
-                n.recalculate_y();
+                n.recalculate_y(this);
             }
         }
 
-        public void recalculate_y() {
-            if (this.previous == null)
+        public void recalculate_y(Node? call_origin) {
+            if (this.previous != null && call_origin != this.previous) {
+                this.previous.recalculate_y(this);
                 return;
-            int node_index = this.previous.index_of_child((Node) this);
-            int splits_until = this.previous.get_splits_until(node_index);
-            stdout.printf("\n\n>>>> index: %d\n>>>> splits until: %d\n\n",node_index,splits_until);
-            this.save_easing_state();
-            this.y = this.previous.y + (splits_until+node_index)*(Node.HEIGHT+Track.SPACING);
-            this.restore_easing_state();
-            foreach (Node n in this.childnodes) {
-                n.recalculate_y();
+            } else {
+                int node_index = this.previous.index_of_child((Node) this);
+                int splits_until = this.previous.get_splits_until(node_index);
+                var prvy = this.previous.y != 0 ? this.previous.y : Track.SPACING;
+                this.y =  prvy + (splits_until+node_index)*(Node.HEIGHT+Track.SPACING);
+                foreach (Node n in this.childnodes) {
+                    n.recalculate_y(this);
+                }
             }
+        }
+
+        public int index_of_child(Node n) {
+            return this.childnodes.index_of(n);
+        }
+
+        public int get_splits() {
+            int r = 0;
+            foreach (Node n in this.childnodes) {
+                r += n.get_splits();
+            }
+            if (this.childnodes.size > 1) {
+                r += this.childnodes.size-1;
+            }
+            return r;
+        }
+
+        public int get_splits_until(int index) {
+            int r = 0;
+            for (int i = 0; i < index; ++i) {
+                r += (this.childnodes.get(i) as Node).get_splits();
+            }
+            return r;
         }
 
         public void toggle_highlight() {
@@ -390,7 +405,10 @@ namespace alaia {
                 this.favactor.visible = false;
             }
             var pwidth = this.get_parent().get_parent().get_parent().width;
-            this.scale_x = this.get_nodescale(this.x, pwidth);
+            var newscale = get_nodescale(this.x, pwidth);
+            if (newscale >= 0 ) {
+                this.scale_x = this.get_nodescale(this.x, pwidth);
+            }
         }
 
         public void set_favicon(Gdk.Pixbuf px) {
@@ -429,29 +447,6 @@ namespace alaia {
             } else {
                 return false;
             }
-        }
-
-        public int index_of_child(Node n) {
-            return this.childnodes.index_of(n);
-        }
-
-        public int get_splits() {
-            int r = 0;
-            foreach (Node n in this.childnodes) {
-                r += n.get_splits();
-            }
-            if (this.childnodes.size > 1) {
-                r += this.childnodes.size;
-            }
-            return r;
-        }
-
-        public int get_splits_until(int index) {
-            int r = 0;
-            for (int i = 0; i < index; i++) {
-                r += (this.childnodes.get(i) as Node).get_splits();
-            }
-            return r;
         }
 
         public void emerge() {
