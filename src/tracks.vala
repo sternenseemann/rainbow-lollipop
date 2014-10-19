@@ -306,7 +306,7 @@ namespace alaia {
             if (wf.get_uri() != this._current_node.url) {
                 var nn = new Node(this, wf.get_uri(), this._current_node);
                 this._current_node.toggle_highlight();
-                this._current_node.recalculate_y();
+                this._current_node.recalculate_y(null);
                 this._current_node = nn;
                 this._current_node.toggle_highlight();
                 this.web.icon_loaded.connect(do_icon_loaded);
