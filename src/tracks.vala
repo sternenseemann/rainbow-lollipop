@@ -35,6 +35,7 @@ namespace alaia {
         public const uint8 SPACING = 0x10;
 
         private float ypos;
+        private GtkClutter.Actor close_button;
 
         public Track(TrackList tl) {
             Track last_track = (tl.get_last_child() as Track);
@@ -48,13 +49,16 @@ namespace alaia {
                 new Clutter.BindConstraint(tl, Clutter.BindCoordinate.WIDTH, 0)
             );
 
-            var button = new Gtk.Button.from_stock(Gtk.STOCK_CLOSE);
-            var act = new GtkClutter.Actor.with_contents(button);
+            var close_img = new Gtk.Image.from_stock(Gtk.STOCK_CLOSE, Gtk.IconSize.SMALL_TOOLBAR);
+            var button = new Gtk.Button();
+            button.margin=0;
+            button.set_image(close_img);
+            this.close_button = new GtkClutter.Actor.with_contents(button);
             button.clicked.connect(()=>{this.delete_track();});
-            act.visible = true;
-            act.height = act.width = 26;
-            tl.get_stage().add_child(act);
-            act.add_constraint(
+            this.close_button.visible = true;
+            this.close_button.height = this.close_button.width = 32;
+            tl.get_stage().add_child(this.close_button);
+            this.close_button.add_constraint(
                 new Clutter.BindConstraint(this, Clutter.BindCoordinate.POSITION,0)
             );
 
@@ -88,17 +92,22 @@ namespace alaia {
             this.visible = true;
             this.save_easing_state();
             this.opacity = Track.OPACITY;
+            this.close_button.opacity = 0xFF;
             this.restore_easing_state();
         }
         public void disappear() {
             this.save_easing_state();
             this.opacity = 0x00;
+            this.close_button.opacity = 0x00;
             this.restore_easing_state();
         }
 
         private bool delete_track () {
-            //delete this.track;
             stdout.printf("close track\n");
+            Track par = (Track)this.get_parent().get_last_child();
+            this.destroy();
+            this.close_button.destroy();
+            par.recalculate_y(0);
             return false;
         }
 
