@@ -11,10 +11,20 @@ namespace alaia {
         TRACKLIST
     }
 
+    class ContextMenu : Gtk.Menu {
+        private Gtk.MenuItem new_track_from_node;
+        public ContextMenu () {
+            this.new_track_from_node = new Gtk.MenuItem.with_label("Move to new Track");
+            this.add(this.new_track_from_node);
+            this.show_all();
+        }
+    }
+
     class Application : Gtk.Application {
         private static Application app;
 
         private GtkClutter.Window win;
+        private ContextMenu context;
         private WebKit.WebView web;
         private GtkClutter.Actor webact;
 
@@ -44,7 +54,10 @@ namespace alaia {
             this.win = new GtkClutter.Window();
             this.win.set_title("alaia");
             this.win.key_press_event.connect(do_key_press_event);
+            this.win.button_press_event.connect(do_button_press_event);
             this.win.destroy.connect(do_delete);
+
+            this.context = new ContextMenu();
 
             var stage = this.win.get_stage();
             this.webact.add_constraint(new Clutter.BindConstraint(
@@ -68,8 +81,10 @@ namespace alaia {
             Gtk.main_quit();
         }
 
-        public bool do_button_press_event(Clutter.ButtonEvent e) {
-            stdout.printf("foobar\n");
+        public bool do_button_press_event(Gdk.EventButton e) {
+            if (e.button == Gdk.BUTTON_SECONDARY) {
+                this.context.popup(null,null,null,e.button, e.time);
+            }
             return false;
         }
 
