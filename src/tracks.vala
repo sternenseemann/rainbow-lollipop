@@ -86,7 +86,21 @@ namespace alaia {
                 var last = this.get_parent().get_last_child();
                 (last as Track).recalculate_y((t as HistoryTrack).y_offset,false);
             }
-        }        
+        }
+
+        public Node? get_node_on_position(double x, double y) {
+            for (int i = 0; i < this.get_n_children(); i++) {
+                var c = this.get_child_at_index(i);
+                if (c is Node) {
+                    var n = (Node)c;
+                    if (n.x <= x && n.x+n.width*(float)n.scale_x >= x
+                     && n.y <= y && n.y+n.height*(float)n.scale_y >= y) {
+                        return n;
+                    }
+                }
+            }
+            return null;
+        }
 
         public void emerge() {
             this.visible = true;
@@ -398,6 +412,16 @@ namespace alaia {
             if (this.opacity == 0x00) {
                 this.visible = false;
             }
+        }
+
+        public Track? get_track_on_position(double x, double y) {
+            for (int i = 0; i < this.get_n_children(); i++) {
+                Track t = (this.get_child_at_index(i) as Track);
+                if (t.y <= y && t.y+t.height >= y) {
+                    return t;
+                }
+            }
+            return null;
         }
         
         public void emerge() {

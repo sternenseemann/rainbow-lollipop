@@ -13,11 +13,44 @@ namespace alaia {
 
     class ContextMenu : Gtk.Menu {
         private Gtk.MenuItem new_track_from_node;
+        private Gtk.MenuItem delete_branch;
+        private Gtk.MenuItem delete_track;
+        private Node? node;
+        private Track? track;
+        
         public ContextMenu () {
-            this.new_track_from_node = new Gtk.MenuItem.with_label("Move to new Track");
+            this.new_track_from_node = new Gtk.MenuItem.with_label("New Track from Branch");
+            this.new_track_from_node.activate.connect(do_new_track_from_node);
             this.add(this.new_track_from_node);
+            this.delete_branch = new Gtk.MenuItem.with_label("Close Branch");
+            this.delete_branch.activate.connect(do_new_track_from_node);
+            this.add(this.delete_branch);
+            this.add(new Gtk.SeparatorMenuItem());
+            this.delete_track = new Gtk.MenuItem.with_label("Close Track");
+            this.delete_track.activate.connect(do_new_track_from_node);
+            this.add(this.delete_track);
+
             this.show_all();
         }
+
+        public void set_context(Track? track, Node? node) {
+            this.track = track;
+            this.node = node;
+            
+            this.delete_track.visible = this.track != null;
+            this.new_track_from_node.visible = this.node != null;
+            this.delete_branch.visible = this.node != null;
+        }
+
+        public void do_new_track_from_node(Gtk.MenuItem m) {
+            stdout.printf("foo\n");
+        }
+        /*public void do_new_track_from_node(Gtk.MenuItem m) {
+            stdout.printf("foo\n");
+        }
+        public void do_new_track_from_node(Gtk.MenuItem m) {
+            stdout.printf("foo\n");
+        }*/
     }
 
     class Application : Gtk.Application {
@@ -83,6 +116,12 @@ namespace alaia {
 
         public bool do_button_press_event(Gdk.EventButton e) {
             if (e.button == Gdk.BUTTON_SECONDARY) {
+                Track track = this.tracklist.get_track_on_position(e.x,e.y);
+                Node node = null;
+                if (track != null) {
+                    node = track.get_node_on_position(e.x,e.y);
+                }
+                this.context.set_context(track,node);
                 this.context.popup(null,null,null,e.button, e.time);
             }
             return false;
