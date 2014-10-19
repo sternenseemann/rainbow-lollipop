@@ -29,20 +29,6 @@ namespace alaia {
         }
     }
 
-    class TrackCloseButton : Clutter.Actor {
-        private Track track;
-        private Clutter.Actor stage;
-
-        public TrackCloseButton (Clutter.Actor stage, Track track) {
-            this.button_press_event.connect(do_button_press_event);
-        }
-
-        private bool do_button_press_event (Clutter.ButtonEvent e) {
-            //delete this.track;
-            return false;
-        }
-    }
-
     abstract class Track : Clutter.Actor {
         private const uint8 OPACITY = 0xE0;
         public const uint8 HEIGHT = 0x80;
@@ -61,6 +47,17 @@ namespace alaia {
             this.add_constraint(
                 new Clutter.BindConstraint(tl, Clutter.BindCoordinate.WIDTH, 0)
             );
+
+            var button = new Gtk.Button.from_stock(Gtk.STOCK_CLOSE);
+            var act = new GtkClutter.Actor.with_contents(button);
+            button.clicked.connect(()=>{this.delete_track();});
+            act.visible = true;
+            act.height = act.width = 26;
+            tl.get_stage().add_child(act);
+            act.add_constraint(
+                new Clutter.BindConstraint(this, Clutter.BindCoordinate.POSITION,0)
+            );
+
             this.background_color = TrackColorSource.get_color();
             this.height = this.calculate_height();
             this.opacity = Application.S().state == AppState.TRACKLIST ? Track.OPACITY : 0x00;
@@ -97,6 +94,12 @@ namespace alaia {
             this.save_easing_state();
             this.opacity = 0x00;
             this.restore_easing_state();
+        }
+
+        private bool delete_track () {
+            //delete this.track;
+            stdout.printf("close track\n");
+            return false;
         }
 
         protected abstract int calculate_height();
