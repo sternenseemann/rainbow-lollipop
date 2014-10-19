@@ -227,9 +227,9 @@ namespace alaia {
         public NodeTooltip (Node node, string text) {
             base(node, text);
             var c = node.get_track().get_background_color().lighten();
-            c.red = c.red*50 > 0xFF ? 0xFF : c.red*50;
-            c.green = c.green*50 > 0xFF ? 0xFF : c.green*50;
-            c.blue = c.blue*50 > 0xFF ? 0xFF : c.blue*50;
+            c.red = (8+c.red)*10 > 0xFF ? 0xFF : (8+c.red)*10;
+            c.green = (8+c.green)*10 > 0xFF ? 0xFF : (8+c.green)*10;
+            c.blue = (8+c.blue)*10 > 0xFF ? 0xFF : (8+c.blue)*10;
             this.textactor.color = c;
         }
     }
