@@ -49,7 +49,7 @@ namespace alaia {
                 new Clutter.BindConstraint(tl, Clutter.BindCoordinate.WIDTH, 0)
             );
 
-            var close_img = new Gtk.Image.from_stock(Gtk.STOCK_CLOSE, Gtk.IconSize.SMALL_TOOLBAR);
+            var close_img = new Gtk.Image.from_stock(Gtk.Stock.CLOSE, Gtk.IconSize.SMALL_TOOLBAR);
             var button = new Gtk.Button();
             button.margin=0;
             button.set_image(close_img);
@@ -94,7 +94,7 @@ namespace alaia {
                 if (c is Node) {
                     var n = (Node)c;
                     if (n.x <= x && n.x+n.width*(float)n.scale_x >= x
-                     && n.y <= y && n.y+n.height*(float)n.scale_y >= y) {
+                     && this.y+n.y <= y && this.y+n.y+n.height*(float)n.scale_y >= y) {
                         return n;
                     }
                 }
