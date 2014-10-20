@@ -116,8 +116,7 @@ namespace alaia {
             this.restore_easing_state();
         }
 
-        private bool delete_track () {
-            stdout.printf("close track\n");
+        public bool delete_track () {
             Track par = (Track)this.get_parent().get_last_child();
             this.destroy();
             this.close_button.destroy();
@@ -179,7 +178,7 @@ namespace alaia {
             if (!url.has_prefix("http://") && !url.has_prefix("https://")) {
                 url = "http://" + url;
             }
-            this.tracklist.add_track(url);
+            this.tracklist.add_track_with_url(url);
         }
 
         private void do_transitions_completed() {
@@ -213,7 +212,8 @@ namespace alaia {
     class HistoryTrack : Track {
         private WebKit.WebView web;
         private string url;
-        private TrackList tracklist;
+        private TrackList _tracklist;
+        public TrackList tracklist {get {return this._tracklist;}}
 
         private bool tracking;
         private float x_delta;
@@ -254,10 +254,36 @@ namespace alaia {
         }
         private Node first_node;
 
+        public HistoryTrack.with_node(TrackList tl, Node n, WebView web) {
+            this(tl, n.url, web);
+            this.web.open(n.url);
+            this.remove_child(this.first_node);
+            this.first_node.destroy();
+            this.first_node = n;
+            this.add_child(this.first_node);
+            this.current_node = this.first_node;
+            this.url = n.url;
+
+            this.first_node.make_root_node();
+            this.first_node.track = this;
+            this.first_node.adapt_to_track();
+            this.first_node.recalculate_y(null);
+            this.add_childnodes(n);
+        }
+
+        private void add_childnodes(Node n) {
+            foreach (Node m in n.childnodes) {
+                m.track = this;
+                m.adapt_to_track();
+                this.add_child(m);
+                this.add_childnodes(m);
+            }
+        }
+
         public HistoryTrack(TrackList tl, string url, WebView web) {
             base(tl);
             this.web = web;
-            this.tracklist = tl;
+            this._tracklist = tl;
             this.web.open(url);
             this.first_node = new Node(this, url, null);
             this.current_node = this.first_node;
@@ -389,9 +415,16 @@ namespace alaia {
             this.add_empty_track();
         }
 
-        public void add_track(string url) {
+        public void add_track_with_url(string url) {
             this.insert_child_at_index(
                 new HistoryTrack(this, url, this.web),
+                this.get_n_children()-1
+            );
+        }
+
+        public void add_track_with_node(Node n) {
+            this.insert_child_at_index(
+                new HistoryTrack.with_node(this, n, this.web),
                 this.get_n_children()-1
             );
         }

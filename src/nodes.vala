@@ -58,7 +58,7 @@ namespace alaia {
                 new ConnectorConstraint(previous, next)
             );
             this.c.invalidate();
-            previous.get_track().add_child(this);
+            previous.track.add_child(this);
             
         }
         public bool do_draw(Cairo.Context cr, int w, int h) {
@@ -226,7 +226,7 @@ namespace alaia {
     class NodeTooltip : Tooltip {
         public NodeTooltip (Node node, string text) {
             base(node, text);
-            var c = node.get_track().get_background_color().lighten();
+            var c = node.track.get_background_color().lighten();
             c.red = (8+c.red)*10 > 0xFF ? 0xFF : (8+c.red)*10;
             c.green = (8+c.green)*10 > 0xFF ? 0xFF : (8+c.green)*10;
             c.blue = (8+c.blue)*10 > 0xFF ? 0xFF : (8+c.blue)*10;
@@ -241,8 +241,9 @@ namespace alaia {
         public static const uint8 SPACING = 0x10;
         private float xpos;
         private Node previous;
-        private Gee.ArrayList<Node> childnodes; //special list only for nodes
-        private HistoryTrack track;
+        private Gee.ArrayList<Node> _childnodes; //special list only for nodes
+        public Gee.ArrayList<Node> childnodes {get {return this._childnodes;}}
+        public HistoryTrack track {get; set;}
         private Gdk.Pixbuf favicon;
         private Gdk.Pixbuf snapshot;
         private Clutter.Actor favactor;
@@ -274,8 +275,8 @@ namespace alaia {
                 }
             }
             track.add_child(this);
-            this.childnodes = new Gee.ArrayList<Node>();
-            this.track = track;
+            this._childnodes = new Gee.ArrayList<Node>();
+            this._track = track;
             this.track.notify.connect(do_x_offset);
             this.x = par != null ? par.x : 0;
             this.y = Track.SPACING;
@@ -316,10 +317,6 @@ namespace alaia {
             (this.track.get_parent().get_last_child() as Track).recalculate_y(0);
         }
 
-        public Track get_track() {
-            return this.track;
-        }
-
         private bool is_current_node = false;
 
         public void recalculate_nodes() {
@@ -341,6 +338,52 @@ namespace alaia {
                     n.recalculate_y(this);
                 }
             }
+        }
+
+        public void delete_node() {
+            //TODO: fix fuckup when deleting nodes
+            var prv = this.previous;
+            foreach (Node n in this.childnodes) {
+                n.delete_node();
+            }
+            prv.childnodes.remove(this);
+            this.connector.destroy();
+            this.destroy();
+            prv.recalculate_y(null);
+            prv.track.recalculate_y(0);
+        }
+
+        private void detach_childnodes() {
+            foreach (Node n in this.childnodes) {
+                n.detach_childnodes();
+            }
+            this.track.notify.disconnect(do_x_offset);
+            this.get_parent().remove_child(this);
+            this.connector.destroy();
+        }
+
+        public void adapt_to_track() {
+            this.color = this.track.get_background_color().lighten();
+            this.color = this.color.lighten();
+            this.bullet.content.invalidate();
+            this.highlight.content.invalidate();
+            this.url_tooltip.content.invalidate();
+            this.track.notify.connect(do_x_offset);
+            if (this.previous != null) {
+                this.connector = new Connector(this.previous, this);
+            }
+        }
+        public void make_root_node() {
+            this.previous = null; 
+        }
+
+        public void move_to_new_track() {
+            this.track.notify.disconnect(do_x_offset);
+            this.previous.childnodes.remove(this);
+            this.get_parent().remove_child(this);
+            this.connector.destroy();
+            this.detach_childnodes();
+            this.track.tracklist.add_track_with_node(this);
         }
 
         public int index_of_child(Node n) {

@@ -23,11 +23,11 @@ namespace alaia {
             this.new_track_from_node.activate.connect(do_new_track_from_node);
             this.add(this.new_track_from_node);
             this.delete_branch = new Gtk.MenuItem.with_label("Close Branch");
-            this.delete_branch.activate.connect(do_new_track_from_node);
+            this.delete_branch.activate.connect(do_delete_branch);
             this.add(this.delete_branch);
             this.add(new Gtk.SeparatorMenuItem());
             this.delete_track = new Gtk.MenuItem.with_label("Close Track");
-            this.delete_track.activate.connect(do_new_track_from_node);
+            this.delete_track.activate.connect(do_delete_track);
             this.add(this.delete_track);
 
             this.show_all();
@@ -43,14 +43,17 @@ namespace alaia {
         }
 
         public void do_new_track_from_node(Gtk.MenuItem m) {
-            stdout.printf("foo\n");
+            if (this.node != null)
+                this.node.move_to_new_track();
         }
-        /*public void do_new_track_from_node(Gtk.MenuItem m) {
-            stdout.printf("foo\n");
+        public void do_delete_branch(Gtk.MenuItem m) {
+            if (this.node  != null)
+                this.node.delete_node();
         }
-        public void do_new_track_from_node(Gtk.MenuItem m) {
-            stdout.printf("foo\n");
-        }*/
+        public void do_delete_track(Gtk.MenuItem m) {
+            if (this.track != null)
+                this.track.delete_track();
+        }
     }
 
     class Application : Gtk.Application {
