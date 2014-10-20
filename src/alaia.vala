@@ -12,21 +12,33 @@ namespace alaia {
     }
 
     class ContextMenu : Gtk.Menu {
-        private Gtk.MenuItem new_track_from_node;
-        private Gtk.MenuItem delete_branch;
-        private Gtk.MenuItem delete_track;
+        private Gtk.ImageMenuItem new_track_from_node;
+        private Gtk.ImageMenuItem delete_branch;
+        private Gtk.ImageMenuItem delete_track;
         private Node? node;
         private Track? track;
         
         public ContextMenu () {
-            this.new_track_from_node = new Gtk.MenuItem.with_label("New Track from Branch");
+            this.new_track_from_node = new Gtk.ImageMenuItem.with_label("New Track from Branch");
+            //this.new_track_from_node.allways_show_image = true;
+            this.new_track_from_node.set_image(
+                new Gtk.Image.from_stock(Gtk.Stock.JUMP_TO, Gtk.IconSize.MENU)
+            );
             this.new_track_from_node.activate.connect(do_new_track_from_node);
             this.add(this.new_track_from_node);
-            this.delete_branch = new Gtk.MenuItem.with_label("Close Branch");
+            this.delete_branch = new Gtk.ImageMenuItem.with_label("Close Branch");
+            //this.delete_branch.allways_show_image = true;
+            this.delete_branch.set_image(
+                new Gtk.Image.from_stock(Gtk.Stock.DELETE, Gtk.IconSize.MENU)
+            );
             this.delete_branch.activate.connect(do_delete_branch);
             this.add(this.delete_branch);
             this.add(new Gtk.SeparatorMenuItem());
-            this.delete_track = new Gtk.MenuItem.with_label("Close Track");
+            this.delete_track = new Gtk.ImageMenuItem.with_label("Close Track");
+            //this.delete_track.allways_show_image = true;
+            this.delete_track.set_image(
+                new Gtk.Image.from_stock(Gtk.Stock.CLOSE, Gtk.IconSize.MENU)
+            );
             this.delete_track.activate.connect(do_delete_track);
             this.add(this.delete_track);
 
