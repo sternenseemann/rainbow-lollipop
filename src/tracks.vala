@@ -216,6 +216,7 @@ namespace alaia {
         private WebKit.WebView web;
         private string url;
         private Clutter.Actor separator;
+        private Clutter.Actor centerline;
         private TrackList _tracklist;
         public TrackList tracklist {get {return this._tracklist;}}
 
@@ -304,6 +305,22 @@ namespace alaia {
             );
 
             this.add_child(separator);
+
+            this.centerline = new Clutter.Actor();
+            this.centerline.background_color = Clutter.Color.from_string("#fff");
+            this.centerline.width = 1;
+            this.centerline.height = this.height;
+            this.centerline.y = 0;
+            this.centerline.x = this.width/2;
+            this.centerline.visible = true;
+            this.centerline.add_constraint(
+                new Clutter.AlignConstraint(this, Clutter.AlignAxis.X_AXIS, 0.5f)
+            );
+            this.centerline.add_constraint(
+                new Clutter.BindConstraint(this, Clutter.BindCoordinate.HEIGHT,0)
+            );
+            this.add_child(this.centerline);
+
             this.tracking = false;
             this.x_delta = 0;
             this._x_offset = 80;
