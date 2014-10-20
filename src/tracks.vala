@@ -215,7 +215,7 @@ namespace alaia {
     class HistoryTrack : Track {
         private WebKit.WebView web;
         private string url;
-        private Clutter.Actor separator_top;
+        private Clutter.Actor separator;
         private TrackList _tracklist;
         public TrackList tracklist {get {return this._tracklist;}}
 
@@ -293,17 +293,17 @@ namespace alaia {
             this.current_node = this.first_node;
             this.url = url;
 
-            this.separator_top = new Clutter.Actor();
-            this.separator_top.background_color = this.background_color.lighten();
-            this.separator_top.height = 1;
-            this.separator_top.y = 0;
-            this.separator_top.x = 0;
-            this.separator_top.visible = true;
-            this.separator_top.add_constraint(
+            this.separator = new Clutter.Actor();
+            this.separator.background_color = this.background_color.lighten();
+            this.separator.height = 1;
+            this.separator.y = 0;
+            this.separator.x = 0;
+            this.separator.visible = true;
+            this.separator.add_constraint(
                 new Clutter.BindConstraint(this, Clutter.BindCoordinate.WIDTH,0)
             );
 
-            this.add_child(separator_top);
+            this.add_child(separator);
             this.tracking = false;
             this.x_delta = 0;
             this._x_offset = 80;
