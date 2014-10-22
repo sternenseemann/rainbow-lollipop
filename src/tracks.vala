@@ -9,12 +9,12 @@ namespace alaia {
         public static void init() {
             if (!TrackColorSource.initialized) {
                 TrackColorSource.colors = new Gee.ArrayList<string>();
-                TrackColorSource.colors.add("#550");
-                TrackColorSource.colors.add("#050");
-                TrackColorSource.colors.add("#055");
-                TrackColorSource.colors.add("#005");
-                TrackColorSource.colors.add("#505");
-                TrackColorSource.colors.add("#500");
+                TrackColorSource.colors.add("#cda869");
+                TrackColorSource.colors.add("#e9c062");
+                TrackColorSource.colors.add("#5f5a60");
+                TrackColorSource.colors.add("#7587a6");
+                TrackColorSource.colors.add("#8f9d6a");
+                TrackColorSource.colors.add("#cf6a4c");
                 TrackColorSource.initialized = true;
             }
         }
@@ -422,7 +422,7 @@ namespace alaia {
             this.add_constraint(
                 new Clutter.BindConstraint(stage, Clutter.BindCoordinate.SIZE,0)
             );
-            this.background_color = Clutter.Color.from_string("#121212");
+            this.background_color = Clutter.Color.from_string("#141414");
             this.reactive=true;
             this.opacity = 0x00;
             this.visible = true;
