@@ -392,8 +392,46 @@ namespace alaia {
         }
     }
 
+    class TrackListBackground : Clutter.Actor {
+        public TrackListBackground(WebView web, Clutter.Actor stage) {
+            var tl = new TrackList(this,web);
+            this.visible = true;
+            this.add_constraint(
+                new Clutter.BindConstraint(stage, Clutter.BindCoordinate.SIZE,0)
+            );
+            this.background_color = Clutter.Color.from_string(Config.c.colorscheme.tracklist);
+            this.transitions_completed.connect(do_transitions_completed);
+            this.add_child(tl);
+        }
+
+        public void emerge() {
+            var tl = (TrackList)this.get_first_child();
+            if (tl != null)
+                tl.emerge();
+            this.visible = true;
+            this.save_easing_state();
+            this.opacity = 0xE0;
+            this.restore_easing_state();
+        }
+
+        public void disappear() {
+            var tl = (TrackList)this.get_first_child();
+            if (tl != null)
+                tl.disappear();
+            this.save_easing_state();
+            this.opacity = 0x00;
+            this.restore_easing_state();
+        }
+
+        private void do_transitions_completed() {
+            if (this.opacity == 0x00) {
+                this.visible = false;
+            }
+        }
+
+    }
+
     class TrackList : Clutter.Actor {
-        private Clutter.Actor stage;
         private WebKit.WebView web;
         
         public HistoryTrack? current_track {
@@ -408,14 +446,15 @@ namespace alaia {
 
         private HistoryTrack? _current_track;
 
-        public TrackList(Clutter.Actor stage, WebView web) {
+        public TrackList(TrackListBackground tbl, WebView web) {
             this.web = web;
-            this.stage = stage;
             
             this.add_constraint(
-                new Clutter.BindConstraint(stage, Clutter.BindCoordinate.SIZE,0)
+                new Clutter.BindConstraint(tbl, Clutter.BindCoordinate.WIDTH,0)
             );
-            this.background_color = Clutter.Color.from_string(Config.c.colorscheme.tracklist);
+            this.add_constraint(
+                new Clutter.AlignConstraint(tbl, Clutter.AlignAxis.Y_AXIS, 0.5f)
+            );
             this.reactive=true;
             this.opacity = 0x00;
             this.visible = true;

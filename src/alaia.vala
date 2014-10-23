@@ -77,6 +77,7 @@ namespace alaia {
         private GtkClutter.Actor webact;
 
         private TrackList tracklist;
+        private TrackListBackground tracklist_background;
         
         private AppState _state;
 
@@ -118,11 +119,12 @@ namespace alaia {
             stage.add_child(this.webact);
             stage.reactive = true;
 
-            this.tracklist = new TrackList(stage, this.web);
-            stage.add_child(this.tracklist);
+            this.tracklist_background = new TrackListBackground(this.web, stage);
+            stage.add_child(this.tracklist_background);
 
+            this.tracklist = (TrackList)this.tracklist_background.get_first_child();
             this.win.show_all();
-            this.tracklist.emerge();
+            this.tracklist_background.emerge();
         }
 
         public void do_load_committed(WebFrame wf) {
@@ -151,7 +153,7 @@ namespace alaia {
                 case AppState.NORMAL:
                     switch (e.keyval) {
                         case Gdk.Key.Tab:
-                            this.tracklist.emerge();
+                            this.tracklist_background.emerge();
                             this._state = AppState.TRACKLIST;
                             return true;
                         default:
@@ -160,7 +162,7 @@ namespace alaia {
                 case AppState.TRACKLIST:
                     switch (e.keyval) {
                         case Gdk.Key.Tab:
-                            this.tracklist.disappear();
+                            this.tracklist_background.disappear();
                             this._state = AppState.NORMAL;
                             return true;
                         default:
