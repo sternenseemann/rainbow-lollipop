@@ -1,0 +1,15 @@
+{
+    "track_height":     128,
+    "track_spacing":    16,
+    "track_opacity":    224,
+
+    "node_height":      64,
+    "node_spacing":     16,
+    "favicon_size":     24,
+    "color_multiplier": 15,
+
+    "connector_stroke": 2.0,
+    "bullet_stroke" : 5.0,
+
+    "colorscheme":      "solarized_dark"
+}
