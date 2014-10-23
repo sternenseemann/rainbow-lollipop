@@ -92,6 +92,10 @@ namespace alaia {
                 flags: ApplicationFlags.HANDLES_COMMAND_LINE,
                 register_session : true
             );
+
+            //Load config
+
+            Config.load();
             
             this._state = AppState.TRACKLIST;
 

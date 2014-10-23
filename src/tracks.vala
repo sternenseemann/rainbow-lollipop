@@ -9,12 +9,9 @@ namespace alaia {
         public static void init() {
             if (!TrackColorSource.initialized) {
                 TrackColorSource.colors = new Gee.ArrayList<string>();
-                TrackColorSource.colors.add("#cda869");
-                TrackColorSource.colors.add("#e9c062");
-                TrackColorSource.colors.add("#5f5a60");
-                TrackColorSource.colors.add("#7587a6");
-                TrackColorSource.colors.add("#8f9d6a");
-                TrackColorSource.colors.add("#cf6a4c");
+                foreach (string color in Config.c.colorscheme.tracks) {
+                    TrackColorSource.colors.add(color);
+                }
                 TrackColorSource.initialized = true;
             }
         }
@@ -30,10 +27,6 @@ namespace alaia {
     }
 
     abstract class Track : Clutter.Actor {
-        private const uint8 OPACITY = 0xE0;
-        public const uint8 HEIGHT = 0x80;
-        public const uint8 SPACING = 0x10;
-
         private float ypos;
         private GtkClutter.Actor close_button;
 
@@ -65,7 +58,7 @@ namespace alaia {
 
             this.background_color = TrackColorSource.get_color();
             this.height = this.calculate_height();
-            this.opacity = Application.S().state == AppState.TRACKLIST ? Track.OPACITY : 0x00;
+            this.opacity = Application.S().state == AppState.TRACKLIST ? Config.c.track_opacity : 0x00;
             this.visible = Application.S().state == AppState.TRACKLIST;
 
 
@@ -108,7 +101,7 @@ namespace alaia {
         public void emerge() {
             this.visible = true;
             this.save_easing_state();
-            this.opacity = Track.OPACITY;
+            this.opacity = Config.c.track_opacity;
             this.close_button.opacity = 0xFF;
             this.restore_easing_state();
         }
@@ -157,13 +150,13 @@ namespace alaia {
             this.url_entry = new Gtk.Entry();
             this.enter_button = new Gtk.Button.with_label("Go");
             this.hbox = new Gtk.HBox(false, 5);
-            this.background_color = Clutter.Color.from_string("#555");
+            this.background_color = Clutter.Color.from_string(Config.c.colorscheme.empty_track);
             this.hbox.pack_start(this.url_entry,true);
             this.hbox.pack_start(this.enter_button,false);
             this.url_entry.activate.connect(do_activate);
             this.actor = new GtkClutter.Actor.with_contents(this.hbox);
             this.actor.height=26;
-            this.actor.y = Track.HEIGHT/2-this.actor.height/2;
+            this.actor.y = Config.c.track_height/2-this.actor.height/2;
             this.actor.add_constraint(
                 new Clutter.BindConstraint(this, Clutter.BindCoordinate.WIDTH, 0)
             );
@@ -191,7 +184,7 @@ namespace alaia {
         }
 
         protected override int calculate_height(){
-            return Track.HEIGHT;
+            return Config.c.track_height;
         }
 
         public new void emerge() {
@@ -364,7 +357,7 @@ namespace alaia {
         }
 
         protected override int calculate_height() {
-            int h = Track.SPACING+((Node.HEIGHT+Track.SPACING)*(this.first_node.get_splits()+1));
+            int h = Config.c.track_spacing+((Config.c.node_height+Config.c.track_spacing)*(this.first_node.get_splits()+1));
             this.height = h;
             return h;
         }
@@ -422,7 +415,7 @@ namespace alaia {
             this.add_constraint(
                 new Clutter.BindConstraint(stage, Clutter.BindCoordinate.SIZE,0)
             );
-            this.background_color = Clutter.Color.from_string("#141414");
+            this.background_color = Clutter.Color.from_string(Config.c.colorscheme.tracklist);
             this.reactive=true;
             this.opacity = 0x00;
             this.visible = true;
@@ -442,6 +435,15 @@ namespace alaia {
                 new HistoryTrack.with_node(this, n, this.web),
                 this.get_n_children()-1
             );
+        }
+
+        public Track? get_track_of_node(Node n){
+            foreach (Clutter.Actor t in this.get_children()) {
+                if (t is HistoryTrack && (t as HistoryTrack).contains(n)) {
+                    return (t as HistoryTrack);
+                }
+            }
+            return null;
         }
 
         private void add_empty_track() {

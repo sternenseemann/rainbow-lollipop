@@ -4,6 +4,7 @@
 SRC = src/alaia.vala \
       src/tracks.vala \
       src/nodes.vala \
+      src/config.vala \
 
 # LIBS werden fuer valac und gcc aufgeloest. VALALIBS und CLIBS
 # jeweils nur fuer valac und gcc.

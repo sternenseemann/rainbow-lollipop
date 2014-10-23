@@ -27,11 +27,11 @@ namespace alaia {
             var sourcebox = this.source.get_allocation_box();
             var targetbox = this.target.get_allocation_box();
             alloc.x1 = sourcebox.x2-(this.source.width-this.source.width*(float)this.source.scale_x);
-            alloc.y1 = sourcebox.y1+Node.HEIGHT/2;
+            alloc.y1 = sourcebox.y1+Config.c.node_height/2;
             alloc.x2 = targetbox.x1;
-            alloc.y2 = targetbox.y1+Node.HEIGHT/2+3;
-            if (alloc.y2-alloc.y1 < (float)Connector.STROKE_WIDTH) {
-                alloc.y2 = alloc.y1+(float)Connector.STROKE_WIDTH;
+            alloc.y2 = targetbox.y1+Config.c.node_height/2+3;
+            if (alloc.y2-alloc.y1 < (float)Config.c.connector_stroke) {
+                alloc.y2 = alloc.y1+(float)Config.c.connector_stroke;
             }
             alloc.clamp_to_pixel();
             (a.content as Clutter.Canvas).set_size(rnd(alloc.x2-alloc.x1), rnd(alloc.y2-alloc.y1));
@@ -42,7 +42,6 @@ namespace alaia {
         private Clutter.Canvas c;
         private Node previous;
         private Node next;
-        public const double STROKE_WIDTH = 2.0;
 
         public Connector(Node previous, Node next) {
             this.previous = previous;
@@ -51,7 +50,7 @@ namespace alaia {
             this.content = c;
             this.set_size(10,10);
             this.c.set_size(10,10);
-            this.x = Node.HEIGHT/2+Track.SPACING;
+            this.x = Config.c.node_height/2+Config.c.track_spacing;
             this.y = 0;
             this.c.draw.connect(do_draw);
             this.add_constraint(
@@ -69,12 +68,12 @@ namespace alaia {
                               col_h2f(this.previous.color.green)*2,
                               col_h2f(this.previous.color.blue)*2,
                               1);
-            cr.set_line_width(STROKE_WIDTH);
+            cr.set_line_width(Config.c.connector_stroke);
             cr.move_to(0,1);
-            if (h < Node.HEIGHT) {
+            if (h < Config.c.node_height) {
                 cr.rel_line_to(w,0);
             } else {
-                cr.rel_curve_to(w,0,0,h-STROKE_WIDTH,w,h-STROKE_WIDTH);
+                cr.rel_curve_to(w,0,0,h-Config.c.connector_stroke,w,h-Config.c.connector_stroke);
             }
             cr.stroke();
             return true;
@@ -116,8 +115,8 @@ namespace alaia {
             cr.set_operator(Cairo.Operator.SOURCE);
             cr.paint();
             cr.set_operator(Cairo.Operator.OVER);
-            var glow = new Cairo.Pattern.radial(Node.HEIGHT/2,Node.HEIGHT/2,2,
-                                                Node.HEIGHT/2,Node.HEIGHT/4,100);
+            var glow = new Cairo.Pattern.radial(Config.c.node_height/2,Config.c.node_height/2,2,
+                                                Config.c.node_height/2,Config.c.node_height/4,100);
             glow.add_color_stop_rgba(0.0,
                                      col_h2f(this.parent.color.red)*2,
                                      col_h2f(this.parent.color.green)*2,
@@ -128,7 +127,7 @@ namespace alaia {
                                      col_h2f(this.parent.color.green),
                                      col_h2f(this.parent.color.blue),
                                      0.0);
-            cr.arc(Node.HEIGHT/2,Node.HEIGHT/2,Node.HEIGHT/2,0,2*Math.PI);
+            cr.arc(Config.c.node_height/2,Config.c.node_height/2,Config.c.node_height/2,0,2*Math.PI);
             cr.set_source(glow);
             cr.fill();
             return true;
@@ -136,7 +135,6 @@ namespace alaia {
     }
 
     class NodeBullet : Clutter.Actor {
-        private const double STROKE_WIDTH = 5.0;
         private Clutter.Canvas c;
         private Node parent;
 
@@ -162,14 +160,14 @@ namespace alaia {
                               col_h2f(this.parent.color.blue)*2,
                               1);
             cr.set_operator(Cairo.Operator.OVER);
-            cr.set_line_width(STROKE_WIDTH);
-            cr.arc(Node.HEIGHT/2,Node.HEIGHT/2,Node.HEIGHT/2-(int)STROKE_WIDTH,0,2*Math.PI);
+            cr.set_line_width(Config.c.bullet_stroke);
+            cr.arc(Config.c.node_height/2,Config.c.node_height/2,Config.c.node_height/2-(int)Config.c.bullet_stroke,0,2*Math.PI);
             cr.stroke();
             cr.set_source_rgba(col_h2f(this.parent.color.red),
                               col_h2f(this.parent.color.green),
                               col_h2f(this.parent.color.blue),
                               0.5);
-            cr.arc(Node.HEIGHT/2,Node.HEIGHT/2,Node.HEIGHT/2,0,2*Math.PI);
+            cr.arc(Config.c.node_height/2,Config.c.node_height/2,Config.c.node_height/2,0,2*Math.PI);
             cr.fill();
             return true;
         }
@@ -235,10 +233,6 @@ namespace alaia {
     }
     
     class Node : Clutter.Actor {
-        public static const uint8 COL_MULTIPLIER = 15;
-        public static const uint8 HEIGHT = 0x40;
-        public static const uint8 FAVICON_SIZE = 24;
-        public static const uint8 SPACING = 0x10;
         private float xpos;
         private Node previous;
         private Gee.ArrayList<Node> _childnodes; //special list only for nodes
@@ -279,29 +273,29 @@ namespace alaia {
             this._track = track;
             this.track.notify.connect(do_x_offset);
             this.x = par != null ? par.x : 0;
-            this.y = Track.SPACING;
+            this.y = Config.c.track_spacing;
             this.save_easing_state();
-            this.x = this.xpos = par.x+par.width*(float)par.scale_x+(float)Node.SPACING;
-            this.y = Track.SPACING; 
+            this.x = this.xpos = par.x+par.width*(float)par.scale_x+(float)Config.c.node_spacing;
+            this.y = Config.c.track_spacing; 
             this.restore_easing_state();
             if (par != null){
                 this.connector = new Connector(par,this);
             }
-            this.height = Node.HEIGHT;
-            this.width = Node.HEIGHT;
+            this.height = Config.c.node_height;
+            this.width = Config.c.node_height;
             this.color = track.get_background_color().lighten();
             this.color = this.color.lighten();
             this.reactive = true;
             //this.motion_event.connect((x) => {return false;});
 
             this.favactor = new Clutter.Actor();
-            this.favactor.height=this.favactor.width=FAVICON_SIZE;
+            this.favactor.height=this.favactor.width=Config.c.favicon_size;
             this.favactor.x = this.width/2-this.favactor.width/2;
             this.favactor.y = this.height/2-this.favactor.height/2;
             this.visible= true;
             this.url_tooltip = new NodeTooltip(this, this._url);
             this.add_child(this.url_tooltip);
-            this.url_tooltip.x = -this.url_tooltip.width/2+Node.HEIGHT/2;
+            this.url_tooltip.x = -this.url_tooltip.width/2+Config.c.node_height/2;
             this.url_tooltip.y = -this.url_tooltip.height;
             this.bullet = new NodeBullet(this);
             this.highlight = new NodeHighlight(this);
@@ -332,8 +326,8 @@ namespace alaia {
             } else {
                 int node_index = this.previous.index_of_child((Node) this);
                 int splits_until = this.previous.get_splits_until(node_index);
-                var prvy = this.previous.y != 0 ? this.previous.y : Track.SPACING;
-                this.y =  prvy + (splits_until+node_index)*(Node.HEIGHT+Track.SPACING);
+                var prvy = this.previous.y != 0 ? this.previous.y : Config.c.track_spacing;
+                this.y =  prvy + (splits_until+node_index)*(Config.c.node_height+Config.c.track_spacing);
                 foreach (Node n in this.childnodes) {
                     n.recalculate_y(this);
                 }
