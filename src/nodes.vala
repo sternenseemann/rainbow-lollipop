@@ -26,8 +26,8 @@ namespace alaia {
         public override void update_allocation(Clutter.Actor a, Clutter.ActorBox alloc) {
             var sourcebox = this.source.get_allocation_box();
             var targetbox = this.target.get_allocation_box();
-            alloc.x1 = sourcebox.x2-(this.source.width-this.source.width*(float)this.source.scale_x);
-            alloc.y1 = sourcebox.y1+Config.c.node_height/2;
+            alloc.x1 = sourcebox.x2;
+            alloc.y1 = sourcebox.y1+Node.HEIGHT/2;
             alloc.x2 = targetbox.x1;
             alloc.y2 = targetbox.y1+Config.c.node_height/2+3;
             if (alloc.y2-alloc.y1 < (float)Config.c.connector_stroke) {
@@ -233,6 +233,7 @@ namespace alaia {
     }
     
     class Node : Clutter.Actor {
+        public static const uint8 HEIGHT = 0x40;
         private float xpos;
         private Node previous;
         private Gee.ArrayList<Node> _childnodes; //special list only for nodes
@@ -441,11 +442,6 @@ namespace alaia {
                 this.visible = false;
                 this.favactor.visible = false;
             }
-            var pwidth = this.get_parent().get_parent().get_parent().width;
-            var newscale = get_nodescale(this.x, pwidth);
-            if (newscale >= 0 ) {
-                this.scale_x = this.get_nodescale(this.x, pwidth);
-            }
         }
 
         public void set_favicon(Gdk.Pixbuf px) {
@@ -458,21 +454,13 @@ namespace alaia {
             this.favactor.content = img;
         }
 
-        private double get_nodescale(double x, double width) {
-            return -(GLib.Math.pow(x,2)-width*x)/(GLib.Math.pow((width/2),2));
-        }
-
         public void do_x_offset(GLib.Object t, ParamSpec p) {
             if (p.name == "x-offset") {
                 if (this.previous == null) {
                     this.x = this.track.x_offset;
                 } else {
-                    this.x = this.previous.x + 80 - (this.previous.width-this.previous.width*(float)this.previous.scale_x);
+                    this.x = this.previous.x + 80;
                 }
-                var pwidth = this.get_parent().get_parent().get_parent().width;
-                var newscale = get_nodescale(this.x, pwidth);
-                if (newscale >=0)
-                    this.scale_x = newscale;
             }
         }
         
@@ -486,6 +474,13 @@ namespace alaia {
             }
         }
 
+/*<<<<<<< HEAD
+=======*/
+        
+
+
+
+//>>>>>>> parent of 1c98312... added awesome scrolling behaviour
         public void emerge() {
             foreach (Clutter.Actor n in this.get_children()) {
                 (n as Node).emerge();
