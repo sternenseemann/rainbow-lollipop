@@ -101,7 +101,7 @@ namespace alaia {
             this._state = AppState.TRACKLIST;
 
             this.web = new WebKit.WebView();
-            this.web.load_committed.connect(do_load_committed);
+            this.web.load_changed.connect(do_load_committed);
             this.webact = new GtkClutter.Actor.with_contents(this.web);
 
             this.win = new GtkClutter.Window();
@@ -127,8 +127,9 @@ namespace alaia {
             this.tracklist_background.emerge();
         }
 
-        public void do_load_committed(WebFrame wf) {
-            this.tracklist.log_call(wf);
+        public void do_load_committed(WebKit.LoadEvent e) {
+            if (e == WebKit.LoadEvent.COMMITTED)
+                this.tracklist.log_call(this.web.get_uri());
         }
         
         public void do_delete() {

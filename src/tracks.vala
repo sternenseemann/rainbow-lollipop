@@ -253,7 +253,7 @@ namespace alaia {
 
         public HistoryTrack.with_node(TrackList tl, Node n, WebView web) {
             this(tl, n.url, web);
-            this.web.open(n.url);
+            this.web.load_uri(n.url);
             this.remove_child(this.first_node);
             this.first_node.destroy();
             this.first_node = n;
@@ -281,7 +281,7 @@ namespace alaia {
             base(tl);
             this.web = web;
             this._tracklist = tl;
-            this.web.open(url);
+            this.web.load_uri(url);
             this.first_node = new Node(this, url, null);
             this.current_node = this.first_node;
             this.url = url;
@@ -348,12 +348,12 @@ namespace alaia {
 
         private void do_notify(GLib.Object self, GLib.ParamSpec p) {
             if (p.name == "current_node") {
-                this.web.open(this._current_node.url);
+                this.web.load_uri(this._current_node.url);
             }
         }
 
         public void load_page(Node n) {
-            this.web.open(n.url);
+            this.web.load_uri(n.url);
         }
 
         protected override int calculate_height() {
@@ -362,19 +362,21 @@ namespace alaia {
             return h;
         }
 
-        public void log_call(WebFrame wf) {
-            if (wf.get_uri() != this._current_node.url) {
-                var nn = new Node(this, wf.get_uri(), this._current_node);
+        public void log_call(string uri) {
+            if (uri != this._current_node.url) {
+                var nn = new Node(this, uri, this._current_node);
                 this._current_node.toggle_highlight();
                 this._current_node.recalculate_y(null);
                 this._current_node = nn;
                 this._current_node.toggle_highlight();
-                this.web.icon_loaded.connect(do_icon_loaded);
+                //this.web.icon_loaded.connect(do_icon_loaded);
             }
         }
+
+        //TODO: reimplement with webkit2gtk-4.0
         private void do_icon_loaded(string b) {
-            this._current_node.set_favicon(this.web.get_icon_pixbuf());
-            this.web.icon_loaded.disconnect(do_icon_loaded);
+            /*this._current_node.set_favicon(this.web.get_icon_pixbuf());
+            this.web.icon_loaded.disconnect(do_icon_loaded);*/
         }
         
         public new void emerge() {
@@ -491,9 +493,9 @@ namespace alaia {
             );
         }
 
-        public void log_call(WebKit.WebFrame wf) {
+        public void log_call(string uri) {
             if (this._current_track != null) {
-                this._current_track.log_call(wf);
+                this._current_track.log_call(uri);
             }
         }
 
