@@ -272,11 +272,10 @@ namespace alaia {
             track.add_child(this);
             this._childnodes = new Gee.ArrayList<Node>();
             this._track = track;
-            this.track.notify.connect(do_x_offset);
             this.x = par != null ? par.x : 0;
             this.y = Config.c.track_spacing;
             this.save_easing_state();
-            this.x = this.xpos = par.x+par.width*(float)par.scale_x+(float)Config.c.node_spacing;
+            this.x = this.xpos = par.x+par.width+(float)Config.c.node_spacing;
             this.y = Config.c.track_spacing; 
             this.restore_easing_state();
             if (par != null){
@@ -309,7 +308,7 @@ namespace alaia {
             this.add_child(this.bullet);
             this.add_child(this.favactor);
             this.previous.recalculate_y(null);
-            (this.track.get_parent().get_last_child() as Track).recalculate_y(0);
+            (this.track.get_parent().get_last_child() as Track).recalculate_y();
         }
 
         private bool is_current_node = false;
@@ -345,14 +344,13 @@ namespace alaia {
             this.connector.destroy();
             this.destroy();
             prv.recalculate_y(null);
-            prv.track.recalculate_y(0);
+            prv.track.recalculate_y();
         }
 
         private void detach_childnodes() {
             foreach (Node n in this.childnodes) {
                 n.detach_childnodes();
             }
-            this.track.notify.disconnect(do_x_offset);
             this.get_parent().remove_child(this);
             this.connector.destroy();
         }
@@ -363,7 +361,6 @@ namespace alaia {
             this.bullet.content.invalidate();
             this.highlight.content.invalidate();
             this.url_tooltip.content.invalidate();
-            this.track.notify.connect(do_x_offset);
             if (this.previous != null) {
                 this.connector = new Connector(this.previous, this);
             }
@@ -373,7 +370,6 @@ namespace alaia {
         }
 
         public void move_to_new_track() {
-            this.track.notify.disconnect(do_x_offset);
             this.previous.childnodes.remove(this);
             this.get_parent().remove_child(this);
             this.connector.destroy();
@@ -457,16 +453,6 @@ namespace alaia {
             }
         }
 
-        public void do_x_offset(GLib.Object t, ParamSpec p) {
-            if (p.name == "x-offset") {
-                if (this.previous == null) {
-                    this.x = this.track.x_offset;
-                } else {
-                    this.x = this.previous.x + 80;
-                }
-            }
-        }
-        
         private bool do_button_press_event(Clutter.ButtonEvent e) {
             if (e.button == Gdk.BUTTON_PRIMARY) {
                 this.track.current_node = this;

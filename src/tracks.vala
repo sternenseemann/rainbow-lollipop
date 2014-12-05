@@ -28,31 +28,16 @@ namespace alaia {
 
     abstract class Track : Clutter.Actor {
         private float ypos;
-        private GtkClutter.Actor close_button;
 
         public Track(TrackList tl) {
             Track last_track = (tl.get_last_child() as Track);
             if (last_track != null) {
                 this.y = last_track.y;
                 this.save_easing_state();
-                this.y += last_track.height;
                 this.restore_easing_state();
             }
             this.add_constraint(
                 new Clutter.BindConstraint(tl, Clutter.BindCoordinate.WIDTH, 0)
-            );
-
-            var close_img = new Gtk.Image.from_icon_name("window-close", Gtk.IconSize.SMALL_TOOLBAR);
-            var button = new Gtk.Button();
-            button.margin=0;
-            button.set_image(close_img);
-            this.close_button = new GtkClutter.Actor.with_contents(button);
-            button.clicked.connect(()=>{this.delete_track();});
-            this.close_button.visible = true;
-            this.close_button.height = this.close_button.width = 32;
-            tl.get_stage().add_child(this.close_button);
-            this.close_button.add_constraint(
-                new Clutter.BindConstraint(this, Clutter.BindCoordinate.POSITION,0)
             );
 
 
@@ -61,26 +46,17 @@ namespace alaia {
             this.opacity = Application.S().state == AppState.TRACKLIST ? Config.c.track_opacity : 0x00;
             this.visible = Application.S().state == AppState.TRACKLIST;
 
-
-            this.notify.connect(do_y_offset);
             this.transitions_completed.connect(do_transitions_completed);
-            (this.get_parent().get_last_child() as Track).recalculate_y(0);
+            (this.get_parent().get_last_child() as Track).recalculate_y(true);
         }
 
         ~Track(){
-            (this.get_parent().get_last_child() as Track).recalculate_y(0);
+            (this.get_parent().get_last_child() as Track).recalculate_y(true);
         }
 
         private void do_transitions_completed() {
             if (this.opacity == 0x00) {
                 this.visible = false;
-            }
-        }
-
-        private void do_y_offset(GLib.Object t, ParamSpec p) {
-            if (p.name == "y-offset") {
-                var last = this.get_parent().get_last_child();
-                (last as Track).recalculate_y((t as HistoryTrack).y_offset,false);
             }
         }
 
@@ -102,38 +78,35 @@ namespace alaia {
             this.visible = true;
             this.save_easing_state();
             this.opacity = Config.c.track_opacity;
-            this.close_button.opacity = 0xFF;
             this.restore_easing_state();
         }
         public void disappear() {
             this.save_easing_state();
             this.opacity = 0x00;
-            this.close_button.opacity = 0x00;
             this.restore_easing_state();
         }
 
         public bool delete_track () {
             Track par = (Track)this.get_parent().get_last_child();
             this.destroy();
-            this.close_button.destroy();
-            par.recalculate_y(0);
+            par.recalculate_y();
             return false;
         }
 
         protected abstract int calculate_height();
 
-        public int recalculate_y(float y_offset, bool animated=true){
+        public int recalculate_y(bool animated=true){
             var previous = (this.get_previous_sibling() as Track);
+
             if (animated) 
                 this.save_easing_state();
-            this.ypos = previous != null ? previous.recalculate_y(y_offset,animated) : 0;
-            this.y = this.ypos + y_offset;
-            if (this is HistoryTrack) {
-                (this as HistoryTrack).set_yoff(y_offset);
-            }
+
+            var ypos = this.y = previous != null ? previous.recalculate_y(animated) : 0;
+
             if (animated)
                 this.restore_easing_state();
-            return this.calculate_height() + (int)this.ypos;
+
+            return this.calculate_height() + (int)ypos;
         }
     }
 
@@ -211,31 +184,7 @@ namespace alaia {
         private Clutter.Actor separator;
         private TrackList _tracklist;
         public TrackList tracklist {get {return this._tracklist;}}
-
-        private bool tracking;
-        private float x_delta;
-        private float _x_offset;
-        public float x_offset {
-            set {
-                this._x_offset = value;
-            }
-            get {
-                return this._x_offset;
-            }
-        }
-        private float y_delta;
-        private float _y_offset;
-        public float y_offset {
-            set {
-                this._y_offset = value;
-            }
-            get {
-                return this._y_offset;
-            }
-        }
-        public void set_yoff(float yo) {
-            this._y_offset = yo;
-        }
+        private GtkClutter.Actor close_button;
 
         private Node? _current_node;
         public Node? current_node {
@@ -260,6 +209,16 @@ namespace alaia {
             this.add_child(this.first_node);
             this.current_node = this.first_node;
             this.url = n.url;
+
+            var close_img = new Gtk.Image.from_icon_name("window-close", Gtk.IconSize.SMALL_TOOLBAR);
+            var button = new Gtk.Button();
+            button.margin=0;
+            button.set_image(close_img);
+            this.close_button = new GtkClutter.Actor.with_contents(button);
+            button.clicked.connect(()=>{this.delete_track();});
+            this.close_button.visible = true;
+            this.close_button.height = this.close_button.width = 32;
+            this.add_child(this.close_button);
 
             this.first_node.make_root_node();
             this.first_node.track = this;
@@ -286,6 +245,16 @@ namespace alaia {
             this.current_node = this.first_node;
             this.url = url;
 
+            var close_img = new Gtk.Image.from_icon_name("window-close", Gtk.IconSize.SMALL_TOOLBAR);
+            var button = new Gtk.Button();
+            button.margin=0;
+            button.set_image(close_img);
+            this.close_button = new GtkClutter.Actor.with_contents(button);
+            button.clicked.connect(()=>{this.delete_track();});
+            this.close_button.visible = true;
+            this.close_button.height = this.close_button.width = 32;
+            this.add_child(this.close_button);
+
             this.separator = new Clutter.Actor();
             this.separator.background_color = this.background_color.lighten();
             this.separator.height = 1;
@@ -297,54 +266,14 @@ namespace alaia {
             );
 
             this.add_child(separator);
-            this.tracking = false;
-            this.x_delta = 0;
-            this._x_offset = 80;
             this.reactive = true;
-            this.leave_event.connect(do_leave_event);
-            this.button_press_event.connect(do_button_press_event);
-            this.button_release_event.connect(do_button_release_event);
-            this.motion_event.connect(do_motion_event);
+            var action = new Clutter.PanAction();
+            action.pan_axis = Clutter.PanAxis.X_AXIS;
+            action.interpolate = true;
+            this.add_action(action);
             this.notify.connect(do_notify);
         }
 
-        private bool do_leave_event(Clutter.CrossingEvent e) {
-            if (this.contains(e.related)) {
-                return false;
-            }
-            this.tracking = false;
-            return true;
-        }
-
-        private bool do_button_press_event(Clutter.ButtonEvent e){
-            if (e.button == Gdk.BUTTON_MIDDLE) {
-                this.tracking = true;
-                this.x_delta = e.x - this._x_offset;
-                this.y_delta = e.y - this._y_offset;
-                return true;
-            } else {
-                return false;
-            }
-        }
-
-        private bool do_button_release_event(Clutter.ButtonEvent e) {
-            if (e.button == Gdk.BUTTON_MIDDLE) {
-                this.tracking = false;
-                return true;
-            } else {
-                return false;
-            }
-        }
-
-        private bool do_motion_event(Clutter.MotionEvent e) {
-            if (this.tracking) {
-                this.x_offset = e.x-x_delta;
-                this.y_offset = e.y-y_delta;
-                return true;
-            } else {
-                return false;
-            }
-        }
 
         private void do_notify(GLib.Object self, GLib.ParamSpec p) {
             if (p.name == "current_node") {
@@ -381,6 +310,7 @@ namespace alaia {
         
         public new void emerge() {
             base.emerge();
+            this.close_button.opacity = 0xFF;
             if (this.first_node != null) {
                 this.first_node.emerge();
             }
@@ -388,9 +318,15 @@ namespace alaia {
 
         public new void disappear() {
             base.disappear();
+            this.close_button.opacity = 0x00;
             if (this.first_node != null) {
                 this.first_node.disappear();
             }
+        }
+
+        public new void delete_track() {
+            this.close_button.destroy();
+            base.delete_track();
         }
     }
 
@@ -403,6 +339,11 @@ namespace alaia {
             );
             this.background_color = Clutter.Color.from_string(Config.c.colorscheme.tracklist);
             this.transitions_completed.connect(do_transitions_completed);
+            var action = new Clutter.PanAction();
+            action.pan_axis = Clutter.PanAxis.Y_AXIS;
+            action.interpolate = true;
+            this.add_action(action);
+            this.reactive = true;
             this.add_child(tl);
         }
 
@@ -465,17 +406,21 @@ namespace alaia {
         }
 
         public void add_track_with_url(string url) {
+            var t = new HistoryTrack(this, url, this.web);
             this.insert_child_at_index(
-                new HistoryTrack(this, url, this.web),
+                t,
                 this.get_n_children()-1
             );
+            t.recalculate_y(true);
         }
 
         public void add_track_with_node(Node n) {
+            var t = new HistoryTrack.with_node(this, n, this.web);
             this.insert_child_at_index(
-                new HistoryTrack.with_node(this, n, this.web),
+                t,
                 this.get_n_children()-1
             );
+            t.recalculate_y(true);
         }
 
         public Track? get_track_of_node(Node n){
