@@ -270,6 +270,7 @@ namespace alaia {
             var action = new Clutter.PanAction();
             action.pan_axis = Clutter.PanAxis.X_AXIS;
             action.interpolate = true;
+            action.deceleration = 0.75;
             this.add_action(action);
             this.notify.connect(do_notify);
         }
@@ -342,6 +343,7 @@ namespace alaia {
             var action = new Clutter.PanAction();
             action.pan_axis = Clutter.PanAxis.Y_AXIS;
             action.interpolate = true;
+            action.deceleration = 0.75;
             this.add_action(action);
             this.reactive = true;
             this.add_child(tl);
