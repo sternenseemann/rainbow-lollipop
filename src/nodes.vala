@@ -57,7 +57,7 @@ namespace alaia {
                 new ConnectorConstraint(previous, next)
             );
             this.c.invalidate();
-            previous.track.add_child(this);
+            previous.track.add_nodeconnector(this);
             
         }
         public bool do_draw(Cairo.Context cr, int w, int h) {
@@ -269,7 +269,7 @@ namespace alaia {
                     this.previous.recalculate_nodes();
                 }
             }
-            track.add_child(this);
+            track.add_node(this);
             this._childnodes = new Gee.ArrayList<Node>();
             this._track = track;
             this.x = par != null ? par.x : 0;

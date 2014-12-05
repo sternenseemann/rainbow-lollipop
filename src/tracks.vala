@@ -182,6 +182,7 @@ namespace alaia {
         private WebKit.WebView web;
         private string url;
         private Clutter.Actor separator;
+        private Clutter.Actor nodecontainer;
         private TrackList _tracklist;
         public TrackList tracklist {get {return this._tracklist;}}
         private GtkClutter.Actor close_button;
@@ -199,6 +200,14 @@ namespace alaia {
             }
         }
         private Node first_node;
+
+        public void add_node(Node n) {
+            this.nodecontainer.add_child(n);
+        }
+
+        public void add_nodeconnector(Connector n) {
+            this.nodecontainer.add_child(n);
+        }
 
         public HistoryTrack.with_node(TrackList tl, Node n, WebView web) {
             this(tl, n.url, web);
@@ -241,6 +250,16 @@ namespace alaia {
             this.web = web;
             this._tracklist = tl;
             this.web.load_uri(url);
+ 
+            this.nodecontainer = new Clutter.Actor();
+            this.nodecontainer.add_constraint(
+                new Clutter.BindConstraint(this, Clutter.BindCoordinate.SIZE,0)
+            );
+            this.nodecontainer.y = 0;
+            this.nodecontainer.x = 0;
+            this.nodecontainer.reactive = true;
+            this.add_child(nodecontainer);
+
             this.first_node = new Node(this, url, null);
             this.current_node = this.first_node;
             this.url = url;
@@ -271,7 +290,7 @@ namespace alaia {
             action.pan_axis = Clutter.PanAxis.X_AXIS;
             action.interpolate = true;
             action.deceleration = 0.75;
-            this.add_action(action);
+            this.nodecontainer.add_action(action);
             this.notify.connect(do_notify);
         }
 
