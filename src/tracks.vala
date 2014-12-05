@@ -42,7 +42,7 @@ namespace alaia {
                 new Clutter.BindConstraint(tl, Clutter.BindCoordinate.WIDTH, 0)
             );
 
-            var close_img = new Gtk.Image.from_stock(Gtk.Stock.CLOSE, Gtk.IconSize.SMALL_TOOLBAR);
+            var close_img = new Gtk.Image.from_icon_name("window-close", Gtk.IconSize.SMALL_TOOLBAR);
             var button = new Gtk.Button();
             button.margin=0;
             button.set_image(close_img);
@@ -140,7 +140,7 @@ namespace alaia {
     class EmptyTrack : Track {
         private Gtk.Entry url_entry;
         private Gtk.Button enter_button;
-        private Gtk.HBox hbox;
+        private Gtk.Grid hbox;
         private GtkClutter.Actor actor; 
         private TrackList tracklist;
 
@@ -149,10 +149,10 @@ namespace alaia {
             this.tracklist = tl;
             this.url_entry = new Gtk.Entry();
             this.enter_button = new Gtk.Button.with_label("Go");
-            this.hbox = new Gtk.HBox(false, 5);
+            this.hbox = new Gtk.Grid();
             this.background_color = Clutter.Color.from_string(Config.c.colorscheme.empty_track);
-            this.hbox.pack_start(this.url_entry,true);
-            this.hbox.pack_start(this.enter_button,false);
+            this.hbox.add(this.url_entry);
+            this.hbox.add(this.enter_button);
             this.url_entry.activate.connect(do_activate);
             this.actor = new GtkClutter.Actor.with_contents(this.hbox);
             this.actor.height=26;
@@ -164,7 +164,7 @@ namespace alaia {
                 new Clutter.BindConstraint(tl, Clutter.BindCoordinate.WIDTH, 0)
             );
             this.actor.transitions_completed.connect(do_transitions_completed);
-            this.actor.show_all();
+            this.hbox.show_all();
             this.actor.visible = false;
             this.add_child(this.actor);
         }
@@ -374,10 +374,10 @@ namespace alaia {
         }
 
         //TODO: reimplement with webkit2gtk-4.0
-        private void do_icon_loaded(string b) {
-            /*this._current_node.set_favicon(this.web.get_icon_pixbuf());
-            this.web.icon_loaded.disconnect(do_icon_loaded);*/
-        }
+        /*private void do_icon_loaded(string b) {
+            this._current_node.set_favicon(this.web.get_icon_pixbuf());
+            this.web.icon_loaded.disconnect(do_icon_loaded);
+        }*/
         
         public new void emerge() {
             base.emerge();

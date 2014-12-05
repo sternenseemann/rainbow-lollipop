@@ -239,8 +239,8 @@ namespace alaia {
         private Gee.ArrayList<Node> _childnodes; //special list only for nodes
         public Gee.ArrayList<Node> childnodes {get {return this._childnodes;}}
         public HistoryTrack track {get; set;}
-        private Gdk.Pixbuf favicon;
-        private Gdk.Pixbuf snapshot;
+        //private Gdk.Pixbuf favicon;
+        //private Gdk.Pixbuf snapshot;
         private Clutter.Actor favactor;
         private NodeBullet bullet;
         private NodeHighlight highlight;
@@ -446,12 +446,15 @@ namespace alaia {
 
         public void set_favicon(Gdk.Pixbuf px) {
             var img = new Clutter.Image();
-            img.set_data(px.get_pixels(),
+            try { 
+                img.set_data(px.get_pixels(),
                            px.has_alpha ? Cogl.PixelFormat.RGBA_8888 : Cogl.PixelFormat.RGB_888,
                            px.width,
                            px.height,
                            px.rowstride);
-            this.favactor.content = img;
+                this.favactor.content = img;
+            } catch (GLib.Error e) {
+            }
         }
 
         public void do_x_offset(GLib.Object t, ParamSpec p) {
@@ -474,13 +477,6 @@ namespace alaia {
             }
         }
 
-/*<<<<<<< HEAD
-=======*/
-        
-
-
-
-//>>>>>>> parent of 1c98312... added awesome scrolling behaviour
         public void emerge() {
             foreach (Clutter.Actor n in this.get_children()) {
                 (n as Node).emerge();
