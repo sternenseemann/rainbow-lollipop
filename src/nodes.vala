@@ -246,6 +246,7 @@ namespace alaia {
         private NodeHighlight highlight;
         private Connector? connector;
         private NodeTooltip url_tooltip;
+        private Clutter.ClickAction clickaction;
         
         public Clutter.Color color {
             get;set;
@@ -286,7 +287,6 @@ namespace alaia {
             this.color = track.get_background_color().lighten();
             this.color = this.color.lighten();
             this.reactive = true;
-            //this.motion_event.connect((x) => {return false;});
 
             this.favactor = new Clutter.Actor();
             this.favactor.height=this.favactor.width=Config.c.favicon_size;
@@ -299,7 +299,10 @@ namespace alaia {
             this.url_tooltip.y = -this.url_tooltip.height;
             this.bullet = new NodeBullet(this);
             this.highlight = new NodeHighlight(this);
-            this.bullet.button_press_event.connect(do_button_press_event);
+
+            this.clickaction = new Clutter.ClickAction();
+            this.bullet.add_action(this.clickaction);
+            this.clickaction.clicked.connect(do_bullet_clicked);
             this.transitions_completed.connect(do_transitions_completed);
             this.bullet.enter_event.connect(do_enter_event);
             this.bullet.leave_event.connect(do_leave_event);
@@ -449,17 +452,19 @@ namespace alaia {
                            px.height,
                            px.rowstride);
                 this.favactor.content = img;
-            } catch (GLib.Error e) {
-            }
+            } catch (GLib.Error e) {}
         }
 
-        private bool do_button_press_event(Clutter.ButtonEvent e) {
-            if (e.button == Gdk.BUTTON_PRIMARY) {
-                this.track.current_node = this;
-                this.track.load_page(this);
-                return true;
-            } else {
-                return false;
+        private void do_bullet_clicked(Clutter.Actor a) {
+            switch (this.clickaction.get_button()) {
+                case 1: //Left mousebutton
+                    this.track.current_node = this;
+                    this.track.load_page(this);
+                    break;
+                case 3: //Right mousebutton
+                    Application.S().context.set_context(this.track,this);
+                    Application.S().context.popup(null,null,null,3,0);
+                    break;
             }
         }
 

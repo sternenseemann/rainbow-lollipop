@@ -20,14 +20,12 @@ namespace alaia {
         
         public ContextMenu () {
             this.new_track_from_node = new Gtk.ImageMenuItem.with_label("New Track from Branch");
-            //this.new_track_from_node.allways_show_image = true;
             this.new_track_from_node.set_image(
                 new Gtk.Image.from_icon_name("go-jump", Gtk.IconSize.MENU)
             );
             this.new_track_from_node.activate.connect(do_new_track_from_node);
             this.add(this.new_track_from_node);
             this.delete_branch = new Gtk.ImageMenuItem.with_label("Close Branch");
-            //this.delete_branch.allways_show_image = true;
             this.delete_branch.set_image(
                 new Gtk.Image.from_icon_name("edit-delete", Gtk.IconSize.MENU)
             );
@@ -35,7 +33,6 @@ namespace alaia {
             this.add(this.delete_branch);
             this.add(new Gtk.SeparatorMenuItem());
             this.delete_track = new Gtk.ImageMenuItem.with_label("Close Track");
-            //this.delete_track.allways_show_image = true;
             this.delete_track.set_image(
                 new Gtk.Image.from_icon_name("window-close", Gtk.IconSize.MENU)
             );
@@ -72,7 +69,8 @@ namespace alaia {
         private static Application app;
 
         private GtkClutter.Window win;
-        private ContextMenu context;
+        private ContextMenu _context;
+        public ContextMenu context {get{return _context;}}
         private WebKit.WebView web;
         private GtkClutter.Actor webact;
 
@@ -107,10 +105,9 @@ namespace alaia {
             this.win = new GtkClutter.Window();
             this.win.set_title("alaia");
             this.win.key_press_event.connect(do_key_press_event);
-            this.win.button_press_event.connect(do_button_press_event);
             this.win.destroy.connect(do_delete);
 
-            this.context = new ContextMenu();
+            this._context = new ContextMenu();
 
             var stage = this.win.get_stage();
             this.webact.add_constraint(new Clutter.BindConstraint(
@@ -134,19 +131,6 @@ namespace alaia {
         
         public void do_delete() {
             Gtk.main_quit();
-        }
-
-        public bool do_button_press_event(Gdk.EventButton e) {
-            if (e.button == Gdk.BUTTON_SECONDARY) {
-                Track track = this.tracklist.get_track_on_position(e.x,e.y);
-                Node node = null;
-                if (track != null) {
-                    node = track.get_node_on_position(e.x,e.y);
-                }
-                this.context.set_context(track,node);
-                this.context.popup(null,null,null,e.button, e.time);
-            }
-            return false;
         }
 
         public bool do_key_press_event(Gdk.EventKey e) {

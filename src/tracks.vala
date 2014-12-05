@@ -27,8 +27,6 @@ namespace alaia {
     }
 
     abstract class Track : Clutter.Actor {
-        private float ypos;
-
         public Track(TrackList tl) {
             Track last_track = (tl.get_last_child() as Track);
             if (last_track != null) {
@@ -186,6 +184,7 @@ namespace alaia {
         private TrackList _tracklist;
         public TrackList tracklist {get {return this._tracklist;}}
         private GtkClutter.Actor close_button;
+        private Clutter.ClickAction clickaction;
 
         private Node? _current_node;
         public Node? current_node {
@@ -219,20 +218,15 @@ namespace alaia {
             this.current_node = this.first_node;
             this.url = n.url;
 
-            var close_img = new Gtk.Image.from_icon_name("window-close", Gtk.IconSize.SMALL_TOOLBAR);
-            var button = new Gtk.Button();
-            button.margin=0;
-            button.set_image(close_img);
-            this.close_button = new GtkClutter.Actor.with_contents(button);
-            button.clicked.connect(()=>{this.delete_track();});
-            this.close_button.visible = true;
-            this.close_button.height = this.close_button.width = 32;
-            this.add_child(this.close_button);
-
             this.first_node.make_root_node();
             this.first_node.track = this;
             this.first_node.adapt_to_track();
             this.first_node.recalculate_y(null);
+            
+            this.clickaction = new Clutter.ClickAction();
+            this.add_action(this.clickaction);
+            this.clickaction.clicked.connect(do_clicked);
+
             this.add_childnodes(n);
         }
 
@@ -283,8 +277,12 @@ namespace alaia {
             this.separator.add_constraint(
                 new Clutter.BindConstraint(this, Clutter.BindCoordinate.WIDTH,0)
             );
-
             this.add_child(separator);
+
+            this.clickaction = new Clutter.ClickAction();
+            this.add_action(this.clickaction);
+            this.clickaction.clicked.connect(do_clicked);
+
             this.reactive = true;
             var action = new Clutter.PanAction();
             action.pan_axis = Clutter.PanAxis.X_AXIS;
@@ -298,6 +296,15 @@ namespace alaia {
         private void do_notify(GLib.Object self, GLib.ParamSpec p) {
             if (p.name == "current_node") {
                 this.web.load_uri(this._current_node.url);
+            }
+        }
+
+        private void do_clicked(Clutter.Actor a) {
+            switch(this.clickaction.get_button()) {
+                case 3:
+                    Application.S().context.set_context(this,null);
+                    Application.S().context.popup(null,null,null,3,0);
+                    break;
             }
         }
 
