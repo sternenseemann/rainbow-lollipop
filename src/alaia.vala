@@ -100,6 +100,7 @@ namespace alaia {
 
             this.web = new WebKit.WebView();
             this.web.load_changed.connect(do_load_committed);
+            this.web.web_context.get_favicon_database().favicon_changed.connect(do_favicon_loaded);
             this.webact = new GtkClutter.Actor.with_contents(this.web);
 
             this.win = new GtkClutter.Window();
@@ -125,10 +126,26 @@ namespace alaia {
         }
 
         public void do_load_committed(WebKit.LoadEvent e) {
-            if (e == WebKit.LoadEvent.COMMITTED)
-                this.tracklist.log_call(this.web.get_uri());
+            switch (e) {
+                case WebKit.LoadEvent.STARTED:
+                    this.tracklist.log_call(this.web.get_uri());
+                    break;
+                case WebKit.LoadEvent.REDIRECTED:
+                    this.tracklist.finish_call(null);
+                    break;
+                case WebKit.LoadEvent.COMMITTED:
+                    break;
+                case WebKit.LoadEvent.FINISHED:
+                    var favicon = this.web.get_favicon();
+                    this.tracklist.finish_call(favicon);
+                    break;
+            }
         }
         
+        public void do_favicon_loaded(string page_uri, string favicon_uri) {
+            this.tracklist.set_favicon(this.web.get_favicon());
+        }
+
         public void do_delete() {
             Gtk.main_quit();
         }

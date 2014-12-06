@@ -325,15 +325,15 @@ namespace alaia {
                 this._current_node.recalculate_y(null);
                 this._current_node = nn;
                 this._current_node.toggle_highlight();
-                //this.web.icon_loaded.connect(do_icon_loaded);
             }
         }
 
-        //TODO: reimplement with webkit2gtk-4.0
-        /*private void do_icon_loaded(string b) {
-            this._current_node.set_favicon(this.web.get_icon_pixbuf());
-            this.web.icon_loaded.disconnect(do_icon_loaded);
-        }*/
+        public void finish_call(Cairo.Surface? favicon) {
+            if (favicon != null){
+                this._current_node.set_favicon(favicon);
+            }
+            this._current_node.stop_spinner();
+        }
         
         public new void emerge() {
             base.emerge();
@@ -469,6 +469,18 @@ namespace alaia {
         public void log_call(string uri) {
             if (this._current_track != null) {
                 this._current_track.log_call(uri);
+            }
+        }
+
+        public void finish_call(Cairo.Surface? favicon) {
+            if (this._current_track != null) {
+                this._current_track.finish_call(favicon);
+            }
+        }
+
+        public void set_favicon(Cairo.Surface? favicon) {
+            if (this._current_track != null) {
+                this._current_track.finish_call(favicon);
             }
         }
 

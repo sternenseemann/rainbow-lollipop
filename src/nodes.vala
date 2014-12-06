@@ -100,7 +100,6 @@ namespace alaia {
             this.parent = parent;
             this.c = new Clutter.Canvas();
             this.content = this.c;
-            this.reactive = true;
             this.opacity = 0x33;
             this.set_size(rnd(parent.width)+20, rnd(parent.height)+20);
             this.c.set_size(rnd(parent.width)+20, rnd(parent.height)+20);
@@ -132,6 +131,75 @@ namespace alaia {
             cr.fill();
             return true;
         }
+    }
+
+    class NodeSpinner : Clutter.Actor {
+        private Clutter.Canvas c;
+        private Node parent;
+        private bool running = false;
+
+        public NodeSpinner(Node parent){
+            this.parent = parent;
+            this.c = new Clutter.Canvas();
+            this.x = 0;
+            this.y = 0;
+            this.content = c;
+            this.opacity = 0x00;
+            this.set_size(rnd(parent.width), rnd(parent.height));
+            this.c.set_size(rnd(parent.width), rnd(parent.height));
+            this.c.draw.connect(do_draw);
+            this.c.invalidate();
+            this.transitions_completed.connect(do_transitions_completed);
+            this.set_pivot_point(0.5f, 0.5f);
+            this.set_pivot_point_z(0.5f);//Config.c.node_height/2;
+            this.start();
+        }
+
+        private void do_transitions_completed(){
+            if (!this.running) {
+                return;
+            }
+            this.set_easing_mode(Clutter.AnimationMode.EASE_IN_OUT_BOUNCE);
+            this.save_easing_state();
+            this.rotation_angle_z += 60;
+            this.restore_easing_state();
+        }
+
+        public void stop(){
+            this.running = false;
+            this.save_easing_state();
+            this.opacity = 0x00;
+            this.restore_easing_state();
+        }
+
+        public void start(){
+            this.running = true;
+            this.set_easing_mode(Clutter.AnimationMode.EASE_IN_OUT_BOUNCE);
+            this.set_easing_duration(10);
+            this.save_easing_state();
+            this.rotation_angle_z += 45;
+            this.opacity = 0xFF;
+            this.restore_easing_state();
+        }
+
+        public bool do_draw(Cairo.Context cr, int w, int h) {
+            cr.set_source_rgba(0,0,0,0);
+            cr.set_operator(Cairo.Operator.SOURCE);
+            cr.paint();
+            cr.set_source_rgba(
+                                     col_h2f(this.parent.color.red)/2,
+                                     col_h2f(this.parent.color.green)/2,
+                                     col_h2f(this.parent.color.blue)/2,
+                              1);
+            cr.set_operator(Cairo.Operator.OVER);
+            cr.set_line_width(2);
+            cr.arc(Config.c.node_height/2,Config.c.node_height/2,Config.c.node_height/2-(int)Config.c.bullet_stroke,Math.PI,1.5*Math.PI);
+            cr.stroke();
+            cr.arc(Config.c.node_height/2,Config.c.node_height/2,Config.c.node_height/2-(int)Config.c.bullet_stroke,0,0.5*Math.PI);
+            cr.stroke();
+            return true;
+        }
+
     }
 
     class NodeBullet : Clutter.Actor {
@@ -239,10 +307,11 @@ namespace alaia {
         private Gee.ArrayList<Node> _childnodes; //special list only for nodes
         public Gee.ArrayList<Node> childnodes {get {return this._childnodes;}}
         public HistoryTrack track {get; set;}
-        //private Gdk.Pixbuf favicon;
+        private Cairo.Surface favicon;
         //private Gdk.Pixbuf snapshot;
         private Clutter.Actor favactor;
         private NodeBullet bullet;
+        private NodeSpinner spinner;
         private NodeHighlight highlight;
         private Connector? connector;
         private NodeTooltip url_tooltip;
@@ -292,12 +361,14 @@ namespace alaia {
             this.favactor.height=this.favactor.width=Config.c.favicon_size;
             this.favactor.x = this.width/2-this.favactor.width/2;
             this.favactor.y = this.height/2-this.favactor.height/2;
+            this.favactor.content = new Clutter.Canvas();
             this.visible= true;
             this.url_tooltip = new NodeTooltip(this, this._url);
             this.add_child(this.url_tooltip);
             this.url_tooltip.x = -this.url_tooltip.width/2+Config.c.node_height/2;
             this.url_tooltip.y = -this.url_tooltip.height;
             this.bullet = new NodeBullet(this);
+            this.spinner = new NodeSpinner(this);
             this.highlight = new NodeHighlight(this);
 
             this.clickaction = new Clutter.ClickAction();
@@ -310,6 +381,7 @@ namespace alaia {
             this.add_child(this.highlight);
             this.add_child(this.bullet);
             this.add_child(this.favactor);
+            this.add_child(this.spinner);
             this.previous.recalculate_y(null);
             (this.track.get_parent().get_last_child() as Track).recalculate_y();
         }
@@ -335,6 +407,10 @@ namespace alaia {
                     n.recalculate_y(this);
                 }
             }
+        }
+
+        public void finish_loading() {
+
         }
 
         public void delete_node() {
@@ -443,16 +519,20 @@ namespace alaia {
             }
         }
 
-        public void set_favicon(Gdk.Pixbuf px) {
-            var img = new Clutter.Image();
-            try { 
-                img.set_data(px.get_pixels(),
-                           px.has_alpha ? Cogl.PixelFormat.RGBA_8888 : Cogl.PixelFormat.RGB_888,
-                           px.width,
-                           px.height,
-                           px.rowstride);
-                this.favactor.content = img;
-            } catch (GLib.Error e) {}
+        public void stop_spinner() {
+            this.spinner.stop();
+        }
+
+        public bool do_draw_favactor(Cairo.Context cr, int w, int h) {
+            cr.set_source_surface(this.favicon,w,h);
+            cr.set_operator(Cairo.Operator.SOURCE);
+            cr.paint();
+            return true;
+        }
+
+        public void set_favicon(Cairo.Surface px) {
+            this.favicon=px;
+            this.favactor.content.invalidate();
         }
 
         private void do_bullet_clicked(Clutter.Actor a) {
