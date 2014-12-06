@@ -528,12 +528,20 @@ namespace alaia {
         }
 
         public bool do_draw_favactor(Cairo.Context cr, int w, int h) {
+            var fvcx = new Cairo.Context(this.favicon);
+            double x1,x2,y1,y2;
+            fvcx.clip_extents(out x1,out y1,out x2,out y2);
+            double width = x2-x1;
+            double height = y2-y1; 
             cr.set_source_rgba(0,0,0,0);
             cr.set_operator(Cairo.Operator.SOURCE);
             cr.paint();
+            cr.save();
+            cr.scale(w/width,h/height);
             cr.set_source_surface(this.favicon,0,0);
-            cr.set_operator(Cairo.Operator.OVER);
+            cr.set_operator(Cairo.Operator.SOURCE);
             cr.paint();
+            cr.restore();
             return true;
         }
 
