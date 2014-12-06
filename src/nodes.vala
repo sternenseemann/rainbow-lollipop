@@ -310,6 +310,7 @@ namespace alaia {
         private Cairo.Surface favicon;
         //private Gdk.Pixbuf snapshot;
         private Clutter.Actor favactor;
+        private Clutter.Canvas favactor_canvas;
         private NodeBullet bullet;
         private NodeSpinner spinner;
         private NodeHighlight highlight;
@@ -361,7 +362,10 @@ namespace alaia {
             this.favactor.height=this.favactor.width=Config.c.favicon_size;
             this.favactor.x = this.width/2-this.favactor.width/2;
             this.favactor.y = this.height/2-this.favactor.height/2;
-            this.favactor.content = new Clutter.Canvas();
+            this.favactor_canvas = new Clutter.Canvas();
+            this.favactor_canvas.set_size(Config.c.favicon_size,Config.c.favicon_size);
+            this.favactor_canvas.draw.connect(do_draw_favactor);
+            this.favactor.content = this.favactor_canvas;
             this.visible= true;
             this.url_tooltip = new NodeTooltip(this, this._url);
             this.add_child(this.url_tooltip);
@@ -524,15 +528,18 @@ namespace alaia {
         }
 
         public bool do_draw_favactor(Cairo.Context cr, int w, int h) {
-            cr.set_source_surface(this.favicon,w,h);
+            cr.set_source_rgba(0,0,0,0);
             cr.set_operator(Cairo.Operator.SOURCE);
+            cr.paint();
+            cr.set_source_surface(this.favicon,0,0);
+            cr.set_operator(Cairo.Operator.OVER);
             cr.paint();
             return true;
         }
 
         public void set_favicon(Cairo.Surface px) {
             this.favicon=px;
-            this.favactor.content.invalidate();
+            this.favactor_canvas.invalidate();
         }
 
         private void do_bullet_clicked(Clutter.Actor a) {

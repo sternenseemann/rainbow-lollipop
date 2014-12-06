@@ -100,7 +100,8 @@ namespace alaia {
 
             this.web = new WebKit.WebView();
             this.web.load_changed.connect(do_load_committed);
-            this.web.web_context.get_favicon_database().favicon_changed.connect(do_favicon_loaded);
+            this.web.web_context.set_favicon_database_directory("/tmp/alaia_favicons");
+            this.web.notify["favicon"].connect((e,p) => {this.do_favicon_loaded();});
             this.webact = new GtkClutter.Actor.with_contents(this.web);
 
             this.win = new GtkClutter.Window();
@@ -141,7 +142,7 @@ namespace alaia {
             }
         }
         
-        public void do_favicon_loaded(string page_uri, string favicon_uri) {
+        public void do_favicon_loaded() {
             this.tracklist.set_favicon(this.web.get_favicon());
         }
 
