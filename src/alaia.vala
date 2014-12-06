@@ -131,7 +131,6 @@ namespace alaia {
                     this.tracklist.log_call(this.web.get_uri());
                     break;
                 case WebKit.LoadEvent.REDIRECTED:
-                    this.tracklist.finish_call(null);
                     break;
                 case WebKit.LoadEvent.COMMITTED:
                     break;

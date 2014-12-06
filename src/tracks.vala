@@ -124,6 +124,7 @@ namespace alaia {
             this.background_color = Clutter.Color.from_string(Config.c.colorscheme.empty_track);
             this.hbox.add(this.url_entry);
             this.hbox.add(this.enter_button);
+            this.url_entry.expand=true;
             this.url_entry.activate.connect(do_activate);
             this.actor = new GtkClutter.Actor.with_contents(this.hbox);
             this.actor.height=26;
