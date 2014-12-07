@@ -103,7 +103,13 @@ namespace alaia {
                 }
             }
              
-        } 
+        }
+        
+        private static void loadDefault() {
+            stdout.printf("Using default config\n");
+            Config.c = new Config();
+            Config.c.colorscheme = new Colorscheme.default();
+        }
 
         public static void load() {
             string configdata;
@@ -111,9 +117,7 @@ namespace alaia {
                 FileUtils.get_contents(GLib.Environment.get_user_config_dir()+
                                        C+"/config.json", out configdata);
             } catch (GLib.FileError e) {
-                stdout.printf("Could not load config. Using default config\n");
-                Config.c = new Config();
-                Config.c.colorscheme = new Colorscheme.default();
+                Config.loadDefault();
                 return;
             }
 
@@ -121,18 +125,14 @@ namespace alaia {
             try {
                 p.load_from_data(configdata);
             } catch (GLib.Error e) {
-                stdout.printf("Could not feed configparser. Using default config\n");
-                Config.c = new Config();
-                Config.c.colorscheme = new Colorscheme.default();
+                Config.loadDefault();
                 return;
             }
             var config = new Config();
             try {
                 config.process(p.get_root());
             } catch (ConfigError e) {
-                stdout.printf("Invalid config format. Using default config\n");
-                Config.c = new Config();
-                Config.c.colorscheme = new Colorscheme.default();
+                Config.loadDefault();
                 return;
             }
             config.colorscheme = Colorscheme.load(config.colorscheme_name);
