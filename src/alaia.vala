@@ -144,7 +144,6 @@ namespace alaia {
         public void show_web_view(HistoryTrack t) {
             if (this.webviews.has_key(t)){
                 var page = this.webviews_container.page_num(this.webviews[t]);
-                stdout.printf("page: %d\n",page);
                 this.webviews_container.set_current_page(page);
                 this.webviews_container.show_all();
             }
