@@ -209,8 +209,8 @@ namespace alaia {
             this.nodecontainer.add_child(n);
         }
 
-        public HistoryTrack.with_node(TrackList tl, Node n, WebView web) {
-            this(tl, n.url, web);
+        public HistoryTrack.with_node(TrackList tl, Node n) {
+            this(tl, n.url);
             this.web.load_uri(n.url);
             this.remove_child(this.first_node);
             this.first_node.destroy();
@@ -240,9 +240,11 @@ namespace alaia {
             }
         }
 
-        public HistoryTrack(TrackList tl, string url, WebView web) {
+        public HistoryTrack(TrackList tl, string url) {
             base(tl);
-            this.web = web;
+            this.web = Application.S().get_web_view(this);
+            this.web.load_changed.connect(do_load_committed);
+            this.web.notify["favicon"].connect((e,p) => {this.do_favicon_loaded();});
             this._tracklist = tl;
             this.web.load_uri(url);
  
@@ -256,6 +258,7 @@ namespace alaia {
             this.add_child(nodecontainer);
 
             this.first_node = new Node(this, url, null);
+            this.notify["current-node"].connect(do_node_changed);
             this.current_node = this.first_node;
             this.url = url;
 
@@ -290,14 +293,30 @@ namespace alaia {
             action.interpolate = true;
             action.deceleration = 0.75;
             this.nodecontainer.add_action(action);
-            this.notify.connect(do_notify);
         }
 
-
-        private void do_notify(GLib.Object self, GLib.ParamSpec p) {
-            if (p.name == "current_node") {
-                this.web.load_uri(this._current_node.url);
+        public void do_load_committed(WebKit.LoadEvent e) {
+            switch (e) {
+                case WebKit.LoadEvent.STARTED:
+                    this.log_call(this.web.get_uri());
+                    break;
+                case WebKit.LoadEvent.REDIRECTED:
+                    break;
+                case WebKit.LoadEvent.COMMITTED:
+                    break;
+                case WebKit.LoadEvent.FINISHED:
+                    this.finish_call(this.web.get_favicon());
+                    break;
             }
+        }
+
+        public void do_favicon_loaded() {
+            this.finish_call(this.web.get_favicon());
+        }
+
+        private void do_node_changed(GLib.Object self, GLib.ParamSpec p) {
+            Application.S().show_web_view(this);
+            this.web.load_uri(this._current_node.url);
         }
 
         private void do_clicked(Clutter.Actor a) {
@@ -359,8 +378,8 @@ namespace alaia {
     }
 
     class TrackListBackground : Clutter.Actor {
-        public TrackListBackground(WebView web, Clutter.Actor stage) {
-            var tl = new TrackList(this,web);
+        public TrackListBackground(Clutter.Actor stage) {
+            var tl = new TrackList(this);
             this.visible = true;
             this.add_constraint(
                 new Clutter.BindConstraint(stage, Clutter.BindCoordinate.SIZE,0)
@@ -404,8 +423,6 @@ namespace alaia {
     }
 
     class TrackList : Clutter.Actor {
-        private WebKit.WebView web;
-        
         public HistoryTrack? current_track {
             get {
                 return this._current_track;
@@ -418,9 +435,7 @@ namespace alaia {
 
         private HistoryTrack? _current_track;
 
-        public TrackList(TrackListBackground tbl, WebView web) {
-            this.web = web;
-            
+        public TrackList(TrackListBackground tbl) {
             this.add_constraint(
                 new Clutter.BindConstraint(tbl, Clutter.BindCoordinate.WIDTH,0)
             );
@@ -431,11 +446,14 @@ namespace alaia {
             this.opacity = 0x00;
             this.visible = true;
             this.transitions_completed.connect(do_transitions_completed);
+            this.notify["current-track"].connect((d,e)=>{
+                        Application.S().show_web_view(this.current_track);
+                    });
             this.add_empty_track();
         }
 
         public void add_track_with_url(string url) {
-            var t = new HistoryTrack(this, url, this.web);
+            var t = new HistoryTrack(this, url);
             this.insert_child_at_index(
                 t,
                 this.get_n_children()-1
@@ -444,7 +462,7 @@ namespace alaia {
         }
 
         public void add_track_with_node(Node n) {
-            var t = new HistoryTrack.with_node(this, n, this.web);
+            var t = new HistoryTrack.with_node(this, n);
             this.insert_child_at_index(
                 t,
                 this.get_n_children()-1
@@ -465,24 +483,6 @@ namespace alaia {
             this.add_child(
                 new EmptyTrack(this)
             );
-        }
-
-        public void log_call(string uri) {
-            if (this._current_track != null) {
-                this._current_track.log_call(uri);
-            }
-        }
-
-        public void finish_call(Cairo.Surface? favicon) {
-            if (this._current_track != null) {
-                this._current_track.finish_call(favicon);
-            }
-        }
-
-        public void set_favicon(Cairo.Surface? favicon) {
-            if (this._current_track != null) {
-                this._current_track.finish_call(favicon);
-            }
         }
 
         private void do_transitions_completed() {

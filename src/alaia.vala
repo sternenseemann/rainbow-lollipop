@@ -71,7 +71,8 @@ namespace alaia {
         private GtkClutter.Window win;
         private ContextMenu _context;
         public ContextMenu context {get{return _context;}}
-        private WebKit.WebView web;
+        private Gee.HashMap<HistoryTrack,WebKit.WebView> webviews;
+        private Gtk.Notebook webviews_container;
         private GtkClutter.Actor webact;
 
         private TrackList tracklist;
@@ -85,7 +86,7 @@ namespace alaia {
             }
         }
 
-        public Application()  {
+        private Application()  {
             GLib.Object(
                 application_id : "de.grindhold.alaia",
                 flags: ApplicationFlags.HANDLES_COMMAND_LINE,
@@ -98,11 +99,10 @@ namespace alaia {
             
             this._state = AppState.TRACKLIST;
 
-            this.web = new WebKit.WebView();
-            this.web.load_changed.connect(do_load_committed);
-            this.web.web_context.set_favicon_database_directory("/tmp/alaia_favicons");
-            this.web.notify["favicon"].connect((e,p) => {this.do_favicon_loaded();});
-            this.webact = new GtkClutter.Actor.with_contents(this.web);
+            this.webviews = new Gee.HashMap<HistoryTrack, WebKit.WebView>();
+            this.webviews_container = new Gtk.Notebook();
+            this.webviews_container.show_tabs = false;
+            this.webact = new GtkClutter.Actor.with_contents(this.webviews_container);
 
             this.win = new GtkClutter.Window();
             this.win.set_title("alaia");
@@ -118,7 +118,7 @@ namespace alaia {
             stage.add_child(this.webact);
             stage.reactive = true;
 
-            this.tracklist_background = new TrackListBackground(this.web, stage);
+            this.tracklist_background = new TrackListBackground(stage);
             stage.add_child(this.tracklist_background);
 
             this.tracklist = (TrackList)this.tracklist_background.get_first_child();
@@ -126,26 +126,30 @@ namespace alaia {
             this.tracklist_background.emerge();
         }
 
-        public void do_load_committed(WebKit.LoadEvent e) {
-            switch (e) {
-                case WebKit.LoadEvent.STARTED:
-                    this.tracklist.log_call(this.web.get_uri());
-                    break;
-                case WebKit.LoadEvent.REDIRECTED:
-                    break;
-                case WebKit.LoadEvent.COMMITTED:
-                    break;
-                case WebKit.LoadEvent.FINISHED:
-                    var favicon = this.web.get_favicon();
-                    this.tracklist.finish_call(favicon);
-                    break;
+        public WebKit.WebView get_web_view(HistoryTrack t) {
+            if (!this.webviews.has_key(t)) {
+                var w = new WebKit.WebView();
+                w.web_context.set_favicon_database_directory("/tmp/alaia_favicons");
+                this.webviews.set(t,w);
+                this.webviews_container.append_page(w);
+            }
+            return this.webviews.get(t);
+        }
+
+        public void destroy_web_view(HistoryTrack t) {
+            if (this.webviews.has_key(t))
+                this.webviews[t].destroy();
+        }
+    
+        public void show_web_view(HistoryTrack t) {
+            if (this.webviews.has_key(t)){
+                var page = this.webviews_container.page_num(this.webviews[t]);
+                stdout.printf("page: %d\n",page);
+                this.webviews_container.set_current_page(page);
+                this.webviews_container.show_all();
             }
         }
         
-        public void do_favicon_loaded() {
-            this.tracklist.set_favicon(this.web.get_favicon());
-        }
-
         public void do_delete() {
             Gtk.main_quit();
         }
