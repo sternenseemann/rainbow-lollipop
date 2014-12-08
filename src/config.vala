@@ -12,8 +12,8 @@ namespace alaia {
     }
 
     class Config {
-        public const string C = "/alaia";
-        public const string C_COLORS = "/colors";
+        public const string C = "/alaia/";
+        public const string C_COLORS = "colors/";
 
         public Colorscheme colorscheme {get; set;}
         private string colorscheme_name = "";
@@ -114,8 +114,8 @@ namespace alaia {
         public static void load() {
             string configdata;
             try {
-                FileUtils.get_contents(GLib.Environment.get_user_config_dir()+
-                                       C+"/config.json", out configdata);
+                FileUtils.get_contents(Application.get_config_filename("config.json"),
+                                       out configdata);
             } catch (GLib.FileError e) {
                 Config.loadDefault();
                 return;
@@ -203,8 +203,8 @@ namespace alaia {
         public static Colorscheme load(string name) {
             string colorschemedata;
             try {
-                FileUtils.get_contents(GLib.Environment.get_user_config_dir()+
-                                       Config.C+Config.C_COLORS+"/"+name+".json", out colorschemedata);
+                FileUtils.get_contents(Application.get_config_filename(Config.C_COLORS+name+".json"),
+                                       out colorschemedata);
             } catch (GLib.FileError e) {
                 stdout.printf("Could not load colorscheme. Using default colorscheme\n");
                 return new Colorscheme.default();

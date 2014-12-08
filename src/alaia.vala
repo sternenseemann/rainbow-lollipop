@@ -189,5 +189,39 @@ namespace alaia {
             Gtk.main();
             return 0;
         }
+
+        public static string get_config_filename(string name) {
+            File f = File.new_for_path(GLib.Environment.get_user_config_dir()+Config.C+name);
+            if (f.query_exists())
+                return f.get_path();
+            foreach (string dir in GLib.Environment.get_system_config_dirs()) {
+                stdout.printf(dir+Config.C+name+"\n");
+                f = File.new_for_path(dir+Config.C+name);
+                if (f.query_exists())
+                    return f.get_path();
+            }
+#if DEBUG
+            return "config/"+name;
+#else
+            return "";
+#endif
+        }
+
+        public static string get_data_filename(string name) {
+            File f = File.new_for_path(GLib.Environment.get_user_data_dir()+Config.C+name);
+            if (f.query_exists())
+                return f.get_path();
+            foreach (string dir in GLib.Environment.get_system_data_dirs()) {
+                stdout.printf(dir+Config.C+name+"\n");
+                f = File.new_for_path(dir+Config.C+name);
+                if (f.query_exists())
+                    return f.get_path();
+            }
+#if DEBUG
+            return "data/"+name;
+#else
+            return "";
+#endif
+        }
     }
 }

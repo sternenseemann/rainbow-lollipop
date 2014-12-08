@@ -358,7 +358,8 @@ namespace alaia {
             this.color = this.color.lighten();
             this.reactive = true;
 
-            this.favicon = new Cairo.ImageSurface.from_png("data/nofav.png");
+            var default_fav_path = Application.get_data_filename("nofav.png");
+            this.favicon = new Cairo.ImageSurface.from_png(default_fav_path);
 
             this.favactor = new Clutter.Actor();
             this.favactor.height=this.favactor.width=Config.c.favicon_size;
