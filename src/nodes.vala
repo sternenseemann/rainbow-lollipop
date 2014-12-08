@@ -302,7 +302,6 @@ namespace alaia {
     
     class Node : Clutter.Actor {
         public static const uint8 HEIGHT = 0x40;
-        private float xpos;
         private Node previous;
         private Gee.ArrayList<Node> _childnodes; //special list only for nodes
         public Gee.ArrayList<Node> childnodes {get {return this._childnodes;}}
@@ -346,7 +345,7 @@ namespace alaia {
             this.x = par != null ? par.x : 0;
             this.y = Config.c.track_spacing;
             this.save_easing_state();
-            this.x = this.xpos = par.x+par.width+(float)Config.c.node_spacing;
+            this.x = par.x+par.width+(float)Config.c.node_spacing;
             this.y = Config.c.track_spacing; 
             this.restore_easing_state();
             if (par != null){
