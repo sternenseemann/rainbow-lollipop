@@ -358,6 +358,8 @@ namespace alaia {
             this.color = this.color.lighten();
             this.reactive = true;
 
+            this.favicon = new Cairo.ImageSurface.from_png("data/nofav.png");
+
             this.favactor = new Clutter.Actor();
             this.favactor.height=this.favactor.width=Config.c.favicon_size;
             this.favactor.x = this.width/2-this.favactor.width/2;
@@ -388,6 +390,7 @@ namespace alaia {
             this.add_child(this.spinner);
             this.previous.recalculate_y(null);
             (this.track.get_parent().get_last_child() as Track).recalculate_y();
+            this.favactor.content.invalidate();
         }
 
         private bool is_current_node = false;
