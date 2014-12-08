@@ -253,7 +253,7 @@ namespace alaia {
                 new Clutter.BindConstraint(this, Clutter.BindCoordinate.SIZE,0)
             );
             this.nodecontainer.y = 0;
-            this.nodecontainer.x = 0;
+            this.nodecontainer.x = 0x20;
             this.nodecontainer.reactive = true;
             this.add_child(nodecontainer);
 
