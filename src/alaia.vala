@@ -201,7 +201,7 @@ namespace alaia {
                     return f.get_path();
             }
 #if DEBUG
-            return "config/"+name;
+            return "cfg/"+name;
 #else
             return "";
 #endif
