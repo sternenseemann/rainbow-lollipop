@@ -195,11 +195,13 @@ namespace alaia {
             if (f.query_exists())
                 return f.get_path();
             foreach (string dir in GLib.Environment.get_system_config_dirs()) {
-                stdout.printf(dir+Config.C+name+"\n");
                 f = File.new_for_path(dir+Config.C+name);
                 if (f.query_exists())
                     return f.get_path();
             }
+            f = File.new_for_path("/etc"+Config.C+name);
+            if (f.query_exists())
+                return f.get_path();
 #if DEBUG
             return "cfg/"+name;
 #else
@@ -212,7 +214,6 @@ namespace alaia {
             if (f.query_exists())
                 return f.get_path();
             foreach (string dir in GLib.Environment.get_system_data_dirs()) {
-                stdout.printf(dir+Config.C+name+"\n");
                 f = File.new_for_path(dir+Config.C+name);
                 if (f.query_exists())
                     return f.get_path();

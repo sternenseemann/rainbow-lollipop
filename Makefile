@@ -86,3 +86,14 @@ $(TARGET): $(FOLDERS) $(VAPIFILES) $(CFILES) $(OBJ)
 
 all: $(TARGET)
 
+install: $(TARGET)
+	mkdir -p /usr/local/share/$(TARGET)
+	cp -r data/* /usr/local/share/$(TARGET)/
+	mkdir -p /etc/$(TARGET)
+	cp -r cfg/* /etc/$(TARGET)
+	cp $(TARGET) /usr/local/bin/
+
+uninstall:
+	rm -rf /usr/local/share/$(TARGET)
+	rm -rf /etc/$(TARGET)
+	rm /usr/local/bin/$(TARGET)

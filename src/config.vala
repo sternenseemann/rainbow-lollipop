@@ -203,7 +203,7 @@ namespace alaia {
         public static Colorscheme load(string name) {
             string colorschemedata;
             try {
-                FileUtils.get_contents(Application.get_config_filename(Config.C_COLORS+name+".json"),
+                FileUtils.get_contents(Application.get_data_filename(Config.C_COLORS+name+".json"),
                                        out colorschemedata);
             } catch (GLib.FileError e) {
                 stdout.printf("Could not load colorscheme. Using default colorscheme\n");
