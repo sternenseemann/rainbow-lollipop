@@ -284,6 +284,10 @@ namespace alaia {
         public void do_load_committed(WebKit.LoadEvent e) {
             switch (e) {
                 case WebKit.LoadEvent.STARTED:
+                    if (this._current_node != null
+                            && this.web.get_uri() == this._current_node.url+"/") {
+                        break;
+                    }
                     this.log_call(this.web.get_uri());
                     break;
                 case WebKit.LoadEvent.REDIRECTED:
@@ -444,7 +448,7 @@ namespace alaia {
                 t,
                 this.get_n_children()-1
             );
-            t.recalculate_y(true);
+            (this.get_last_child() as Track).recalculate_y(true);
         }
 
         public void add_track_with_node(Node n) {
@@ -453,7 +457,7 @@ namespace alaia {
                 t,
                 this.get_n_children()-1
             );
-            t.recalculate_y(true);
+            (this.get_last_child() as Track).recalculate_y(true);
         }
 
         public Track? get_track_of_node(Node n){
