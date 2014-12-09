@@ -126,10 +126,15 @@ namespace alaia {
             this.tracklist_background.emerge();
         }
 
+        public bool do_web_context_menu(WebKit.ContextMenu cm, Gdk.Event e, WebKit.HitTestResult htr){
+            return true;
+        }
+
         public WebKit.WebView get_web_view(HistoryTrack t) {
             if (!this.webviews.has_key(t)) {
                 var w = new WebKit.WebView();
                 w.web_context.set_favicon_database_directory("/tmp/alaia_favicons");
+                w.context_menu.connect(do_web_context_menu);
                 this.webviews.set(t,w);
                 this.webviews_container.append_page(w);
             }
