@@ -212,7 +212,6 @@ namespace alaia {
             this.x = 0;
             this.y = 0;
             this.content = c;
-            this.reactive=true;
             this.set_size(rnd(parent.width), rnd(parent.height));
             this.c.set_size(rnd(parent.width), rnd(parent.height));
             this.c.draw.connect(do_draw);
@@ -359,7 +358,6 @@ namespace alaia {
 
             var default_fav_path = Application.get_data_filename("nofav.png");
             this.favicon = new Cairo.ImageSurface.from_png(default_fav_path);
-
             this.favactor = new Clutter.Actor();
             this.favactor.height=this.favactor.width=Config.c.favicon_size;
             this.favactor.x = this.width/2-this.favactor.width/2;
@@ -368,7 +366,6 @@ namespace alaia {
             this.favactor_canvas.set_size(Config.c.favicon_size,Config.c.favicon_size);
             this.favactor_canvas.draw.connect(do_draw_favactor);
             this.favactor.content = this.favactor_canvas;
-            this.visible= true;
             this.url_tooltip = new NodeTooltip(this, this._url);
             this.add_child(this.url_tooltip);
             this.url_tooltip.x = -this.url_tooltip.width/2+Config.c.node_height/2;
@@ -378,11 +375,11 @@ namespace alaia {
             this.highlight = new NodeHighlight(this);
 
             this.clickaction = new Clutter.ClickAction();
-            this.bullet.add_action(this.clickaction);
-            this.clickaction.clicked.connect(do_bullet_clicked);
+            this.add_action(this.clickaction);
+            this.clickaction.clicked.connect(do_clicked);
+            this.enter_event.connect(do_enter_event);
+            this.leave_event.connect(do_leave_event);
             this.transitions_completed.connect(do_transitions_completed);
-            this.bullet.enter_event.connect(do_enter_event);
-            this.bullet.leave_event.connect(do_leave_event);
 
             this.add_child(this.highlight);
             this.add_child(this.bullet);
@@ -521,8 +518,6 @@ namespace alaia {
 
         private void do_transitions_completed() {
             if (this.opacity == 0x00) {
-                this.visible = false;
-                this.favactor.visible = false;
             }
         }
 
@@ -553,7 +548,7 @@ namespace alaia {
             this.favactor_canvas.invalidate();
         }
 
-        private void do_bullet_clicked(Clutter.Actor a) {
+        private void do_clicked(Clutter.Actor a) {
             switch (this.clickaction.get_button()) {
                 case 1: //Left mousebutton
                     this.track.current_node = this;
@@ -564,23 +559,23 @@ namespace alaia {
                     Application.S().context.popup(null,null,null,3,0);
                     break;
             }
+            this.track.clickaction.release(); //TODO: ugly fix.. there has to be a better way
+                                              // Prevents nodes from hanging in a pressed
+                                              // state after they have been clicked.
         }
 
         public void emerge() {
             foreach (Clutter.Actor n in this.get_children()) {
                 (n as Node).emerge();
             }
-            this.bullet.visible = true;
             this.bullet.save_easing_state();
             this.bullet.opacity = 0xE0;
             this.bullet.restore_easing_state();
-            this.favactor.visible = true;
             this.favactor.save_easing_state();
             this.favactor.opacity = 0xE0;
             this.favactor.restore_easing_state();
             this.connector.emerge();
             if (this.is_current_node) {
-                this.highlight.visible = true;
                 this.highlight.save_easing_state();
                 this.highlight.opacity = 0xFF;
                 this.highlight.restore_easing_state();

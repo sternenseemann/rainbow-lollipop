@@ -171,7 +171,7 @@ namespace alaia {
         private TrackList _tracklist;
         public TrackList tracklist {get {return this._tracklist;}}
         private GtkClutter.Actor close_button;
-        private Clutter.ClickAction clickaction;
+        public Clutter.ClickAction clickaction;
 
         private Node? _current_node;
         public Node? current_node {
