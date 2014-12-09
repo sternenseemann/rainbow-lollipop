@@ -58,20 +58,6 @@ namespace alaia {
             }
         }
 
-        public Node? get_node_on_position(double x, double y) {
-            for (int i = 0; i < this.get_n_children(); i++) {
-                var c = this.get_child_at_index(i);
-                if (c is Node) {
-                    var n = (Node)c;
-                    if (n.x <= x && n.x+n.width*(float)n.scale_x >= x
-                     && this.y+n.y <= y && this.y+n.y+n.height*(float)n.scale_y >= y) {
-                        return n;
-                    }
-                }
-            }
-            return null;
-        }
-
         public void emerge() {
             this.visible = true;
             this.save_easing_state();
@@ -491,16 +477,6 @@ namespace alaia {
             }
         }
 
-        public Track? get_track_on_position(double x, double y) {
-            for (int i = 0; i < this.get_n_children(); i++) {
-                Track t = (this.get_child_at_index(i) as Track);
-                if (t.y <= y && t.y+t.height >= y) {
-                    return t;
-                }
-            }
-            return null;
-        }
-        
         public void emerge() {
             for (int i = 0; i < this.get_n_children(); i++) {
                 Track t = (this.get_child_at_index(i) as Track);
