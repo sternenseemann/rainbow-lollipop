@@ -27,7 +27,7 @@ namespace alaia {
             var sourcebox = this.source.get_allocation_box();
             var targetbox = this.target.get_allocation_box();
             alloc.x1 = sourcebox.x2;
-            alloc.y1 = sourcebox.y1+Node.HEIGHT/2;
+            alloc.y1 = sourcebox.y1+Config.c.node_height/2;
             alloc.x2 = targetbox.x1;
             alloc.y2 = targetbox.y1+Config.c.node_height/2+3;
             if (alloc.y2-alloc.y1 < (float)Config.c.connector_stroke) {
@@ -300,7 +300,6 @@ namespace alaia {
     }
     
     class Node : Clutter.Actor {
-        public static const uint8 HEIGHT = 0x40;
         private Node? previous;
         private Gee.ArrayList<Node> _childnodes; //special list only for nodes
         public Gee.ArrayList<Node> childnodes {get {return this._childnodes;}}
