@@ -168,6 +168,7 @@ namespace alaia {
         private string url;
         private Clutter.Actor separator;
         private Clutter.Actor nodecontainer;
+        private Clutter.Text title;
         private TrackList _tracklist;
         public TrackList tracklist {get {return this._tracklist;}}
         private GtkClutter.Actor close_button;
@@ -269,6 +270,13 @@ namespace alaia {
             );
             this.add_child(separator);
 
+            this.title = new Clutter.Text.with_text("Monospace Bold 9", "");
+            this.title.color = this.background_color.lighten().lighten();
+            this.title.add_constraint(
+                new Clutter.AlignConstraint(this, Clutter.AlignAxis.X_AXIS,0.5f)
+            );
+            this.add_child(this.title);
+
             this.clickaction = new Clutter.ClickAction();
             this.add_action(this.clickaction);
             this.clickaction.clicked.connect(do_clicked);
@@ -279,6 +287,10 @@ namespace alaia {
             action.interpolate = true;
             action.deceleration = 0.75;
             this.nodecontainer.add_action(action);
+        }
+
+        public void set_title(string t) {
+            this.title.text = t;
         }
 
         public void do_load_committed(WebKit.LoadEvent e) {
@@ -296,6 +308,7 @@ namespace alaia {
                     break;
                 case WebKit.LoadEvent.FINISHED:
                     this.finish_call(this.web.get_favicon());
+                    this.set_title(this.web.title);
                     break;
             }
         }
