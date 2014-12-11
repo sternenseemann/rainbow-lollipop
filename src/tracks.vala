@@ -322,6 +322,18 @@ namespace alaia {
             this.web.load_uri(n.url);
         }
 
+        public void go_back() {
+            Node? prv = this.current_node.get_previous();
+            if (prv != null) {
+                load_page(prv);
+                this.current_node = prv;
+            }
+        }
+
+        //TODO: implement
+        public void go_forward() {
+        }
+
         protected override int calculate_height() {
             int h = Config.c.track_spacing+((Config.c.node_height+Config.c.track_spacing)*(this.first_node.get_splits()+1));
             this.height = h;

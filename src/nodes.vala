@@ -301,7 +301,7 @@ namespace alaia {
     
     class Node : Clutter.Actor {
         public static const uint8 HEIGHT = 0x40;
-        private Node previous;
+        private Node? previous;
         private Gee.ArrayList<Node> _childnodes; //special list only for nodes
         public Gee.ArrayList<Node> childnodes {get {return this._childnodes;}}
         public HistoryTrack track {get; set;}
@@ -428,6 +428,10 @@ namespace alaia {
             this.destroy();
             prv.recalculate_y(null);
             prv.track.recalculate_y();
+        }
+
+        public Node? get_previous() {
+            return this.previous;
         }
 
         private void detach_childnodes() {

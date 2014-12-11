@@ -126,8 +126,30 @@ namespace alaia {
             this.tracklist_background.emerge();
         }
 
+        //TODO: exchange Gtk.Action for GLib.Simpleaction as soon as webkitgtk is ready for it
         public bool do_web_context_menu(WebKit.ContextMenu cm, Gdk.Event e, WebKit.HitTestResult htr){
-            return true;
+            var w = this.webviews_container.get_nth_page(this.webviews_container.page) as WebView;
+            WebKit.ContextMenuItem mi;
+            //GLib.SimpleAction a;
+            Gtk.Action a;
+            cm.remove_all();
+            if (w.can_go_back()) {
+                //a = new GLib.SimpleAction("navigate-back",null);
+                a = new Gtk.Action("nanvigate-back", "Go Back", null, null);
+                a.activate.connect(()=>{
+                    this.tracklist.current_track.go_back();
+                });
+                cm.append(new WebKit.ContextMenuItem(a as Gtk.Action));
+            }
+            if (w.can_go_forward()) {
+                //a = new GLib.SimpleAction("navigate-forward",null);
+                a = new Gtk.Action("nanvigate-forward", "Go Forward", null, null);
+                a.activate.connect(()=>{
+                    this.tracklist.current_track.go_forward();
+                });
+                cm.append(new WebKit.ContextMenuItem(a as Gtk.Action));
+            }
+            return false;
         }
 
         public WebKit.WebView get_web_view(HistoryTrack t) {
