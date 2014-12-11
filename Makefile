@@ -11,12 +11,12 @@ SRC = src/alaia.vala \
 # z.b. valac -pkg libpq  || gcc -lpq
 VALALIBS =  
 CLIBS = 
-LIBS = gtk+-3.0 clutter-1.0 clutter-gtk-1.0 webkit2gtk-4.0 gee-1.0
+LIBS = gtk+-3.0 clutter-1.0 clutter-gtk-1.0 webkit2gtk-4.0 webkit2gtk-web-extension-4.0 gee-1.0
 
 CC = gcc
 
 # Vala compilerflags
-VFLAGS = --thread -D DEBUG
+VFLAGS = --thread -D DEBUG --vapidir=vapi
 
 # programmname.
 TARGET = alaia
