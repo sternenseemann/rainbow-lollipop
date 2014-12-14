@@ -416,17 +416,22 @@ namespace alaia {
 
         }
 
-        public void delete_node() {
-            //TODO: fix fuckup when deleting nodes
+        public void delete_node(bool rec_initial=true) {
             var prv = this.previous;
+            Gee.ArrayList<Node> nodes = new Gee.ArrayList<Node>();
             foreach (Node n in this.childnodes) {
-                n.delete_node();
+                nodes.add(n);
+            }
+            foreach (Node n in nodes) {
+                n.delete_node(false);
             }
             prv.childnodes.remove(this);
             this.connector.destroy();
             this.destroy();
             prv.recalculate_y(null);
-            prv.track.recalculate_y();
+            if (rec_initial){
+                (prv.track.get_parent().get_last_child() as Track).recalculate_y(true);
+            }
         }
 
         public Node? get_previous() {
