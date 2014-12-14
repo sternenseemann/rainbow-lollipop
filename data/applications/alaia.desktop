@@ -1,0 +1,16 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=Rainbow Submarine
+GenericName=Browser
+GenericName[de]=Weltnetz-Stöberer
+GenericName[fi]=Selain
+GenericName[pl]=Przeglądarka
+GenericName[se]=webbläsare
+tryExec=alaia
+Exec=alaia %u
+Comment=Rainbow Submarine — The Visual History Browser
+Icon=alaia
+Terminal=false
+Categories=Gtk;Internet;
+MimeType=text/html;

@@ -88,12 +88,14 @@ all: $(TARGET)
 
 install: $(TARGET)
 	mkdir -p /usr/local/share/$(TARGET)
-	cp -r data/* /usr/local/share/$(TARGET)/
+	cp -r data/* /usr/local/share/
 	mkdir -p /etc/$(TARGET)
 	cp -r cfg/* /etc/$(TARGET)
 	cp $(TARGET) /usr/local/bin/
 
 uninstall:
 	rm -rf /usr/local/share/$(TARGET)
+	find /usr/local/share/icons -name alaia.png | xargs -I{} rm {}
+	rm /usr/local/share/applications/alaia.desktop
 	rm -rf /etc/$(TARGET)
 	rm /usr/local/bin/$(TARGET)
