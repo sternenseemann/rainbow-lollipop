@@ -39,12 +39,12 @@ namespace alaia {
             );
 
 
+            this.background_color = TrackColorSource.get_color();
+            this.height = this.calculate_height();
             this.opacity = Application.S().state == AppState.TRACKLIST ? Config.c.track_opacity : 0x00;
             this.visible = Application.S().state == AppState.TRACKLIST;
 
             this.transitions_completed.connect(do_transitions_completed);
-            this.background_color = TrackColorSource.get_color();
-            this.height = this.calculate_height();
             (this.get_parent().get_last_child() as Track).recalculate_y(true);
         }
 
@@ -173,8 +173,6 @@ namespace alaia {
         public TrackList tracklist {get {return this._tracklist;}}
         private GtkClutter.Actor close_button;
         public Clutter.ClickAction clickaction;
-        private Clutter.Color color;
-        private Clutter.Canvas c;
 
         private Node? _current_node;
         public Node? current_node {
@@ -251,18 +249,6 @@ namespace alaia {
             this.current_node = this.first_node;
             this.url = url;
 
-            this.color = this.background_color;
-            this.c = new Clutter.Canvas();
-            this.content = this.c;
-            this.set_size(40,this.calculate_height());
-            this.c.set_size((int)this.width,(int)this.height);
-            this.c.draw.connect(this.do_draw);
-            stdout.printf("invalidate\n");
-            this.x = 0;
-            this.y = 0;
-            this.c.invalidate();
-            stdout.printf("invalidated\n");
-
             var close_img = new Gtk.Image.from_icon_name("window-close", Gtk.IconSize.SMALL_TOOLBAR);
             var button = new Gtk.Button();
             button.margin=0;
@@ -301,27 +287,6 @@ namespace alaia {
             action.interpolate = true;
             action.deceleration = 0.75;
             this.nodecontainer.add_action(action);
-        }
-
-        private bool do_draw(Cairo.Context cr, int w, int h) {
-            cr.set_source_rgba(0,0,0,0);
-            cr.set_operator(Cairo.Operator.SOURCE);
-            cr.paint();
-            var grad = new Cairo.Pattern.linear(0,0,0,h);
-            grad.add_color_stop_rgba(0.0,
-                                     col_h2f(this.color.red),
-                                     col_h2f(this.color.green),
-                                     col_h2f(this.color.blue),
-                                     1.0);
-            grad.add_color_stop_rgba(1.0,
-                                     col_h2f(this.color.red)-0.3f,
-                                     col_h2f(this.color.green)-0.3f,
-                                     col_h2f(this.color.blue)-0.3f,
-                                     1.0);
-            cr.rectangle(0,1,w,h);
-            cr.set_source(grad);
-            cr.fill();
-            return true;
         }
 
         public void set_title(string t) {
