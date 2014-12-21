@@ -318,7 +318,7 @@ namespace alaia {
                                      col_h2f(this.color.green)-0.3f,
                                      col_h2f(this.color.blue)-0.3f,
                                      1.0);
-            cr.rectangle(0,1,w,h);
+            cr.rectangle(0,0,w,h);
             cr.set_source(grad);
             cr.fill();
             return true;
