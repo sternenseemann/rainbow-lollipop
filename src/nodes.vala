@@ -560,7 +560,6 @@ namespace alaia {
             switch (this.clickaction.get_button()) {
                 case 1: //Left mousebutton
                     this.track.current_node = this;
-                    this.track.load_page(this);
                     break;
                 case 3: //Right mousebutton
                     Application.S().context.set_context(this.track,this);

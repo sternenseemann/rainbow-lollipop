@@ -184,11 +184,13 @@ namespace alaia {
             set {
                 this.tracklist.current_track = this;
                 this._current_node.toggle_highlight();
+                this.reload_needed = this._current_node != value;
                 this._current_node = value;
                 this._current_node.toggle_highlight();
             }
         }
         private Node first_node;
+        private bool reload_needed = true;
 
         public void add_node(Node n) {
             this.nodecontainer.add_child(n);
@@ -257,11 +259,9 @@ namespace alaia {
             this.set_size(40,this.calculate_height());
             this.c.set_size((int)this.width,(int)this.height);
             this.c.draw.connect(this.do_draw);
-            stdout.printf("invalidate\n");
             this.x = 0;
             this.y = 0;
             this.c.invalidate();
-            stdout.printf("invalidated\n");
 
             var close_img = new Gtk.Image.from_icon_name("window-close", Gtk.IconSize.SMALL_TOOLBAR);
             var button = new Gtk.Button();
@@ -354,7 +354,8 @@ namespace alaia {
 
         private void do_node_changed(GLib.Object self, GLib.ParamSpec p) {
             Application.S().show_web_view(this);
-            this.web.load_uri(this._current_node.url);
+            if (this.reload_needed)
+                this.web.load_uri(this._current_node.url);
         }
 
         private void do_clicked(Clutter.Actor a) {
@@ -366,14 +367,9 @@ namespace alaia {
             }
         }
 
-        public void load_page(Node n) {
-            this.web.load_uri(n.url);
-        }
-
         public void go_back() {
             Node? prv = this.current_node.get_previous();
             if (prv != null) {
-                load_page(prv);
                 this.current_node = prv;
             }
         }
