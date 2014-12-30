@@ -419,6 +419,7 @@ namespace alaia {
 
         public new void delete_track() {
             this.close_button.destroy();
+            Application.S().destroy_web_view(this);
             base.delete_track();
         }
     }
