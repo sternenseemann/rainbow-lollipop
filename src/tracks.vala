@@ -212,6 +212,7 @@ namespace alaia {
             this.first_node.destroy();
             this.first_node = n;
             this.add_node(this.first_node,true);
+            this.first_node.highlight_off(true);
             this.current_node = this.first_node;
             this.url = n.url;
 

@@ -494,13 +494,33 @@ namespace alaia {
         public void toggle_highlight() {
             this.is_current_node = !this.is_current_node;
             if (this.is_current_node) {
-                this.highlight.save_easing_state();
-                this.highlight.opacity = 0xFF;
-                this.highlight.restore_easing_state();
+                this.highlight_on();
             } else {
-                this.highlight.save_easing_state();
-                this.highlight.opacity = 0x00;
-                this.highlight.restore_easing_state();
+                this.highlight_off();
+            }
+        }
+
+        public void highlight_on(bool recursive=false) {
+            this.is_current_node = true;
+            this.highlight.save_easing_state();
+            this.highlight.opacity = 0xFF;
+            this.highlight.restore_easing_state();
+            if (recursive) {
+                foreach(Node n in this.childnodes){
+                    n.highlight_on(recursive);
+                }
+            }
+        }
+
+        public void highlight_off(bool recursive=false) {
+            this.is_current_node=false;
+            this.highlight.save_easing_state();
+            this.highlight.opacity = 0x00;
+            this.highlight.restore_easing_state();
+            if (recursive) {
+                foreach(Node n in this.childnodes){
+                    n.highlight_off(recursive);
+                }
             }
         }
 
