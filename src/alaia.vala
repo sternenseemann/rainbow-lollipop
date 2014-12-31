@@ -106,6 +106,7 @@ namespace alaia {
 
             this.win = new GtkClutter.Window();
             this.win.set_title("alaia");
+            this.win.maximize();
             this.win.key_press_event.connect(do_key_press_event);
             this.win.destroy.connect(do_delete);
 
