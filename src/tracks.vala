@@ -220,10 +220,6 @@ namespace alaia {
             this.first_node.adapt_to_track();
             this.first_node.recalculate_y(null);
             
-            this.clickaction = new Clutter.ClickAction();
-            this.add_action(this.clickaction);
-            this.clickaction.clicked.connect(do_clicked);
-
             this.add_childnodes(n);
         }
 
