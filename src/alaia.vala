@@ -182,13 +182,21 @@ namespace alaia {
             Gtk.main_quit();
         }
 
+        public void show_tracklist() {
+            this.tracklist_background.emerge();
+            this._state = AppState.TRACKLIST;
+        }
+        public void hide_tracklist() {
+            this.tracklist_background.disappear();
+            this._state = AppState.NORMAL;
+        }
+
         public bool do_key_press_event(Gdk.EventKey e) {
             switch (this._state) {
                 case AppState.NORMAL:
                     switch (e.keyval) {
                         case Gdk.Key.Tab:
-                            this.tracklist_background.emerge();
-                            this._state = AppState.TRACKLIST;
+                            this.show_tracklist();
                             return true;
                         default:
                             return false;
@@ -196,8 +204,7 @@ namespace alaia {
                 case AppState.TRACKLIST:
                     switch (e.keyval) {
                         case Gdk.Key.Tab:
-                            this.tracklist_background.disappear();
-                            this._state = AppState.NORMAL;
+                            this.hide_tracklist();
                             return true;
                         default:
                             return false;

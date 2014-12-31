@@ -106,6 +106,7 @@ namespace alaia {
             this.tracklist = tl;
             this.url_entry = new Gtk.Entry();
             this.enter_button = new Gtk.Button.with_label("Go");
+            this.enter_button.clicked.connect(do_activate);
             this.hbox = new Gtk.Grid();
             this.background_color = Clutter.Color.from_string(Config.c.colorscheme.empty_track);
             this.hbox.add(this.url_entry);
@@ -127,12 +128,17 @@ namespace alaia {
             this.add_child(this.actor);
         }
 
-        private void do_activate() {
-            var url = this.url_entry.get_text();
+        private string complete_url(string url) {
             if (!url.has_prefix("http://") && !url.has_prefix("https://")) {
-                url = "http://" + url;
+                return "http://" + url;
             }
+            return url; 
+        }
+
+        private void do_activate() {
+            var url = this.complete_url(this.url_entry.get_text());
             this.tracklist.add_track_with_url(url);
+            Application.S().hide_tracklist();
         }
 
         private void do_transitions_completed() {
