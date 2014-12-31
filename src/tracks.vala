@@ -192,8 +192,13 @@ namespace alaia {
         private Node first_node;
         private bool reload_needed = true;
 
-        public void add_node(Node n) {
+        public void add_node(Node n, bool recursive=false) {
             this.nodecontainer.add_child(n);
+            if (recursive) {
+                foreach (Node cn in n.childnodes) {
+                    this.add_node(cn, recursive);
+                }
+            }
         }
 
         public void add_nodeconnector(Connector n) {
@@ -206,7 +211,7 @@ namespace alaia {
             this.remove_child(this.first_node);
             this.first_node.destroy();
             this.first_node = n;
-            this.add_child(this.first_node);
+            this.add_node(this.first_node,true);
             this.current_node = this.first_node;
             this.url = n.url;
 
