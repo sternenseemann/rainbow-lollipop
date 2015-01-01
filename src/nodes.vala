@@ -580,6 +580,7 @@ namespace alaia {
             switch (this.clickaction.get_button()) {
                 case 1: //Left mousebutton
                     this.track.current_node = this;
+                    Application.S().hide_tracklist();
                     break;
                 case 3: //Right mousebutton
                     Application.S().context.set_context(this.track,this);
