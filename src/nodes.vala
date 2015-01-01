@@ -368,7 +368,7 @@ namespace alaia {
             this.url_tooltip = new NodeTooltip(this, this._url);
             this.add_child(this.url_tooltip);
             this.url_tooltip.x = -this.url_tooltip.width/2+Config.c.node_height/2;
-            this.url_tooltip.y = -this.url_tooltip.height;
+            this.url_tooltip.y = Config.c.node_height;
             this.bullet = new NodeBullet(this);
             this.spinner = new NodeSpinner(this);
             this.highlight = new NodeHighlight(this);
