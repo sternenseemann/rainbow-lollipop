@@ -14,6 +14,7 @@ namespace alaia {
     class ContextMenu : Gtk.Menu {
         private Gtk.ImageMenuItem new_track_from_node;
         private Gtk.ImageMenuItem delete_branch;
+        private Gtk.ImageMenuItem copy_url;
         private Gtk.ImageMenuItem delete_track;
         private Node? node;
         private Track? track;
@@ -31,6 +32,12 @@ namespace alaia {
             );
             this.delete_branch.activate.connect(do_delete_branch);
             this.add(this.delete_branch);
+            this.copy_url = new Gtk.ImageMenuItem.with_label("Copy URL");
+            this.copy_url.set_image(
+                new Gtk.Image.from_icon_name("edit-copy", Gtk.IconSize.MENU)
+            );
+            this.copy_url.activate.connect(do_copy_url);
+            this.add(this.copy_url);
             this.add(new Gtk.SeparatorMenuItem());
             this.delete_track = new Gtk.ImageMenuItem.with_label("Close Track");
             this.delete_track.set_image(
@@ -58,6 +65,10 @@ namespace alaia {
         public void do_delete_branch(Gtk.MenuItem m) {
             if (this.node  != null)
                 this.node.delete_node();
+        }
+        public void do_copy_url(Gtk.MenuItem m) {
+            var c = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD);
+            c.set_text(this.node.url,-1);
         }
         public void do_delete_track(Gtk.MenuItem m) {
             if (this.track != null)
