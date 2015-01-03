@@ -67,8 +67,10 @@ namespace alaia {
                 this.node.delete_node();
         }
         public void do_copy_url(Gtk.MenuItem m) {
-            var c = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD);
-            c.set_text(this.node.url,-1);
+            if (this.node != null && this.node is SiteNode){
+                var c = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD);
+                c.set_text((this.node as SiteNode).url,-1);
+            }
         }
         public void do_delete_track(Gtk.MenuItem m) {
             if (this.track != null)

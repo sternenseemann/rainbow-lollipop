@@ -189,10 +189,12 @@ namespace alaia {
             }
             set {
                 this.tracklist.current_track = this;
-                this._current_node.toggle_highlight();
+                if (this._current_node is SiteNode)
+                    (this._current_node as SiteNode).toggle_highlight();
                 this.reload_needed = this._current_node != value;
                 this._current_node = value;
-                this._current_node.toggle_highlight();
+                if (this._current_node is SiteNode)
+                    (this._current_node as SiteNode).toggle_highlight();
             }
         }
         private Node first_node;
@@ -211,20 +213,20 @@ namespace alaia {
             this.nodecontainer.add_child(n);
         }
 
-        public HistoryTrack.with_node(TrackList tl, Node n) {
+        public HistoryTrack.with_node(TrackList tl, SiteNode n) {
             this(tl, n.url);
             this.web.load_uri(n.url);
             this.remove_child(this.first_node);
             this.first_node.destroy();
             this.first_node = n;
             this.add_node(this.first_node,true);
-            this.first_node.highlight_off(true);
+            n.highlight_off(true);
             this.current_node = this.first_node;
             this.url = n.url;
 
             this.first_node.make_root_node();
             this.first_node.track = this;
-            this.first_node.adapt_to_track();
+            n.adapt_to_track();
             this.first_node.recalculate_y(null);
             
             this.add_childnodes(n);
@@ -233,7 +235,8 @@ namespace alaia {
         private void add_childnodes(Node n) {
             foreach (Node m in n.childnodes) {
                 m.track = this;
-                m.adapt_to_track();
+                if (m is SiteNode)
+                    (m as SiteNode).adapt_to_track();
                 this.add_child(m);
                 this.add_childnodes(m);
             }
@@ -256,7 +259,7 @@ namespace alaia {
             this.nodecontainer.reactive = true;
             this.add_child(nodecontainer);
 
-            this.first_node = new Node(this, url, null);
+            this.first_node = new SiteNode(this, url, null);
             this.notify["current-node"].connect(do_node_changed);
             this.current_node = this.first_node;
             this.url = url;
@@ -340,7 +343,8 @@ namespace alaia {
             switch (e) {
                 case WebKit.LoadEvent.STARTED:
                     if (this._current_node != null
-                            && this.web.get_uri() == this._current_node.url+"/") {
+                            && this._current_node is SiteNode
+                            && this.web.get_uri() == (this._current_node as SiteNode).url+"/") {
                         break;
                     }
                     this.log_call(this.web.get_uri());
@@ -362,8 +366,8 @@ namespace alaia {
 
         private void do_node_changed(GLib.Object self, GLib.ParamSpec p) {
             Application.S().show_web_view(this);
-            if (this.reload_needed)
-                this.web.load_uri(this._current_node.url);
+            if (this.reload_needed && this._current_node is SiteNode)
+                this.web.load_uri((this._current_node as SiteNode).url);
         }
 
         private void do_clicked(Clutter.Actor a) {
@@ -393,36 +397,33 @@ namespace alaia {
         }
 
         public void log_call(string uri) {
-            if (uri != this._current_node.url) {
-                var nn = new Node(this, uri, this._current_node);
-                this._current_node.toggle_highlight();
-                this._current_node.recalculate_y(null);
+            if (this._current_node is SiteNode &&
+                uri != (this._current_node as SiteNode).url) {
+                var nn = new SiteNode(this, uri, this._current_node);
+                (this._current_node as SiteNode).toggle_highlight();
+                (this._current_node as SiteNode).recalculate_y(null);
                 this._current_node = nn;
-                this._current_node.toggle_highlight();
+                (this._current_node as SiteNode).toggle_highlight();
             }
         }
 
         public void finish_call(Cairo.Surface? favicon) {
-            if (favicon != null){
-                this._current_node.set_favicon(favicon);
+            if(this._current_node is SiteNode) {
+                if (favicon != null){
+                    (this._current_node as SiteNode).set_favicon(favicon);
+                }
+                (this._current_node as SiteNode).stop_spinner();
             }
-            this._current_node.stop_spinner();
         }
         
         public new void emerge() {
             base.emerge();
             this.close_button.opacity = 0xFF;
-            if (this.first_node != null) {
-                this.first_node.emerge();
-            }
         }
 
         public new void disappear() {
             base.disappear();
             this.close_button.opacity = 0x00;
-            if (this.first_node != null) {
-                this.first_node.disappear();
-            }
         }
 
         public new void delete_track() {
@@ -517,7 +518,7 @@ namespace alaia {
         }
 
         public void add_track_with_node(Node n) {
-            var t = new HistoryTrack.with_node(this, n);
+            var t = new HistoryTrack.with_node(this, (n as SiteNode));
             this.insert_child_at_index(
                 t,
                 this.get_n_children()-1

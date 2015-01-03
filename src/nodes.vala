@@ -298,38 +298,17 @@ namespace alaia {
             this.textactor.color = c;
         }
     }
-    
+
     class Node : Clutter.Actor {
         private Node? previous;
         private Gee.ArrayList<Node> _childnodes; //special list only for nodes
         public Gee.ArrayList<Node> childnodes {get {return this._childnodes;}}
         public HistoryTrack track {get; set;}
-        private Cairo.Surface favicon;
-        //private Gdk.Pixbuf snapshot;
-        private Clutter.Actor favactor;
-        private Clutter.Canvas favactor_canvas;
-        private NodeBullet bullet;
-        private NodeSpinner spinner;
-        private NodeHighlight highlight;
+        public Clutter.Color color {get;set;}
         private Connector? connector;
-        private NodeTooltip url_tooltip;
-        private Clutter.ClickAction clickaction;
-        
-        public Clutter.Color color {
-            get;set;
-        }
 
-        private string _url;
 
-        [Description(nick="url of this node", blurb="The url that this node represents")]
-        public string url {
-            get {
-                return this._url;
-            }
-        }
-
-        public Node(HistoryTrack track, string url, Node? par) {
-            this._url = url;
+        public Node(HistoryTrack track, Node? par) {
             if (par != null) {
                 par.childnodes.add(this);
                 this.previous = par;
@@ -353,109 +332,10 @@ namespace alaia {
             this.width = Config.c.node_height;
             this.color = track.get_background_color().lighten();
             this.color = this.color.lighten();
-            this.reactive = true;
-
-            var default_fav_path = Application.get_data_filename("nofav.png");
-            this.favicon = new Cairo.ImageSurface.from_png(default_fav_path);
-            this.favactor = new Clutter.Actor();
-            this.favactor.height=this.favactor.width=Config.c.favicon_size;
-            this.favactor.x = this.width/2-this.favactor.width/2;
-            this.favactor.y = this.height/2-this.favactor.height/2;
-            this.favactor_canvas = new Clutter.Canvas();
-            this.favactor_canvas.set_size(Config.c.favicon_size,Config.c.favicon_size);
-            this.favactor_canvas.draw.connect(do_draw_favactor);
-            this.favactor.content = this.favactor_canvas;
-            this.url_tooltip = new NodeTooltip(this, this._url);
-            this.add_child(this.url_tooltip);
-            this.url_tooltip.x = -this.url_tooltip.width/2+Config.c.node_height/2;
-            this.url_tooltip.y = Config.c.node_height;
-            this.bullet = new NodeBullet(this);
-            this.spinner = new NodeSpinner(this);
-            this.highlight = new NodeHighlight(this);
-
-            this.clickaction = new Clutter.ClickAction();
-            this.add_action(this.clickaction);
-            this.clickaction.clicked.connect(do_clicked);
-            this.enter_event.connect(do_enter_event);
-            this.leave_event.connect(do_leave_event);
-            this.transitions_completed.connect(do_transitions_completed);
-
-            this.add_child(this.highlight);
-            this.add_child(this.bullet);
-            this.add_child(this.favactor);
-            this.add_child(this.spinner);
             this.previous.recalculate_y(null);
-            (this.track.get_parent().get_last_child() as Track).recalculate_y();
-            this.favactor.content.invalidate();
+            
         }
 
-        private bool is_current_node = false;
-
-        public void recalculate_nodes() {
-            foreach (Node n in this.childnodes) {
-                n.recalculate_y(this);
-            }
-        }
-
-        public void recalculate_y(Node? call_origin) {
-            if (this.previous != null && call_origin != this.previous) {
-                this.previous.recalculate_y(this);
-                return;
-            } else {
-                int node_index = this.previous.index_of_child((Node) this);
-                int splits_until = this.previous.get_splits_until(node_index);
-                var prvy = this.previous.y != 0 ? this.previous.y : Config.c.track_spacing;
-                this.y =  prvy + (splits_until+node_index)*(Config.c.node_height+Config.c.track_spacing);
-                foreach (Node n in this.childnodes) {
-                    n.recalculate_y(this);
-                }
-            }
-        }
-
-        public void finish_loading() {
-
-        }
-
-        public void delete_node(bool rec_initial=true) {
-            var prv = this.previous;
-            Gee.ArrayList<Node> nodes = new Gee.ArrayList<Node>();
-            foreach (Node n in this.childnodes) {
-                nodes.add(n);
-            }
-            foreach (Node n in nodes) {
-                n.delete_node(false);
-            }
-            prv.childnodes.remove(this);
-            this.connector.destroy();
-            this.destroy();
-            prv.recalculate_y(null);
-            if (rec_initial){
-                (prv.track.get_parent().get_last_child() as Track).recalculate_y(true);
-            }
-        }
-
-        public Node? get_previous() {
-            return this.previous;
-        }
-
-        private void detach_childnodes() {
-            foreach (Node n in this.childnodes) {
-                n.detach_childnodes();
-            }
-            this.get_parent().remove_child(this);
-            this.connector.destroy();
-        }
-
-        public void adapt_to_track() {
-            this.color = this.track.get_background_color().lighten();
-            this.color = this.color.lighten();
-            this.bullet.content.invalidate();
-            this.highlight.content.invalidate();
-            this.url_tooltip.content.invalidate();
-            if (this.previous != null) {
-                this.connector = new Connector(this.previous, this);
-            }
-        }
         public void make_root_node() {
             this.previous = null; 
         }
@@ -496,6 +376,138 @@ namespace alaia {
             return r;
         }
 
+        public void delete_node(bool rec_initial=true) {
+            var prv = this.previous;
+            Gee.ArrayList<Node> nodes = new Gee.ArrayList<Node>();
+            foreach (Node n in this.childnodes) {
+                nodes.add(n);
+            }
+            foreach (Node n in nodes) {
+                n.delete_node(false);
+            }
+            prv.childnodes.remove(this);
+            this.connector.destroy();
+            this.destroy();
+            prv.recalculate_y(null);
+            if (rec_initial){
+                (prv.track.get_parent().get_last_child() as Track).recalculate_y(true);
+            }
+        }
+
+        public void recalculate_nodes() {
+            foreach (Node n in this.childnodes) {
+                n.recalculate_y(this);
+            }
+        }
+
+        public void recalculate_y(Node? call_origin) {
+            if (this.previous != null && call_origin != this.previous) {
+                this.previous.recalculate_y(this);
+                return;
+            } else {
+                int node_index = this.previous.index_of_child((Node) this);
+                int splits_until = this.previous.get_splits_until(node_index);
+                var prvy = this.previous.y != 0 ? this.previous.y : Config.c.track_spacing;
+                this.y =  prvy + (splits_until+node_index)*(Config.c.node_height+Config.c.track_spacing);
+                foreach (Node n in this.childnodes) {
+                    n.recalculate_y(this);
+                }
+            }
+        }
+
+        public Node? get_previous() {
+            return this.previous;
+        }
+
+        private void detach_childnodes() {
+            foreach (Node n in this.childnodes) {
+                n.detach_childnodes();
+            }
+            this.get_parent().remove_child(this);
+            this.connector.destroy();
+        }
+
+        protected void adapt_to_track() {
+            if (this.previous != null) {
+                this.connector = new Connector(this.previous, this);
+            }
+        }
+
+    }
+    
+    class SiteNode : Node {
+        private Cairo.Surface favicon;
+        private Clutter.Actor favactor;
+        private Clutter.Canvas favactor_canvas;
+        private NodeBullet bullet;
+        private NodeSpinner spinner;
+        private NodeHighlight highlight;
+        private NodeTooltip url_tooltip;
+        private Clutter.ClickAction clickaction;
+        
+        private string _url;
+
+        [Description(nick="url of this node", blurb="The url that this node represents")]
+        public string url {
+            get {
+                return this._url;
+            }
+        }
+
+        public SiteNode(HistoryTrack track, string url, Node? par) {
+            base(track, par);
+            this._url = url;
+            this.reactive = true;
+
+            var default_fav_path = Application.get_data_filename("nofav.png");
+            this.favicon = new Cairo.ImageSurface.from_png(default_fav_path);
+            this.favactor = new Clutter.Actor();
+            this.favactor.height=this.favactor.width=Config.c.favicon_size;
+            this.favactor.x = this.width/2-this.favactor.width/2;
+            this.favactor.y = this.height/2-this.favactor.height/2;
+            this.favactor_canvas = new Clutter.Canvas();
+            this.favactor_canvas.set_size(Config.c.favicon_size,Config.c.favicon_size);
+            this.favactor_canvas.draw.connect(do_draw_favactor);
+            this.favactor.content = this.favactor_canvas;
+            this.url_tooltip = new NodeTooltip(this, this._url);
+            this.add_child(this.url_tooltip);
+            this.url_tooltip.x = -this.url_tooltip.width/2+Config.c.node_height/2;
+            this.url_tooltip.y = Config.c.node_height;
+            this.bullet = new NodeBullet(this);
+            this.spinner = new NodeSpinner(this);
+            this.highlight = new NodeHighlight(this);
+
+            this.clickaction = new Clutter.ClickAction();
+            this.add_action(this.clickaction);
+            this.clickaction.clicked.connect(do_clicked);
+            this.enter_event.connect(do_enter_event);
+            this.leave_event.connect(do_leave_event);
+            this.transitions_completed.connect(do_transitions_completed);
+
+            this.add_child(this.highlight);
+            this.add_child(this.bullet);
+            this.add_child(this.favactor);
+            this.add_child(this.spinner);
+            (this.track.get_parent().get_last_child() as Track).recalculate_y();
+            this.favactor.content.invalidate();
+        }
+
+        private bool is_current_node = false;
+
+        public void finish_loading() {
+
+        }
+
+        public new void adapt_to_track() {
+            base.adapt_to_track();
+            this.color = this.track.get_background_color().lighten();
+            this.color = this.color.lighten();
+            this.bullet.content.invalidate();
+            this.highlight.content.invalidate();
+            this.url_tooltip.content.invalidate();
+        }
+
+
         public void toggle_highlight() {
             this.is_current_node = !this.is_current_node;
             if (this.is_current_node) {
@@ -512,7 +524,8 @@ namespace alaia {
             this.highlight.restore_easing_state();
             if (recursive) {
                 foreach(Node n in this.childnodes){
-                    n.highlight_on(recursive);
+                    if (n is SiteNode)
+                        (n as SiteNode).highlight_on(recursive);
                 }
             }
         }
@@ -524,7 +537,8 @@ namespace alaia {
             this.highlight.restore_easing_state();
             if (recursive) {
                 foreach(Node n in this.childnodes){
-                    n.highlight_off(recursive);
+                    if (n is SiteNode)
+                        (n as SiteNode).highlight_off(recursive);
                 }
             }
         }
@@ -595,41 +609,6 @@ namespace alaia {
             this.track.clickaction.release(); //TODO: ugly fix.. there has to be a better way
                                               // Prevents nodes from hanging in a pressed
                                               // state after they have been clicked.
-        }
-
-        public void emerge() {
-            foreach (Clutter.Actor n in this.get_children()) {
-                (n as Node).emerge();
-            }
-            this.bullet.save_easing_state();
-            this.bullet.opacity = 0xE0;
-            this.bullet.restore_easing_state();
-            this.favactor.save_easing_state();
-            this.favactor.opacity = 0xE0;
-            this.favactor.restore_easing_state();
-            this.connector.emerge();
-            if (this.is_current_node) {
-                this.highlight.save_easing_state();
-                this.highlight.opacity = 0xFF;
-                this.highlight.restore_easing_state();
-            }
-        }
-
-        public void disappear() {
-            this.url_tooltip.disappear();
-            foreach (Clutter.Actor n in this.get_children()) {
-                (n as Node).disappear();
-            }
-            this.bullet.save_easing_state();
-            this.bullet.opacity = 0x00;
-            this.bullet.restore_easing_state();
-            this.favactor.save_easing_state();
-            this.favactor.opacity = 0x00;
-            this.favactor.restore_easing_state();
-            this.connector.disappear();
-            this.highlight.save_easing_state();
-            this.highlight.opacity = 0x000;
-            this.highlight.restore_easing_state();
         }
     }
 }
