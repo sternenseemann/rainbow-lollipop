@@ -25,7 +25,10 @@ namespace alaia {
                               1);
             cr.set_operator(Cairo.Operator.OVER);
             cr.set_line_width(Config.c.bullet_stroke);
-            cr.rectangle(0,0,Config.c.node_height,Config.c.node_height);
+            cr.rectangle(Config.c.bullet_stroke,
+                         Config.c.bullet_stroke,
+                         Config.c.node_height-2*Config.c.bullet_stroke,
+                         Config.c.node_height-2*Config.c.bullet_stroke);
             cr.stroke();
             cr.set_source_rgba(col_h2f(this.parent.color.red),
                               col_h2f(this.parent.color.green),
@@ -53,14 +56,11 @@ namespace alaia {
             this.dl = download;
             this.progress = new ProgressBullet(this);
             this.add_child(this.progress);
-            this.text = new Clutter.Text.with_text("Monospace Bold 9", "0 %");
-            this.text.color = this.color.lighten();
+            this.text = new Clutter.Text.with_text("Monospace Bold 9", "0 %%");
+            this.text.color = this.color.darken().darken().darken();
+            this.text.x = Config.c.node_height/2-this.text.width/2;
+            this.text.y = Config.c.node_height/2-this.text.height/2;
             this.add_child(this.text);
-            this.text.x = Config.c.node_height/2;
-            this.text.y = Config.c.node_height/2;
-            this.text.add_constraint(
-                new Clutter.AlignConstraint(this, Clutter.AlignAxis.BOTH,0.5f)
-            );
             
             this.opacity = 0x7F;
             this.background_color = this.color;
@@ -73,7 +73,9 @@ namespace alaia {
         public bool update() {
             this.progress.set_fraction(this.dl.get_estimated_progress());
             double percent = this.dl.get_estimated_progress()*100;
-            this.text.set_text("%d %".printf((int)percent));
+            this.text.set_text("%d %%".printf((int)percent));
+            this.text.x = Config.c.node_height/2-this.text.width/2;
+            this.text.y = Config.c.node_height/2-this.text.height/2;
             if (!this.finished) {
                 GLib.Idle.add(this.update);
             }
