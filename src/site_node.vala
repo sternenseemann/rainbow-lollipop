@@ -1,0 +1,385 @@
+namespace alaia {
+    class NodeHighlight  : Clutter.Actor {
+        private Clutter.Canvas c;
+        private Node parent;
+
+        public NodeHighlight(Node parent) {
+            this.parent = parent;
+            this.c = new Clutter.Canvas();
+            this.content = this.c;
+            this.opacity = 0x33;
+            this.set_size(rnd(parent.width)+20, rnd(parent.height)+20);
+            this.c.set_size(rnd(parent.width)+20, rnd(parent.height)+20);
+            this.c.draw.connect(do_draw);
+            this.x = 0;
+            this.y = 0;
+            this.c.invalidate();
+        }
+
+        public bool do_draw(Cairo.Context cr, int w, int h) {
+            cr.set_source_rgba(0,0,0,0);
+            cr.set_operator(Cairo.Operator.SOURCE);
+            cr.paint();
+            cr.set_operator(Cairo.Operator.OVER);
+            var glow = new Cairo.Pattern.radial(Config.c.node_height/2,Config.c.node_height/2,2,
+                                                Config.c.node_height/2,Config.c.node_height/4,100);
+            glow.add_color_stop_rgba(0.0,
+                                     col_h2f(this.parent.color.red)*2,
+                                     col_h2f(this.parent.color.green)*2,
+                                     col_h2f(this.parent.color.blue)*2,
+                                     1.0);
+            glow.add_color_stop_rgba(1.0,
+                                     col_h2f(this.parent.color.red),
+                                     col_h2f(this.parent.color.green),
+                                     col_h2f(this.parent.color.blue),
+                                     0.0);
+            cr.arc(Config.c.node_height/2,Config.c.node_height/2,Config.c.node_height/2,0,2*Math.PI);
+            cr.set_source(glow);
+            cr.fill();
+            return true;
+        }
+    }
+
+    class NodeSpinner : Clutter.Actor {
+        private Clutter.Canvas c;
+        private Node parent;
+        private bool running = false;
+
+        public NodeSpinner(Node parent){
+            this.parent = parent;
+            this.c = new Clutter.Canvas();
+            this.x = 0;
+            this.y = 0;
+            this.content = c;
+            this.opacity = 0x00;
+            this.set_size(rnd(parent.width), rnd(parent.height));
+            this.c.set_size(rnd(parent.width), rnd(parent.height));
+            this.c.draw.connect(do_draw);
+            this.c.invalidate();
+            this.transitions_completed.connect(do_transitions_completed);
+            this.set_pivot_point(0.5f, 0.5f);
+            this.set_pivot_point_z(0.5f);//Config.c.node_height/2;
+            this.start();
+        }
+
+        private void do_transitions_completed(){
+            if (!this.running) {
+                return;
+            }
+            this.set_easing_mode(Clutter.AnimationMode.EASE_IN_OUT_BOUNCE);
+            this.save_easing_state();
+            this.rotation_angle_z += 60;
+            this.restore_easing_state();
+        }
+
+        public void stop(){
+            this.running = false;
+            this.save_easing_state();
+            this.opacity = 0x00;
+            this.restore_easing_state();
+        }
+
+        public void start(){
+            this.running = true;
+            this.set_easing_mode(Clutter.AnimationMode.EASE_IN_OUT_BOUNCE);
+            this.set_easing_duration(10);
+            this.save_easing_state();
+            this.rotation_angle_z += 45;
+            this.opacity = 0xFF;
+            this.restore_easing_state();
+        }
+
+        public bool do_draw(Cairo.Context cr, int w, int h) {
+            cr.set_source_rgba(0,0,0,0);
+            cr.set_operator(Cairo.Operator.SOURCE);
+            cr.paint();
+            cr.set_source_rgba(
+                                     col_h2f(this.parent.color.red)/2,
+                                     col_h2f(this.parent.color.green)/2,
+                                     col_h2f(this.parent.color.blue)/2,
+                              1);
+            cr.set_operator(Cairo.Operator.OVER);
+            cr.set_line_width(2);
+            cr.arc(Config.c.node_height/2,Config.c.node_height/2,Config.c.node_height/2-(int)Config.c.bullet_stroke,Math.PI,1.5*Math.PI);
+            cr.stroke();
+            cr.arc(Config.c.node_height/2,Config.c.node_height/2,Config.c.node_height/2-(int)Config.c.bullet_stroke,0,0.5*Math.PI);
+            cr.stroke();
+            return true;
+        }
+
+    }
+
+    class NodeBullet : Clutter.Actor {
+        private Clutter.Canvas c;
+        private Node parent;
+
+        public NodeBullet(Node parent) {
+            this.parent = parent;
+            this.c = new Clutter.Canvas();
+            this.x = 0;
+            this.y = 0;
+            this.content = c;
+            this.set_size(rnd(parent.width), rnd(parent.height));
+            this.c.set_size(rnd(parent.width), rnd(parent.height));
+            this.c.draw.connect(do_draw);
+            this.c.invalidate();
+        }
+
+        public bool do_draw(Cairo.Context cr, int w, int h) {
+            cr.set_source_rgba(0,0,0,0);
+            cr.set_operator(Cairo.Operator.SOURCE);
+            cr.paint();
+            cr.set_source_rgba(col_h2f(this.parent.color.red)*2,
+                              col_h2f(this.parent.color.green)*2,
+                              col_h2f(this.parent.color.blue)*2,
+                              1);
+            cr.set_operator(Cairo.Operator.OVER);
+            cr.set_line_width(Config.c.bullet_stroke);
+            cr.arc(Config.c.node_height/2,Config.c.node_height/2,Config.c.node_height/2-(int)Config.c.bullet_stroke,0,2*Math.PI);
+            cr.stroke();
+            cr.set_source_rgba(col_h2f(this.parent.color.red),
+                              col_h2f(this.parent.color.green),
+                              col_h2f(this.parent.color.blue),
+                              0.5);
+            cr.arc(Config.c.node_height/2,Config.c.node_height/2,Config.c.node_height/2,0,2*Math.PI);
+            cr.fill();
+            return true;
+        }
+    }
+
+    class Tooltip : Clutter.Actor {
+        private const uint8 OPACITY = 0xAF;
+        private const string COLOR = "#121212";
+        protected Clutter.Text textactor;
+        private Clutter.Actor par;
+        public Tooltip(Clutter.Actor par, string text) {
+            this.par = par;
+            this.background_color = Clutter.Color.from_string(Tooltip.COLOR);
+            this.textactor = new Clutter.Text.with_text("Monospace Bold 9", text);
+            this.width = this.textactor.width+2;
+            this.height = this.textactor.height+2;
+            this.opacity = Tooltip.OPACITY;
+            this.visible = false;
+            this.textactor.x = 1;
+            this.textactor.y = 1;
+            this.transitions_completed.connect(do_transitions_completed); 
+            this.add_child(this.textactor);
+        }
+
+        public void emerge() {
+            this.scale_x = 1/this.get_parent().scale_x;
+            this.visible = true;
+            this.textactor.visible = true;
+            this.save_easing_state();
+            this.textactor.save_easing_state();
+            this.opacity = Tooltip.OPACITY;
+            this.textactor.opacity = 0xFF;
+            this.restore_easing_state();
+            this.textactor.restore_easing_state();
+        }
+
+        private void do_transitions_completed() {
+            if (this.opacity == 0x00) {
+                this.visible = false;
+                this.textactor.visible = false;
+            }
+        }
+
+        public void disappear() {
+            this.save_easing_state();
+            this.textactor.save_easing_state();
+            this.opacity = 0x00;
+            this.textactor.opacity = 0x00;
+            this.restore_easing_state();
+            this.textactor.restore_easing_state();
+        }
+    }
+
+    class NodeTooltip : Tooltip {
+        public NodeTooltip (Node node, string text) {
+            base(node, text);
+            var c = node.track.get_background_color().lighten();
+            c.red = (8+c.red)*10 > 0xFF ? 0xFF : (8+c.red)*10;
+            c.green = (8+c.green)*10 > 0xFF ? 0xFF : (8+c.green)*10;
+            c.blue = (8+c.blue)*10 > 0xFF ? 0xFF : (8+c.blue)*10;
+            this.textactor.color = c;
+        }
+    }
+
+    class SiteNode : Node {
+        private Cairo.Surface favicon;
+        private Clutter.Actor favactor;
+        private Clutter.Canvas favactor_canvas;
+        private NodeBullet bullet;
+        private NodeSpinner spinner;
+        private NodeHighlight highlight;
+        private NodeTooltip url_tooltip;
+        private Clutter.ClickAction clickaction;
+        
+        private string _url;
+
+        [Description(nick="url of this node", blurb="The url that this node represents")]
+        public string url {
+            get {
+                return this._url;
+            }
+        }
+
+        public SiteNode(HistoryTrack track, string url, Node? par) {
+            base(track, par);
+            this._url = url;
+            this.reactive = true;
+
+            var default_fav_path = Application.get_data_filename("nofav.png");
+            this.favicon = new Cairo.ImageSurface.from_png(default_fav_path);
+            this.favactor = new Clutter.Actor();
+            this.favactor.height=this.favactor.width=Config.c.favicon_size;
+            this.favactor.x = this.width/2-this.favactor.width/2;
+            this.favactor.y = this.height/2-this.favactor.height/2;
+            this.favactor_canvas = new Clutter.Canvas();
+            this.favactor_canvas.set_size(Config.c.favicon_size,Config.c.favicon_size);
+            this.favactor_canvas.draw.connect(do_draw_favactor);
+            this.favactor.content = this.favactor_canvas;
+            this.url_tooltip = new NodeTooltip(this, this._url);
+            this.add_child(this.url_tooltip);
+            this.url_tooltip.x = -this.url_tooltip.width/2+Config.c.node_height/2;
+            this.url_tooltip.y = Config.c.node_height;
+            this.bullet = new NodeBullet(this);
+            this.spinner = new NodeSpinner(this);
+            this.highlight = new NodeHighlight(this);
+
+            this.clickaction = new Clutter.ClickAction();
+            this.add_action(this.clickaction);
+            this.clickaction.clicked.connect(do_clicked);
+            this.enter_event.connect(do_enter_event);
+            this.leave_event.connect(do_leave_event);
+            this.transitions_completed.connect(do_transitions_completed);
+
+            this.add_child(this.highlight);
+            this.add_child(this.bullet);
+            this.add_child(this.favactor);
+            this.add_child(this.spinner);
+            (this.track.get_parent().get_last_child() as Track).recalculate_y();
+            this.favactor.content.invalidate();
+        }
+
+        private bool is_current_node = false;
+
+        public void finish_loading() {
+
+        }
+
+        public new void adapt_to_track() {
+            base.adapt_to_track();
+            this.color = this.track.get_background_color().lighten();
+            this.color = this.color.lighten();
+            this.bullet.content.invalidate();
+            this.highlight.content.invalidate();
+            this.url_tooltip.content.invalidate();
+        }
+
+
+        public void toggle_highlight() {
+            this.is_current_node = !this.is_current_node;
+            if (this.is_current_node) {
+                this.highlight_on();
+            } else {
+                this.highlight_off();
+            }
+        }
+
+        public void highlight_on(bool recursive=false) {
+            this.is_current_node = true;
+            this.highlight.save_easing_state();
+            this.highlight.opacity = 0xFF;
+            this.highlight.restore_easing_state();
+            if (recursive) {
+                foreach(Node n in this.childnodes){
+                    if (n is SiteNode)
+                        (n as SiteNode).highlight_on(recursive);
+                }
+            }
+        }
+
+        public void highlight_off(bool recursive=false) {
+            this.is_current_node=false;
+            this.highlight.save_easing_state();
+            this.highlight.opacity = 0x00;
+            this.highlight.restore_easing_state();
+            if (recursive) {
+                foreach(Node n in this.childnodes){
+                    if (n is SiteNode)
+                        (n as SiteNode).highlight_off(recursive);
+                }
+            }
+        }
+
+        private bool do_enter_event(Clutter.CrossingEvent e) {
+            if (!this.is_current_node) {
+                this.highlight.save_easing_state();
+                this.highlight.opacity = 0xFF;
+                this.highlight.restore_easing_state();
+            }
+            this.url_tooltip.emerge();
+            return true;
+        }
+
+        private bool do_leave_event(Clutter.CrossingEvent e) {
+            if (!this.is_current_node) {
+                this.highlight.save_easing_state();
+                this.highlight.opacity = 0x00;
+                this.highlight.restore_easing_state();
+            }
+            this.url_tooltip.disappear();
+            return true;
+        }
+
+        private void do_transitions_completed() {
+            if (this.opacity == 0x00) {
+            }
+        }
+
+        public void stop_spinner() {
+            this.spinner.stop();
+        }
+
+        public bool do_draw_favactor(Cairo.Context cr, int w, int h) {
+            var fvcx = new Cairo.Context(this.favicon);
+            double x1,x2,y1,y2;
+            fvcx.clip_extents(out x1,out y1,out x2,out y2);
+            double width = x2-x1;
+            double height = y2-y1; 
+            cr.set_source_rgba(0,0,0,0);
+            cr.set_operator(Cairo.Operator.SOURCE);
+            cr.paint();
+            cr.save();
+            cr.scale(w/width,h/height);
+            cr.set_source_surface(this.favicon,0,0);
+            cr.set_operator(Cairo.Operator.SOURCE);
+            cr.paint();
+            cr.restore();
+            return true;
+        }
+
+        public void set_favicon(Cairo.Surface px) {
+            this.favicon=px;
+            this.favactor_canvas.invalidate();
+        }
+
+        private void do_clicked(Clutter.Actor a) {
+            switch (this.clickaction.get_button()) {
+                case 1: //Left mousebutton
+                    this.track.current_node = this;
+                    Application.S().hide_tracklist();
+                    break;
+                case 3: //Right mousebutton
+                    Application.S().context.set_context(this.track,this);
+                    Application.S().context.popup(null,null,null,3,0);
+                    break;
+            }
+            this.track.clickaction.release(); //TODO: ugly fix.. there has to be a better way
+                                              // Prevents nodes from hanging in a pressed
+                                              // state after they have been clicked.
+        }
+    }
+}
