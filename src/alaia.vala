@@ -11,6 +11,10 @@ namespace alaia {
         TRACKLIST
     }
 
+    class TrackWebView : WebKit.WebView {
+        public HistoryTrack track{ get;set; }
+    }
+
     class ContextMenu : Gtk.Menu {
         private Gtk.ImageMenuItem new_track_from_node;
         private Gtk.ImageMenuItem delete_branch;
@@ -88,7 +92,7 @@ namespace alaia {
         private Gtk.Notebook webviews_container;
         private GtkClutter.Actor webact;
 
-        private TrackList tracklist;
+        public TrackList tracklist {get;set;}
         private TrackListBackground tracklist_background;
         
         private AppState _state;
@@ -112,7 +116,7 @@ namespace alaia {
             
             this._state = AppState.TRACKLIST;
 
-            this.webviews = new Gee.HashMap<HistoryTrack, WebKit.WebView>();
+            this.webviews = new Gee.HashMap<HistoryTrack, TrackWebView>();
             this.webviews_container = new Gtk.Notebook();
             this.webviews_container.show_tabs = false;
             this.webact = new GtkClutter.Actor.with_contents(this.webviews_container);
@@ -169,9 +173,11 @@ namespace alaia {
 
         public WebKit.WebView get_web_view(HistoryTrack t) {
             if (!this.webviews.has_key(t)) {
-                var w = new WebKit.WebView();
+                var w = new TrackWebView();
+                w.track = t;
                 w.web_context.set_favicon_database_directory("/tmp/alaia_favicons");
                 w.context_menu.connect(do_web_context_menu);
+                w.get_context().download_started.connect(t.log_download);
                 this.webviews.set(t,w);
                 this.webviews_container.append_page(w);
             }

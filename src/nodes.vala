@@ -101,7 +101,6 @@ namespace alaia {
         public Clutter.Color color {get;set;}
         private Connector? connector;
 
-
         public Node(HistoryTrack track, Node? par) {
             if (par != null) {
                 par.childnodes.add(this);

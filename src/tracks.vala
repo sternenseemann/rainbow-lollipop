@@ -407,6 +407,15 @@ namespace alaia {
             }
         }
 
+        public void log_download(WebKit.Download d) {
+            var fsn = this._current_node;
+            if (Application.S().tracklist.current_track == this){
+                this._current_node = fsn.get_previous();
+                fsn.delete_node();
+                new DownloadNode(this, d, this._current_node);
+            }
+        }
+
         public void finish_call(Cairo.Surface? favicon) {
             if(this._current_node is SiteNode) {
                 if (favicon != null){
