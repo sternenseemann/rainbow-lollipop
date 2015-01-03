@@ -461,7 +461,10 @@ namespace alaia {
         }
 
         public void move_to_new_track() {
-            this.previous.childnodes.remove(this);
+            var prv = this.previous;
+            prv.childnodes.remove(this);
+            prv.recalculate_y(null);
+            (prv.track.get_parent().get_last_child() as Track).recalculate_y(true);
             this.get_parent().remove_child(this);
             this.connector.destroy();
             this.detach_childnodes();
