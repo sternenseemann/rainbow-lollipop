@@ -66,11 +66,11 @@ namespace alaia {
             this.background_color = this.color;
             this.dl.finished.connect(()=>{this.finished=true;});
             this.dl.failed.connect(()=>{this.finished=true;});
+            this.clickaction.clicked.connect(do_clicked);
             GLib.Idle.add(this.update);
         }
 
         public bool update() {
-            stdout.printf("updating\n");
             this.progress.set_fraction(this.dl.get_estimated_progress());
             double percent = this.dl.get_estimated_progress()*100;
             this.text.set_text("%d %".printf((int)percent));
@@ -78,6 +78,36 @@ namespace alaia {
                 GLib.Idle.add(this.update);
             }
             return false;
+        }
+
+        public bool is_finished() {
+            return this.finished;
+        }
+
+        private void open_path(File f) {
+            try {
+                var handler = f.query_default_handler(null);
+                var arglist = new List<File>();
+                arglist.append(f);
+                handler.launch(arglist,null);
+            } catch (GLib.Error e) {
+                stderr.printf("Could not find a launcher for file: %s", f.get_path());
+            }
+        }
+
+        public void open_folder() {
+            var f = File.new_for_uri(this.dl.get_destination());
+            this.open_path(f.get_parent());
+        }
+
+        public void open_download() {
+            var f = File.new_for_uri(this.dl.get_destination());
+            this.open_path(f);
+        }
+
+        private new void do_clicked(Clutter.Actor _) {
+            base.do_clicked();
+            stdout.printf("ohai\n");
         }
     }
 }

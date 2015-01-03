@@ -214,7 +214,6 @@ namespace alaia {
         private NodeSpinner spinner;
         private NodeHighlight highlight;
         private NodeTooltip url_tooltip;
-        private Clutter.ClickAction clickaction;
         
         private string _url;
 
@@ -228,7 +227,6 @@ namespace alaia {
         public SiteNode(HistoryTrack track, string url, Node? par) {
             base(track, par);
             this._url = url;
-            this.reactive = true;
 
             var default_fav_path = Application.get_data_filename("nofav.png");
             this.favicon = new Cairo.ImageSurface.from_png(default_fav_path);
@@ -248,9 +246,6 @@ namespace alaia {
             this.spinner = new NodeSpinner(this);
             this.highlight = new NodeHighlight(this);
 
-            this.clickaction = new Clutter.ClickAction();
-            this.add_action(this.clickaction);
-            this.clickaction.clicked.connect(do_clicked);
             this.enter_event.connect(do_enter_event);
             this.leave_event.connect(do_leave_event);
             this.transitions_completed.connect(do_transitions_completed);
@@ -260,6 +255,7 @@ namespace alaia {
             this.add_child(this.favactor);
             this.add_child(this.spinner);
             (this.track.get_parent().get_last_child() as Track).recalculate_y();
+            this.clickaction.clicked.connect(do_clicked);
             this.favactor.content.invalidate();
         }
 
@@ -366,20 +362,14 @@ namespace alaia {
             this.favactor_canvas.invalidate();
         }
 
-        private void do_clicked(Clutter.Actor a) {
+        private new void do_clicked(Clutter.Actor a) {
+            base.do_clicked();
             switch (this.clickaction.get_button()) {
                 case 1: //Left mousebutton
                     this.track.current_node = this;
                     Application.S().hide_tracklist();
                     break;
-                case 3: //Right mousebutton
-                    Application.S().context.set_context(this.track,this);
-                    Application.S().context.popup(null,null,null,3,0);
-                    break;
             }
-            this.track.clickaction.release(); //TODO: ugly fix.. there has to be a better way
-                                              // Prevents nodes from hanging in a pressed
-                                              // state after they have been clicked.
         }
     }
 }

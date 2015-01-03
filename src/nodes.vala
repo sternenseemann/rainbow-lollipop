@@ -100,6 +100,7 @@ namespace alaia {
         public HistoryTrack track {get; set;}
         public Clutter.Color color {get;set;}
         private Connector? connector;
+        protected Clutter.ClickAction clickaction;
 
         public Node(HistoryTrack track, Node? par) {
             if (par != null) {
@@ -126,7 +127,9 @@ namespace alaia {
             this.color = track.get_background_color().lighten();
             this.color = this.color.lighten();
             this.previous.recalculate_y(null);
-            
+            this.reactive = true;
+            this.clickaction = new Clutter.ClickAction();
+            this.add_action(this.clickaction);
         }
 
         public void make_root_node() {
@@ -185,6 +188,18 @@ namespace alaia {
             if (rec_initial){
                 (prv.track.get_parent().get_last_child() as Track).recalculate_y(true);
             }
+        }
+
+        public void do_clicked() {
+            switch (this.clickaction.get_button()) {
+                case 3: //Right mousebutton
+                    Application.S().context.set_context(this.track,this);
+                    Application.S().context.popup(null,null,null,3,0);
+                    break;
+            }
+            this.track.clickaction.release(); //TODO: ugly fix.. there has to be a better way
+                                              // Prevents nodes from hanging in a pressed
+                                              // state after they have been clicked.
         }
 
         public void recalculate_nodes() {

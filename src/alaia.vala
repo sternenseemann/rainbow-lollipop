@@ -20,10 +20,13 @@ namespace alaia {
         private Gtk.ImageMenuItem delete_branch;
         private Gtk.ImageMenuItem copy_url;
         private Gtk.ImageMenuItem delete_track;
+        private Gtk.ImageMenuItem open_folder;
+        private Gtk.ImageMenuItem open_download;
         private Node? node;
         private Track? track;
         
         public ContextMenu () {
+            //Nodes
             this.new_track_from_node = new Gtk.ImageMenuItem.with_label("New Track from Branch");
             this.new_track_from_node.set_image(
                 new Gtk.Image.from_icon_name("go-jump", Gtk.IconSize.MENU)
@@ -36,12 +39,31 @@ namespace alaia {
             );
             this.delete_branch.activate.connect(do_delete_branch);
             this.add(this.delete_branch);
+
+            //Sitenodes
             this.copy_url = new Gtk.ImageMenuItem.with_label("Copy URL");
             this.copy_url.set_image(
                 new Gtk.Image.from_icon_name("edit-copy", Gtk.IconSize.MENU)
             );
             this.copy_url.activate.connect(do_copy_url);
             this.add(this.copy_url);
+
+
+            //DownloadNodes
+            this.open_folder = new Gtk.ImageMenuItem.with_label("Open folder");
+            this.open_folder.set_image(
+                new Gtk.Image.from_icon_name("folder", Gtk.IconSize.MENU)
+            );
+            this.open_folder.activate.connect(do_open_folder);
+            this.add(this.open_folder);
+            this.open_download = new Gtk.ImageMenuItem.with_label("Open");
+            this.open_download.set_image(
+                new Gtk.Image.from_icon_name("document-open", Gtk.IconSize.MENU)
+            );
+            this.open_download.activate.connect(do_open_download);
+            this.add(this.open_download);
+
+            //Track
             this.add(new Gtk.SeparatorMenuItem());
             this.delete_track = new Gtk.ImageMenuItem.with_label("Close Track");
             this.delete_track.set_image(
@@ -57,8 +79,14 @@ namespace alaia {
             this.track = track;
             this.node = node;
             
+            stdout.printf(node == null ? "benis\n" : "bagina\n");
+
             this.delete_track.visible = this.track != null;
             this.new_track_from_node.visible = this.node != null;
+            this.copy_url.visible = this.node != null && this.node is SiteNode;
+            this.open_folder.visible = this.node != null && this.node is DownloadNode;
+            this.open_download.visible = this.node != null && this.node is DownloadNode &&
+                                         (this.node as DownloadNode).is_finished();
             this.delete_branch.visible = this.node != null;
         }
 
@@ -79,6 +107,14 @@ namespace alaia {
         public void do_delete_track(Gtk.MenuItem m) {
             if (this.track != null)
                 this.track.delete_track();
+        }
+        public void do_open_folder(Gtk.MenuItem m) {
+            if (this.node is DownloadNode)
+                (this.node as DownloadNode).open_folder();
+        }
+        public void do_open_download(Gtk.MenuItem m) {
+            if (this.node is DownloadNode)
+                (this.node as DownloadNode).open_download();
         }
     }
 
