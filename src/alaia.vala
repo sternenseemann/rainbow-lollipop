@@ -11,8 +11,39 @@ namespace alaia {
         TRACKLIST
     }
 
+    [DBus (name = "de.grindhold.alaia")]
+    interface AlaiaMessenger : Object {
+        public abstract bool needs_direct_input () throws IOError;
+    }
+
     class TrackWebView : WebKit.WebView {
         public HistoryTrack track{ get;set; }
+
+        private AlaiaMessenger messenger;
+
+        public TrackWebView() {
+            Bus.watch_name(BusType.SESSION, "de.grindhold.alaia", BusNameWatcherFlags.NONE,
+                (connection, name, owner) => {on_extension_appeared(connection,name,owner);}, null);
+            /*Bus.watch_name(BusType.SESSION, "de.grindhold.alaia", BusNameWatcherFlags.NONE,
+                this.on_extension_appeared, null);*/
+        }
+
+        private void on_extension_appeared(DBusConnection connection, string name, string owner) {
+            try {
+                messenger = connection.get_proxy_sync("de.grindhold.alaia", "/de/grindhold/alaia",
+                                    DBusProxyFlags.NONE);
+            } catch (IOError e) {
+                warning("Could not connect to alaia extension via DBus\n");
+            }
+        }
+
+        public bool needs_direct_input() {
+            if (messenger != null) {
+                return messenger.needs_direct_input();
+            }
+            warning("Could not reach rendering engine via dbus");
+            return false;
+        }
     }
 
     class ContextMenu : Gtk.Menu {
@@ -79,8 +110,6 @@ namespace alaia {
             this.track = track;
             this.node = node;
             
-            stdout.printf(node == null ? "benis\n" : "bagina\n");
-
             this.delete_track.visible = this.track != null;
             this.new_track_from_node.visible = this.node != null;
             this.copy_url.visible = this.node != null && this.node is SiteNode;
@@ -228,6 +257,8 @@ namespace alaia {
         public void show_web_view(HistoryTrack t) {
             if (this.webviews.has_key(t)){
                 var page = this.webviews_container.page_num(this.webviews[t]);
+                //TODO: remove debugoutput
+                stdout.printf((this.webviews[t] as TrackWebView).needs_direct_input()? "i need\n" : "i need not\n");
                 this.webviews_container.set_current_page(page);
                 this.webviews_container.show_all();
             }
