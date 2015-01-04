@@ -42,7 +42,7 @@ namespace alaia {
                 try {
                     return messenger.needs_direct_input();
                 } catch (IOError e) {
-                    warning("Error here");
+                    warning("Error here"+e.message);
                     return false;
                 }
             }
@@ -261,8 +261,6 @@ namespace alaia {
         public void show_web_view(HistoryTrack t) {
             if (this.webviews.has_key(t)){
                 var page = this.webviews_container.page_num(this.webviews[t]);
-                //TODO: remove debugoutput
-                stdout.printf((this.webviews[t] as TrackWebView).needs_direct_input()? "i need\n" : "i need not\n");
                 this.webviews_container.set_current_page(page);
                 this.webviews_container.show_all();
             }
@@ -282,6 +280,11 @@ namespace alaia {
         }
 
         public bool do_key_press_event(Gdk.EventKey e) {
+            var t = this.tracklist.current_track;
+            if (t != null) {
+                if((this.get_web_view(t) as TrackWebView).needs_direct_input() )
+                    return false;
+            }
             switch (this._state) {
                 case AppState.NORMAL:
                     switch (e.keyval) {

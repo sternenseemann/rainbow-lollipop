@@ -1,8 +1,24 @@
+using Gee;
+
 [DBus (name = "de.grindhold.alaia")]
 public class AlaiaExtension : Object {
     private WebKit.WebPage page;
+
+    private HashSet<string> direct_input_tags;
+
+    public AlaiaExtension() {
+        this.direct_input_tags = new HashSet<string>();
+        this.direct_input_tags.add("INPUT");
+        this.direct_input_tags.add("TEXTAREA");
+        this.direct_input_tags.add("BUTTON");
+        this.direct_input_tags.add("SUBMIT");
+    }
+
     public bool needs_direct_input() {
-        return true;
+        WebKit.DOM.Document doc = this.page.get_dom_document();
+        WebKit.DOM.Element active = doc.active_element;
+        stdout.printf(active.tag_name+"\n");
+        return this.direct_input_tags.contains(active.tag_name);
     }
 
     [DBus (visible = false)]

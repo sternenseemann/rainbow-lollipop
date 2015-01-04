@@ -14,7 +14,7 @@ SRC = src/alaia.vala \
 VALALIBS =  
 CLIBS = 
 LIBS = gtk+-3.0 clutter-1.0 clutter-gtk-1.0 webkit2gtk-4.0 gee-1.0
-EXT_LIBS = webkit2gtk-web-extension-4.0
+EXT_LIBS = webkit2gtk-web-extension-4.0 gee-1.0
 
 CC = gcc
 
