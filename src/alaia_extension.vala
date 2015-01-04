@@ -6,6 +6,7 @@ public class AlaiaExtension : Object {
 
     private HashSet<string> direct_input_tags;
 
+    [DBus (visible = false)]
     public AlaiaExtension() {
         this.direct_input_tags = new HashSet<string>();
         this.direct_input_tags.add("INPUT");
