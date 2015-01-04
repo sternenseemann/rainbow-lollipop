@@ -26,7 +26,7 @@ namespace alaia {
         }
     }
 
-    abstract class Track : Clutter.Actor {
+    public abstract class Track : Clutter.Actor {
         public Track(TrackList tl) {
             Track last_track = (tl.get_last_child() as Track);
             if (last_track != null) {
@@ -169,7 +169,7 @@ namespace alaia {
         
     }
 
-    class HistoryTrack : Track {
+    public class HistoryTrack : Track {
         private WebKit.WebView web;
         private string url;
         private Clutter.Actor separator;
@@ -442,7 +442,7 @@ namespace alaia {
         }
     }
 
-    class TrackListBackground : Clutter.Actor {
+    public class TrackListBackground : Clutter.Actor {
         public TrackListBackground(Clutter.Actor stage) {
             var tl = new TrackList(this);
             this.visible = true;
@@ -487,7 +487,7 @@ namespace alaia {
 
     }
 
-    class TrackList : Clutter.Actor {
+    public class TrackList : Clutter.Actor {
         public HistoryTrack? current_track {
             get {
                 return this._current_track;

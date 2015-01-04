@@ -16,7 +16,7 @@ namespace alaia {
         public abstract bool needs_direct_input () throws IOError;
     }
 
-    class TrackWebView : WebKit.WebView {
+    public class TrackWebView : WebKit.WebView {
         public HistoryTrack track{ get;set; }
 
         private AlaiaMessenger messenger;
@@ -39,7 +39,12 @@ namespace alaia {
 
         public bool needs_direct_input() {
             if (messenger != null) {
-                return messenger.needs_direct_input();
+                try {
+                    return messenger.needs_direct_input();
+                } catch (IOError e) {
+                    warning("Error here");
+                    return false;
+                }
             }
             warning("Could not reach rendering engine via dbus");
             return false;
@@ -240,7 +245,6 @@ namespace alaia {
             if (!this.webviews.has_key(t)) {
                 var w = new TrackWebView();
                 w.track = t;
-                w.web_context.set_favicon_database_directory("/tmp/alaia_favicons");
                 w.context_menu.connect(do_web_context_menu);
                 w.get_context().download_started.connect(t.log_download);
                 this.webviews.set(t,w);
@@ -308,6 +312,12 @@ namespace alaia {
                 stdout.printf("Could not initialize GtkClutter");
             }
             Application.app = new Application();
+            WebKit.WebContext.get_default().set_process_model(
+                WebKit.ProcessModel.MULTIPLE_SECONDARY_PROCESSES
+            );
+            WebKit.WebContext.get_default().set_favicon_database_directory("/tmp/alaia_favicons");
+            stdout.printf(get_data_filename("wpe")+"\n");
+            WebKit.WebContext.get_default().set_web_extensions_directory(get_data_filename("alaia/wpe"));
             Gtk.main();
             return 0;
         }

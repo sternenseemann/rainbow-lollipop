@@ -14,7 +14,7 @@ namespace alaia {
         return i;
     }
 
-    class ConnectorConstraint : Clutter.Constraint {
+    public class ConnectorConstraint : Clutter.Constraint {
         private Clutter.Actor source;
         private Clutter.Actor target;
         
@@ -38,7 +38,7 @@ namespace alaia {
         }
     }
     
-    class Connector : Clutter.Actor {
+    public class Connector : Clutter.Actor {
         private Clutter.Canvas c;
         private Node previous;
         private Node next;
@@ -93,7 +93,7 @@ namespace alaia {
     }
 
 
-    class Node : Clutter.Actor {
+    public class Node : Clutter.Actor {
         private Node? previous;
         private Gee.ArrayList<Node> _childnodes; //special list only for nodes
         public Gee.ArrayList<Node> childnodes {get {return this._childnodes;}}

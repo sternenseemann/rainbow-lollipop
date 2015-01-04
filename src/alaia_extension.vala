@@ -28,9 +28,10 @@ public errordomain AlaiaExtensionError {
 
 [CCode (cname = "G_MODULE_EXPORT webkit_web_extension_initialize", instance_pos = -1)]
 void webkit_web_extension_initialize(WebKit.WebExtension extension) {
+    stdout.printf("OHAI!\n");
     AlaiaExtension aext = new AlaiaExtension();
     extension.page_created.connect(aext.on_page_created);
-    Bus.own_name(BusType.SESSION, "org.example.DOMTest", BusNameOwnerFlags.NONE,
+    Bus.own_name(BusType.SESSION, "de.grindhold.alaia", BusNameOwnerFlags.NONE,
         aext.on_bus_aquired, null, () => { warning("Could not aquire name"); });
 }
 

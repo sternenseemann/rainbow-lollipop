@@ -1,5 +1,5 @@
 namespace alaia {
-    class NodeHighlight  : Clutter.Actor {
+    public class NodeHighlight  : Clutter.Actor {
         private Clutter.Canvas c;
         private Node parent;
 
@@ -40,7 +40,7 @@ namespace alaia {
         }
     }
 
-    class NodeSpinner : Clutter.Actor {
+    public class NodeSpinner : Clutter.Actor {
         private Clutter.Canvas c;
         private Node parent;
         private bool running = false;
@@ -109,7 +109,7 @@ namespace alaia {
 
     }
 
-    class NodeBullet : Clutter.Actor {
+    public class NodeBullet : Clutter.Actor {
         private Clutter.Canvas c;
         private Node parent;
 
@@ -147,7 +147,7 @@ namespace alaia {
         }
     }
 
-    class Tooltip : Clutter.Actor {
+    public class Tooltip : Clutter.Actor {
         private const uint8 OPACITY = 0xAF;
         private const string COLOR = "#121212";
         protected Clutter.Text textactor;
@@ -195,7 +195,7 @@ namespace alaia {
         }
     }
 
-    class NodeTooltip : Tooltip {
+    public class NodeTooltip : Tooltip {
         public NodeTooltip (Node node, string text) {
             base(node, text);
             var c = node.track.get_background_color().lighten();
@@ -206,7 +206,7 @@ namespace alaia {
         }
     }
 
-    class SiteNode : Node {
+    public class SiteNode : Node {
         private Cairo.Surface favicon;
         private Clutter.Actor favactor;
         private Clutter.Canvas favactor_canvas;

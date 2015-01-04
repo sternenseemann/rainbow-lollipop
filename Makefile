@@ -70,8 +70,6 @@ $(FOLDERS):
 clean:
 	rm -rf $(BUILDFOLDER)
 	rm -f $(TARGET)
-	rm $(EXTENSION).so
-	rm $(EXTENSION).vapi
 
 $(VAPIFOLDER)/%.vapi: %.vala
 	@if [ $(@D) != "." ]; then $(MKDIR_P) $(@D); fi
@@ -91,6 +89,8 @@ $(TARGET): $(FOLDERS) $(VAPIFILES) $(CFILES) $(OBJ)
 
 $(EXTENSION):
 	valac $(addprefix --pkg , $(EXT_LIBS)) --library=$@ -X -fPIC -X -shared -o $@.so src/alaia_extension.vala
+	rm $(EXTENSION).vapi
+	mv $(EXTENSION).so data/alaia/wpe/
 
 all: $(TARGET) $(EXTENSION)
 
