@@ -14,7 +14,7 @@ SRC = src/alaia.vala \
 VALALIBS =  
 CLIBS = 
 LIBS = gtk+-3.0 clutter-1.0 clutter-gtk-1.0 webkit2gtk-4.0 gee-1.0
-EXT_LIBS = webkit2gtk-web-extension-4.0 gee-1.0
+EXT_LIBS = webkit2gtk-web-extension-4.0 gee-1.0 libzmq
 
 CC = gcc
 
@@ -88,7 +88,7 @@ $(TARGET): $(FOLDERS) $(VAPIFILES) $(CFILES) $(OBJ)
 	$(CC) $(CFLAGS) $(OBJ) -o $(TARGET) && touch $(TARGET)
 
 $(EXTENSION):
-	valac $(addprefix --pkg , $(EXT_LIBS)) --library=$@ -X -fPIC -X -shared -o $@.so src/alaia_extension.vala
+	valac $(addprefix --pkg , $(EXT_LIBS)) --vapidir=vapi --library=$@ -X -fPIC -X -shared -o $@.so src/alaia_extension.vala
 	rm $(EXTENSION).vapi
 	mv $(EXTENSION).so data/alaia/wpe/
 
