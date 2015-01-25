@@ -5,36 +5,51 @@ using Clutter;
 using WebKit;
 using Gee;
 
+
 namespace alaia {
+
     enum AppState {
         NORMAL,
         TRACKLIST
     }
 
-    [DBus (name = "de.grindhold.alaia")]
-    interface AlaiaMessenger : Object {
-        public abstract bool needs_direct_input () throws IOError;
+    class ZMQVent() {
+        private static const string VENT = "tcp://127.0.0.1:26010";
+
+        private uint32 callcounter = 0;
+        private ZMQContext ctx;
+        private ZMQSocket sender;
+
+        public ZMQVent() {
+            this.ctx = new ZMQ.Context(1);
+            this.sender = ZMQ.Socket.create(ctx)
+            this.sender.bind(ZMQVent.VENT);
+        }
+
+        public async needs_direct_input(uint64 page_id) {
+            
+        }
+    }
+
+    class ZMQSink() {
+        private static const string SINK = "tcp://127.0.0.1:26011";
+
+        private Gee.HashMap<uint32, ZMQCallback> callbacks;
+        private ZMQContext ctx;
+        private ZMQ.Socket receiver;
+
+        public ZMQSink() {
+            this.callbacks = new Gee.HashMap<uint32, ZMQCallback>(
+            this.ctx = new ZMQ.Context(1);
+            this.receiver = ZMQ.Socket.create(ctx);
+            this.receiver.bind(ZMQSink.SINK);
+        }
     }
 
     public class TrackWebView : WebKit.WebView {
         public HistoryTrack track{ get;set; }
 
-        private AlaiaMessenger messenger;
-
         public TrackWebView() {
-            Bus.watch_name(BusType.SESSION, "de.grindhold.alaia", BusNameWatcherFlags.NONE,
-                (connection, name, owner) => {on_extension_appeared(connection,name,owner);}, null);
-            /*Bus.watch_name(BusType.SESSION, "de.grindhold.alaia", BusNameWatcherFlags.NONE,
-                this.on_extension_appeared, null);*/
-        }
-
-        private void on_extension_appeared(DBusConnection connection, string name, string owner) {
-            try {
-                messenger = connection.get_proxy_sync("de.grindhold.alaia", "/de/grindhold/alaia",
-                                    DBusProxyFlags.NONE);
-            } catch (IOError e) {
-                warning("Could not connect to alaia extension via DBus\n");
-            }
         }
 
         public bool needs_direct_input() {
@@ -277,6 +292,9 @@ namespace alaia {
         public void hide_tracklist() {
             this.tracklist_background.disappear();
             this._state = AppState.NORMAL;
+        }
+        
+        public void do_needs_direct_input(bool ndi) {
         }
 
         public bool do_key_press_event(Gdk.EventKey e) {
