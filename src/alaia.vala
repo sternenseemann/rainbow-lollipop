@@ -265,8 +265,6 @@ namespace alaia {
                 return false;
             }
             if (t != null) {
-                //this.do_key_press_event(e);
-                //return true;
                 (this.get_web_view(t) as TrackWebView).needs_direct_input(do_key_press_event,e);
             } else {
                 this.do_key_press_event(e);
