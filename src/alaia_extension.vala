@@ -38,6 +38,7 @@ public class ZMQWorker {
             string in_data = (string)input.data;
             string out_data = ZMQWorker.handle_request(in_data);
             if (out_data != null){
+                stdout.printf("sending response\n");
                 var output = ZMQ.Msg.with_data(out_data.data);
                 sender.send(ref output,0);
             }
@@ -48,23 +49,43 @@ public class ZMQWorker {
     private static const string NEEDS_DIRECT_INPUT_RET = "r_ndi";
     private static const string ERROR = "error";
     private static const string REGISTER = "reg";
+    private static const string SEPARATOR = "-";
 
-    private static string handle_request(string input) {
+    private static string? handle_request(string input) {
         // Needs direct input
         // Valid request example:
-        //        ndi-5
+        //        ndi-5-<callid>
         // Does the page with the id 5 need direct input?
         // Valid answer example:
-        //        r_ndi5-1        means yes
-        //        r_ndi5-0        means no
+        //        r_ndi-5-1-<callid>  means yes
+        //        r_ndi-5-0-<callid>  means no
+        stdout.printf("input: %s\n",input);
         if (input.has_prefix(ZMQWorker.NEEDS_DIRECT_INPUT)) {
             string[] splitted = input.split("-");
-            uint64 pageid = (uint64)splitted[1];
-            if (aext.get_page_id() == pageid) {
-                if (aext.needs_direct_input())
-                    return ZMQWorker.NEEDS_DIRECT_INPUT_RET+(string)pageid+"-1";
-                else
-                    return ZMQWorker.NEEDS_DIRECT_INPUT_RET+(string)pageid+"-0";
+            uint64 pageid = uint64.parse(splitted[1]);
+            uint32 callid = int.parse(splitted[2]);
+            stdout.printf("callid: %ld\n", callid);
+            stdout.printf("pageid: %lld\n", pageid);
+            if (ZMQWorker.aext.get_page_id() == pageid) {
+                if (ZMQWorker.aext.needs_direct_input()) {
+                    stdout.printf("do need direct input\n");
+                    return ZMQWorker.NEEDS_DIRECT_INPUT_RET+
+                           ZMQWorker.SEPARATOR+
+                           "%lld".printf(pageid)+
+                           ZMQWorker.SEPARATOR+
+                           "1"+
+                           ZMQWorker.SEPARATOR+
+                           "%u".printf(callid);
+                } else {
+                    stdout.printf("do not need direct input\n");
+                    return ZMQWorker.NEEDS_DIRECT_INPUT_RET+
+                           ZMQWorker.SEPARATOR+
+                           "%lld".printf(pageid)+
+                           ZMQWorker.SEPARATOR+
+                           "0"+
+                           ZMQWorker.SEPARATOR+
+                           "%u".printf(callid);
+                }
             } else {
                 return null;
             }
