@@ -264,7 +264,7 @@ namespace alaia {
             if (e.keyval != Gdk.Key.Tab) {
                 return false;
             }
-            if (t != null) {
+            if (t != null && this._state == AppState.NORMAL) {
                 (this.get_web_view(t) as TrackWebView).needs_direct_input(do_key_press_event,e);
             } else {
                 this.do_key_press_event(e);
