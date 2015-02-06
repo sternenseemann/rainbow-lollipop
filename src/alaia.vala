@@ -255,9 +255,6 @@ namespace alaia {
             this.tracklist_background.disappear();
             this._state = AppState.NORMAL;
         }
-        
-        public void do_needs_direct_input(bool ndi) {
-        }
 
         public bool preprocess_key_press_event(Gdk.EventKey e) {
             var t = this.tracklist.current_track;
