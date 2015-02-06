@@ -5,49 +5,23 @@ using Clutter;
 using WebKit;
 using Gee;
 
+
 namespace alaia {
+
     enum AppState {
         NORMAL,
         TRACKLIST
     }
 
-    [DBus (name = "de.grindhold.alaia")]
-    interface AlaiaMessenger : Object {
-        public abstract bool needs_direct_input () throws IOError;
-    }
 
     public class TrackWebView : WebKit.WebView {
         public HistoryTrack track{ get;set; }
 
-        private AlaiaMessenger messenger;
-
         public TrackWebView() {
-            Bus.watch_name(BusType.SESSION, "de.grindhold.alaia", BusNameWatcherFlags.NONE,
-                (connection, name, owner) => {on_extension_appeared(connection,name,owner);}, null);
-            /*Bus.watch_name(BusType.SESSION, "de.grindhold.alaia", BusNameWatcherFlags.NONE,
-                this.on_extension_appeared, null);*/
         }
 
-        private void on_extension_appeared(DBusConnection connection, string name, string owner) {
-            try {
-                messenger = connection.get_proxy_sync("de.grindhold.alaia", "/de/grindhold/alaia",
-                                    DBusProxyFlags.NONE);
-            } catch (IOError e) {
-                warning("Could not connect to alaia extension via DBus\n");
-            }
-        }
-
-        public bool needs_direct_input() {
-            if (messenger != null) {
-                try {
-                    return messenger.needs_direct_input();
-                } catch (IOError e) {
-                    warning("Error here"+e.message);
-                    return false;
-                }
-            }
-            warning("Could not reach rendering engine via dbus");
-            return false;
+        public async void needs_direct_input(IPCCallback cb, Gdk.EventKey e) {
+            ZMQVent.needs_direct_input(this, cb, e);
         }
     }
 
@@ -183,6 +157,9 @@ namespace alaia {
             //Load config
 
             Config.load();
+
+            ZMQVent.init();
+            ZMQSink.init();
             
             this._state = AppState.TRACKLIST;
 
@@ -195,7 +172,7 @@ namespace alaia {
             this.win.set_title("alaia");
             this.win.maximize();
             this.win.icon_name="alaia";
-            this.win.key_press_event.connect(do_key_press_event);
+            this.win.key_press_event.connect(preprocess_key_press_event);
             this.win.destroy.connect(do_delete);
 
             this._context = new ContextMenu();
@@ -278,32 +255,44 @@ namespace alaia {
             this.tracklist_background.disappear();
             this._state = AppState.NORMAL;
         }
+        
+        public void do_needs_direct_input(bool ndi) {
+        }
 
-        public bool do_key_press_event(Gdk.EventKey e) {
+        public bool preprocess_key_press_event(Gdk.EventKey e) {
             var t = this.tracklist.current_track;
-            if (t != null) {
-                if((this.get_web_view(t) as TrackWebView).needs_direct_input() )
-                    return false;
+            if (e.keyval != Gdk.Key.Tab) {
+                return false;
             }
+            if (t != null) {
+                //this.do_key_press_event(e);
+                //return true;
+                (this.get_web_view(t) as TrackWebView).needs_direct_input(do_key_press_event,e);
+            } else {
+                this.do_key_press_event(e);
+            }
+            return true;
+        }
+
+        public void do_key_press_event(Gdk.EventKey e) {
             switch (this._state) {
                 case AppState.NORMAL:
                     switch (e.keyval) {
                         case Gdk.Key.Tab:
                             this.show_tracklist();
-                            return true;
+                            return;
                         default:
-                            return false;
+                            return;
                     }
                 case AppState.TRACKLIST:
                     switch (e.keyval) {
                         case Gdk.Key.Tab:
                             this.hide_tracklist();
-                            return true;
+                            return;
                         default:
-                            return false;
+                            return;
                     }
             }
-            return false;
         }
 
         public static Application S() {
