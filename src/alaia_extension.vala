@@ -4,35 +4,39 @@ public class ZMQWorker {
     private static const string VENT = "tcp://127.0.0.1:26010";
     private static const string SINK = "tcp://127.0.0.1:26011";
     
-    private AlaiaExtension aext;
+    private static AlaiaExtension aext;
+    
+    private static ZMQ.Socket receiver;
+    private static ZMQ.Socket sender;
 
-    public ZMQWorker (AlaiaExtension e) {
-        this.aext = e;
+    public static void init(AlaiaExtension e) {
+        ZMQWorker.aext = e;
     }
 
-    public void* run() {
+    public static void* run() {
         var ctx = new ZMQ.Context(1);
-        var receiver = ZMQ.Socket.create(ctx, ZMQ.SocketType.PULL);
+        ZMQWorker.receiver = ZMQ.Socket.create(ctx, ZMQ.SocketType.PULL);
         var r = receiver.connect(ZMQWorker.VENT);
         if (r!=0) {
-            stdout.printf("Could not connect to alaia vent");
+            stdout.printf("Could not connect to alaia vent\n");
         }
 
-        var sender = ZMQ.Socket.create(ctx, ZMQ.SocketType.PUSH);
+        ZMQWorker.sender = ZMQ.Socket.create(ctx, ZMQ.SocketType.PUSH);
         r = sender.connect(ZMQWorker.SINK);
-
-        var regmsg = ZMQ.Msg.with_data((ZMQWorker.REGISTER+"-"+(string)this.aext.get_page_id()));
-        sender.send
-
         if (r!=0) {
-            stdout.printf("Could not connect to alaia sink");
+            stdout.printf("Could not connect to alaia sink\n");
         }
+
+        uint64 page_id = ZMQWorker.aext.get_page_id();
+        var msgstring = ZMQWorker.REGISTER+"-%lld".printf(page_id);
+        var regmsg = ZMQ.Msg.with_data(msgstring.data);
+        ZMQWorker.sender.send(ref regmsg);
 
         while (true) {
             var input = ZMQ.Msg();
             receiver.recv(ref input, 0);
             string in_data = (string)input.data;
-            string out_data = this.handle_request(in_data);
+            string out_data = ZMQWorker.handle_request(in_data);
             if (out_data != null){
                 var output = ZMQ.Msg.with_data(out_data.data);
                 sender.send(ref output,0);
@@ -45,7 +49,7 @@ public class ZMQWorker {
     private static const string ERROR = "error";
     private static const string REGISTER = "reg";
 
-    private string handle_request(string input) {
+    private static string handle_request(string input) {
         // Needs direct input
         // Valid request example:
         //        ndi-5
@@ -71,6 +75,8 @@ public class ZMQWorker {
 
 public class AlaiaExtension : Object {
     private WebKit.WebPage page;
+    private WebKit.WebExtension ext;
+    private uint64 page_id;
 
     private HashSet<string> direct_input_tags;
 
@@ -82,10 +88,6 @@ public class AlaiaExtension : Object {
         this.direct_input_tags.add("SUBMIT");
     }
     
-    public uint64 get_page_id() {
-        return this.page.get_id();
-    }
-
     public bool needs_direct_input() {
         WebKit.DOM.Document doc = this.page.get_dom_document();
         WebKit.DOM.Element active = doc.active_element;
@@ -93,8 +95,19 @@ public class AlaiaExtension : Object {
         return this.direct_input_tags.contains(active.tag_name);
     }
 
+    public uint64 get_page_id() {
+        return this.page_id;
+    }
+
     public void on_page_created(WebKit.WebExtension extension, WebKit.WebPage page) {
         this.page = page;
+        this.ext = extension;
+        this.page_id = page.get_id();
+        try {
+            unowned Thread<void*> worker_thread = Thread.create<void*>(ZMQWorker.run, true);
+        } catch (ThreadError e) {
+            stdout.printf("Thread failed\n");
+        }
     }
 }
 
@@ -105,11 +118,6 @@ void webkit_web_extension_initialize(WebKit.WebExtension extension) {
     extension.page_created.connect(aext.on_page_created);
     //TODO: migrate thread notation to non-deprecated constructor
     //      see compiler warning.
-    var worker = new ZMQWorker(aext);
-    try {
-        unowned Thread<void*> worker_thread = Thread.create<void*>(worker.run, true);
-    } catch (ThreadError e) {
-        stdout.printf("Thread failed\n");
-    }
+    ZMQWorker.init(aext);
 }
 

@@ -13,36 +13,81 @@ namespace alaia {
         TRACKLIST
     }
 
-    class ZMQVent() {
-        private static const string VENT = "tcp://127.0.0.1:26010";
+    class IPCCallbackWrapper {
+        private IPCCallback cb;
+        private Gdk.EventKey e;
 
-        private uint32 callcounter = 0;
-        private ZMQContext ctx;
-        private ZMQSocket sender;
-
-        public ZMQVent() {
-            this.ctx = new ZMQ.Context(1);
-            this.sender = ZMQ.Socket.create(ctx)
-            this.sender.bind(ZMQVent.VENT);
-        }
-
-        public async needs_direct_input(uint64 page_id) {
-            
+        public IPCCallbackWrapper(IPCCallback cb, Gdk.EventKey e) {
+            this.cb = cb;
+            this.e = e;
         }
     }
 
-    class ZMQSink() {
+    public delegate void IPCCallback(Gdk.EventKey e);
+
+    class ZMQVent {
+        private static const string VENT = "tcp://127.0.0.1:26010";
+
+        private static uint32 callcounter = 0;
+        private static ZMQ.Context ctx;
+        private static ZMQ.Socket sender;
+
+        private static uint32 _current_sites = 0;
+        public static uint32 current_sites {get{return ZMQVent._current_sites;}}
+
+        public static void init() {
+            ZMQVent.ctx = new ZMQ.Context(1);
+            ZMQVent.sender = ZMQ.Socket.create(ctx, ZMQ.SocketType.PUSH);
+            ZMQVent.sender.bind(ZMQVent.VENT);
+        }
+
+        public static async void needs_direct_input(IPCCallback cb, Gdk.EventKey e, uint64 page_id) {
+            stdout.printf("ohai\n");
+            //Create Callback
+            uint32 callid = callcounter++;
+            var cbw = new IPCCallbackWrapper(cb, e);
+            ZMQSink.register_callback(callid, cbw);
+        }
+    }
+
+    class ZMQSink {
         private static const string SINK = "tcp://127.0.0.1:26011";
 
-        private Gee.HashMap<uint32, ZMQCallback> callbacks;
-        private ZMQContext ctx;
-        private ZMQ.Socket receiver;
+        private static Gee.HashMap<uint32, IPCCallbackWrapper> callbacks;
+        private static Gee.HashMap<uint32, uint32> expected_answers;
+        private static Gee.HashMap<uint32, uint32> received_answers;
+        private static ZMQ.Context ctx;
+        private static ZMQ.Socket receiver;
 
-        public ZMQSink() {
-            this.callbacks = new Gee.HashMap<uint32, ZMQCallback>(
-            this.ctx = new ZMQ.Context(1);
-            this.receiver = ZMQ.Socket.create(ctx);
-            this.receiver.bind(ZMQSink.SINK);
+        public static void register_callback(uint32 callid, IPCCallbackWrapper cbw) {
+            ZMQSink.callbacks.set(callid, cbw);
+            ZMQSink.expected_answers.set(callid, ZMQVent.current_sites);
+            ZMQSink.received_answers.set(callid, 0);
+        }
+
+        public static void init() {
+            stdout.printf("initializing sink\n");
+            ZMQSink.callbacks = new Gee.HashMap<uint32, IPCCallbackWrapper>();
+            ZMQSink.ctx = new ZMQ.Context(1);
+            ZMQSink.receiver = ZMQ.Socket.create(ctx, ZMQ.SocketType.PULL);
+            ZMQSink.receiver.bind(ZMQSink.SINK);
+            try {
+                stdout.printf("creating thread\n");
+                unowned Thread<void*> worker_thread = Thread.create<void*>(ZMQSink.run, true);
+                stdout.printf("created thread\n");
+            } catch (ThreadError e) {
+                stdout.printf("Sink broke down\n");
+            }
+        }
+
+        public static void* run() {
+            stdout.printf("ohai thread\n");
+            while (true) {
+                var input = ZMQ.Msg(); 
+                stdout.printf("core - receiving shit\n");
+                receiver.recv(ref input);
+                stdout.printf((string)input.data+"\n");
+            }
         }
     }
 
@@ -52,17 +97,9 @@ namespace alaia {
         public TrackWebView() {
         }
 
-        public bool needs_direct_input() {
-            if (messenger != null) {
-                try {
-                    return messenger.needs_direct_input();
-                } catch (IOError e) {
-                    warning("Error here"+e.message);
-                    return false;
-                }
-            }
-            warning("Could not reach rendering engine via dbus");
-            return false;
+        public async void needs_direct_input(IPCCallback cb, Gdk.EventKey e) {
+            stdout.printf("ohai2\n");
+            ZMQVent.needs_direct_input(cb, e, this.get_page_id());
         }
     }
 
@@ -198,6 +235,9 @@ namespace alaia {
             //Load config
 
             Config.load();
+
+            ZMQVent.init();
+            ZMQSink.init();
             
             this._state = AppState.TRACKLIST;
 
@@ -210,7 +250,7 @@ namespace alaia {
             this.win.set_title("alaia");
             this.win.maximize();
             this.win.icon_name="alaia";
-            this.win.key_press_event.connect(do_key_press_event);
+            this.win.key_press_event.connect(preprocess_key_press_event);
             this.win.destroy.connect(do_delete);
 
             this._context = new ContextMenu();
@@ -297,31 +337,40 @@ namespace alaia {
         public void do_needs_direct_input(bool ndi) {
         }
 
-        public bool do_key_press_event(Gdk.EventKey e) {
+        public bool preprocess_key_press_event(Gdk.EventKey e) {
             var t = this.tracklist.current_track;
-            if (t != null) {
-                if((this.get_web_view(t) as TrackWebView).needs_direct_input() )
-                    return false;
+            if (e.keyval != Gdk.Key.Tab) {
+                return false;
             }
+            if (t != null) {
+                //this.do_key_press_event(e);
+                //return true;
+                (this.get_web_view(t) as TrackWebView).needs_direct_input(do_key_press_event,e);
+            } else {
+                this.do_key_press_event(e);
+            }
+            return true;
+        }
+
+        public void do_key_press_event(Gdk.EventKey e) {
             switch (this._state) {
                 case AppState.NORMAL:
                     switch (e.keyval) {
                         case Gdk.Key.Tab:
                             this.show_tracklist();
-                            return true;
+                            return;
                         default:
-                            return false;
+                            return;
                     }
                 case AppState.TRACKLIST:
                     switch (e.keyval) {
                         case Gdk.Key.Tab:
                             this.hide_tracklist();
-                            return true;
+                            return;
                         default:
-                            return false;
+                            return;
                     }
             }
-            return false;
         }
 
         public static Application S() {
