@@ -38,7 +38,6 @@ public class ZMQWorker {
             string in_data = (string)input.data;
             string out_data = ZMQWorker.handle_request(in_data);
             if (out_data != null){
-                stdout.printf("sending response\n");
                 var output = ZMQ.Msg.with_data(out_data.data);
                 sender.send(ref output,0);
             }
@@ -59,16 +58,12 @@ public class ZMQWorker {
         // Valid answer example:
         //        r_ndi-5-1-<callid>  means yes
         //        r_ndi-5-0-<callid>  means no
-        stdout.printf("input: %s\n",input);
         if (input.has_prefix(ZMQWorker.NEEDS_DIRECT_INPUT)) {
             string[] splitted = input.split("-");
             uint64 pageid = uint64.parse(splitted[1]);
             uint32 callid = int.parse(splitted[2]);
-            stdout.printf("callid: %ld\n", callid);
-            stdout.printf("pageid: %lld\n", pageid);
             if (ZMQWorker.aext.get_page_id() == pageid) {
                 if (ZMQWorker.aext.needs_direct_input()) {
-                    stdout.printf("do need direct input\n");
                     return ZMQWorker.NEEDS_DIRECT_INPUT_RET+
                            ZMQWorker.SEPARATOR+
                            "%lld".printf(pageid)+
@@ -77,7 +72,6 @@ public class ZMQWorker {
                            ZMQWorker.SEPARATOR+
                            "%u".printf(callid);
                 } else {
-                    stdout.printf("do not need direct input\n");
                     return ZMQWorker.NEEDS_DIRECT_INPUT_RET+
                            ZMQWorker.SEPARATOR+
                            "%lld".printf(pageid)+
@@ -112,7 +106,6 @@ public class AlaiaExtension : Object {
     public bool needs_direct_input() {
         WebKit.DOM.Document doc = this.page.get_dom_document();
         WebKit.DOM.Element active = doc.active_element;
-        stdout.printf(active.tag_name+"\n");
         return this.direct_input_tags.contains(active.tag_name);
     }
 
@@ -134,7 +127,6 @@ public class AlaiaExtension : Object {
 
 [CCode (cname = "G_MODULE_EXPORT webkit_web_extension_initialize", instance_pos = -1)]
 void webkit_web_extension_initialize(WebKit.WebExtension extension) {
-    stdout.printf("OHAI!\n");
     AlaiaExtension aext = new AlaiaExtension();
     extension.page_created.connect(aext.on_page_created);
     //TODO: migrate thread notation to non-deprecated constructor

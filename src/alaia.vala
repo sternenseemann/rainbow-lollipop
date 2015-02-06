@@ -55,7 +55,6 @@ namespace alaia {
 
         public static async void needs_direct_input(TrackWebView w,IPCCallback cb, Gdk.EventKey e) {
             uint64 page_id = w.get_page_id();
-            stdout.printf("ohai\n");
             //Create Callback
             uint32 callid = callcounter++;
             var cbw = new IPCCallbackWrapper(w, cb, e);
@@ -68,7 +67,6 @@ namespace alaia {
             for (int i = 0; i < ZMQVent.current_sites; i++) {
                 var msg = ZMQ.Msg.with_data(msgstring.data);
                 sender.send(ref msg);
-                stdout.printf("sending stuff %s\n",msgstring);
             }
         }
 
@@ -94,27 +92,21 @@ namespace alaia {
         }
 
         public static void init() {
-            stdout.printf("initializing sink\n");
             ZMQSink.callbacks = new Gee.HashMap<uint32, IPCCallbackWrapper>();
             ZMQSink.ctx = new ZMQ.Context(1);
             ZMQSink.receiver = ZMQ.Socket.create(ctx, ZMQ.SocketType.PULL);
             ZMQSink.receiver.bind(ZMQSink.SINK);
             try {
-                stdout.printf("creating thread\n");
                 unowned Thread<void*> worker_thread = Thread.create<void*>(ZMQSink.run, true);
-                stdout.printf("created thread\n");
             } catch (ThreadError e) {
                 stdout.printf("Sink broke down\n");
             }
         }
 
         public static void* run() {
-            stdout.printf("ohai thread\n");
             while (true) {
                 var input = ZMQ.Msg(); 
-                stdout.printf("core - receiving shit\n");
                 receiver.recv(ref input);
-                stdout.printf((string)input.data+"\n");
                 ZMQSink.handle_response((string)input.data);
             }
         }
@@ -125,21 +117,17 @@ namespace alaia {
                 ZMQVent.register_site();
             }
             if (input.has_prefix(IPCProtocol.NEEDS_DIRECT_INPUT_RET)) {
-                stdout.printf("in here\n");
                 string[] splitted = input.split(IPCProtocol.SEPARATOR);
                 uint64 page_id = uint64.parse(splitted[1]);
                 int result = int.parse(splitted[2]);
                 uint32 call_id = int.parse(splitted[3]);
                 IPCCallbackWrapper? cbw = ZMQSink.callbacks.get(call_id);
-                stdout.printf("result : %d\n",result);
                 if (result == 1) {
-                    stdout.printf("here too\n2");
                     GLib.Idle.add(() => {
                         cbw.get_webview().key_press_event(cbw.get_event());
                         return false;
                     });
                 } else {
-                    stdout.printf("here\n");
                     GLib.Idle.add(() => {
                         cbw.get_callback()(cbw.get_event());
                         return false;
@@ -167,7 +155,6 @@ namespace alaia {
         }
 
         public async void needs_direct_input(IPCCallback cb, Gdk.EventKey e) {
-            stdout.printf("ohai2\n");
             ZMQVent.needs_direct_input(this, cb, e);
         }
     }
