@@ -11,5 +11,8 @@
     "connector_stroke": 2.0,
     "bullet_stroke" : 5.0,
 
-    "colorscheme":      "solarized_dark"
+    "colorscheme":      "solarized_dark",
+
+    "ipc_vent_port":    26010,
+    "ipc_sink_port":    26011
 }

@@ -30,6 +30,9 @@ namespace alaia {
         public double connector_stroke {get; set; default = 2.0;}
         public double bullet_stroke {get; set; default = 5.0;}
 
+        public uint32 ipc_vent_port {get; set; default = 26010;}
+        public uint32 ipc_sink_port {get; set; default = 26011;}
+
         private void process(Json.Node n) throws ConfigError {
             if (n.get_node_type() != Json.NodeType.OBJECT) {
                 throw new ConfigError.INVALID_FORMAT("Expected root Object. Got %s", n.type_name());
@@ -98,6 +101,20 @@ namespace alaia {
                         }
                         this.colorscheme_name = item.get_string();
                         break;
+
+                    case "ipc_vent_port":
+                        if(item.get_node_type() != Json.NodeType.VALUE) {
+                            throw new ConfigError.INVALID_FORMAT("%s must be Value", name);
+                        }
+                        this.ipc_vent_port = (uint32) item.get_int();
+                        break;
+                    case "ipc_sink_port":
+                        if(item.get_node_type() != Json.NodeType.VALUE) {
+                            throw new ConfigError.INVALID_FORMAT("%s must be Value", name);
+                        }
+                        this.ipc_sink_port = (uint32) item.get_int();
+                        break;
+
                     default:
                         break;
                 }

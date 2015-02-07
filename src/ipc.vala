@@ -24,8 +24,6 @@ namespace alaia {
     public delegate void IPCCallback(Gdk.EventKey e);
 
     class ZMQVent {
-        private static const string VENT = "tcp://127.0.0.1:26010";
-
         private static uint32 callcounter = 0;
         private static ZMQ.Context ctx;
         private static ZMQ.Socket sender;
@@ -36,7 +34,7 @@ namespace alaia {
         public static void init() {
             ZMQVent.ctx = new ZMQ.Context(1);
             ZMQVent.sender = ZMQ.Socket.create(ctx, ZMQ.SocketType.PUSH);
-            ZMQVent.sender.bind(ZMQVent.VENT);
+            ZMQVent.sender.bind("tcp://127.0.0.1:"+Config.c.ipc_vent_port.to_string());
         }
 
         public static async void needs_direct_input(TrackWebView w,IPCCallback cb, Gdk.EventKey e) {
@@ -67,8 +65,6 @@ namespace alaia {
     }
 
     class ZMQSink {
-        private static const string SINK = "tcp://127.0.0.1:26011";
-
         private static Gee.HashMap<uint32, IPCCallbackWrapper> callbacks;
         private static ZMQ.Context ctx;
         private static ZMQ.Socket receiver;
@@ -81,7 +77,7 @@ namespace alaia {
             ZMQSink.callbacks = new Gee.HashMap<uint32, IPCCallbackWrapper>();
             ZMQSink.ctx = new ZMQ.Context(1);
             ZMQSink.receiver = ZMQ.Socket.create(ctx, ZMQ.SocketType.PULL);
-            ZMQSink.receiver.bind(ZMQSink.SINK);
+            ZMQSink.receiver.bind("tcp://127.0.0.1:"+Config.c.ipc_sink_port.to_string());
             try {
                 unowned Thread<void*> worker_thread = Thread.create<void*>(ZMQSink.run, true);
             } catch (ThreadError e) {
