@@ -106,7 +106,10 @@ public class AlaiaExtension : Object {
     public bool needs_direct_input() {
         WebKit.DOM.Document doc = this.page.get_dom_document();
         WebKit.DOM.Element active = doc.active_element;
-        return this.direct_input_tags.contains(active.tag_name);
+        if (active != null)
+            return this.direct_input_tags.contains(active.tag_name);
+        else
+            return false;
     }
 
     public uint64 get_page_id() {
