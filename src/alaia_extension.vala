@@ -121,7 +121,7 @@ public class AlaiaExtension : Object {
         this.ext = extension;
         this.page_id = page.get_id();
         try {
-            unowned Thread<void*> worker_thread = Thread.create<void*>(ZMQWorker.run, true);
+            Thread.create<void*>(ZMQWorker.run, true);
         } catch (ThreadError e) {
             stdout.printf("Thread failed\n");
         }
