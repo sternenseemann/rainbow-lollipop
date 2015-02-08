@@ -245,7 +245,9 @@ namespace alaia {
 
         public void save_session() {
             var b = new Json.Builder();
-            this.tracklist.to_json(b);
+            var valid = this.tracklist.to_json(b);
+            if (!valid)
+                return;
             var g = new Json.Generator();
             g.set_root(b.get_root());
             string session = g.to_data(null);
