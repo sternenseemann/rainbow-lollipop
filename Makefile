@@ -2,7 +2,10 @@
 
 # src files. ein find . -name *.vala sollte auch gehen
 SRC = src/alaia.vala \
-      src/tracks.vala \
+      src/track.vala \
+      src/empty_track.vala \
+      src/history_track.vala \
+      src/tracklist.vala \
       src/nodes.vala \
       src/site_node.vala \
       src/download_node.vala \
