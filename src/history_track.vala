@@ -275,5 +275,19 @@ namespace alaia {
             Application.S().destroy_web_view(this);
             base.delete_track();
         }
+
+        public void to_json(Json.Builder b) {
+            b.begin_object();
+            b.set_member_name("title");
+            b.add_string_value(this.title);
+            b.set_member_name("current");
+            b.add_boolean_value(Application.S().tracklist.current_track == this);
+            b.set_member_name("first_node");
+            if (this.first_node is SiteNode)
+                (this.first_node as SiteNode).to_json(b);
+            else
+                b.add_null_value();
+            b.end_object();
+        }
     }
 }

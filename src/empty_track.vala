@@ -71,6 +71,5 @@ namespace alaia {
             this.actor.opacity = 0x00;
             this.actor.restore_easing_state();
         }
-        
     }
 }

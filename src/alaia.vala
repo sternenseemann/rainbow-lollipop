@@ -242,8 +242,19 @@ namespace alaia {
                 this.webviews_container.show_all();
             }
         }
+
+        public void save_session() {
+            var b = new Json.Builder();
+            this.tracklist.to_json(b);
+            var g = new Json.Generator();
+            g.set_root(b.get_root());
+            string session = g.to_data(null);
+            string filename = Application.get_cache_filename("session.json");
+            FileUtils.set_data(filename, session.data);
+        }
         
         public void do_delete() {
+            this.save_session();
             Gtk.main_quit();
         }
 
@@ -339,6 +350,17 @@ namespace alaia {
             }
 #if DEBUG
             return "data/"+name;
+#else
+            return "";
+#endif
+        }
+
+        public static string get_cache_filename(string name) {
+            File f = File.new_for_path(GLib.Environment.get_user_cache_dir()+Config.C+name);
+            if (f.query_exists())
+                return f.get_path();
+#if DEBUG
+            return "cache/"+name;
 #else
             return "";
 #endif

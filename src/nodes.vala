@@ -241,5 +241,15 @@ namespace alaia {
             }
         }
 
+        public void to_json(Json.Builder b) {
+            b.set_member_name("nodes");
+            b.begin_array();
+            foreach (Node n in this.childnodes) {
+                if (n is SiteNode)
+                    (n as SiteNode).to_json(b);
+            }
+            b.end_array();
+        }
+
     }
 }

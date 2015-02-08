@@ -371,5 +371,15 @@ namespace alaia {
                     break;
             }
         }
+
+        public new void to_json(Json.Builder b) {
+            b.begin_object();
+            base.to_json(b);
+            b.set_member_name("url");
+            b.add_string_value(this.url);
+            b.set_member_name("current");
+            b.add_boolean_value(this.is_current_node);
+            b.end_object();
+        }
     }
 }

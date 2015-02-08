@@ -74,6 +74,21 @@ namespace alaia {
             this.add_empty_track();
         }
 
+        //TODO: write constructor that builds tracklist from json
+
+        public void to_json(Json.Builder b) {
+            b.begin_object();
+            b.set_member_name("tracks");
+            b.begin_array();
+            foreach (Clutter.Actor child in this.get_children()) {
+                if (child is HistoryTrack) {
+                    (child as HistoryTrack).to_json(b);
+                }
+            }
+            b.end_array();
+            b.end_object();
+        }
+
         public void add_track_with_url(string url) {
             var t = new HistoryTrack(this, url);
             this.insert_child_at_index(
