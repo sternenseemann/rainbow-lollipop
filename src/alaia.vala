@@ -10,7 +10,8 @@ namespace alaia {
 
     enum AppState {
         NORMAL,
-        TRACKLIST
+        TRACKLIST,
+        SESSIONDIALOG
     }
 
 
@@ -127,6 +128,7 @@ namespace alaia {
     }
 
     class Application : Gtk.Application {
+        private const string SESSION_FILE = "session.json";
         private static Application app;
 
         private GtkClutter.Window win;
@@ -138,6 +140,7 @@ namespace alaia {
 
         public TrackList tracklist {get;set;}
         private TrackListBackground tracklist_background;
+        private RestoreSessionDialog sessiondialog;
         
         private AppState _state;
 
@@ -161,7 +164,10 @@ namespace alaia {
             ZMQVent.init();
             ZMQSink.init();
             
-            this._state = AppState.TRACKLIST;
+            if (this.old_session_available())
+                this._state = AppState.SESSIONDIALOG;
+            else
+                this._state = AppState.TRACKLIST;
 
             this.webviews = new Gee.HashMap<HistoryTrack, TrackWebView>();
             this.webviews_container = new Gtk.Notebook();
@@ -186,10 +192,22 @@ namespace alaia {
 
             this.tracklist_background = new TrackListBackground(stage);
             stage.add_child(this.tracklist_background);
+            this.sessiondialog = new RestoreSessionDialog(stage);
+            stage.add_child(this.sessiondialog);
 
             this.tracklist = (TrackList)this.tracklist_background.get_first_child();
+
             this.win.show_all();
-            this.tracklist_background.emerge();
+            this.sessiondialog.disappear();
+            this.tracklist_background.disappear();
+            if (this._state == AppState.SESSIONDIALOG) {
+                stdout.printf("foo\n");
+                this.sessiondialog.emerge();
+            }
+            else {
+                stdout.printf("bar\n");
+                this.tracklist_background.emerge();
+            }
         }
 
         //TODO: exchange Gtk.Action for GLib.Simpleaction as soon as webkitgtk is ready for it
@@ -243,6 +261,22 @@ namespace alaia {
             }
         }
 
+        public bool old_session_available() {
+            return FileUtils.test(GLib.Environment.get_user_cache_dir()+Config.C+SESSION_FILE,
+                                    FileTest.EXISTS);
+        }
+
+        public void new_session() {
+            this.sessiondialog.disappear();
+            this.tracklist.emerge();
+            this._state = AppState.TRACKLIST;
+        }
+
+        public void restore_session() {
+            new_session();
+            //TODO: restore data structures from json
+        }
+
         public void save_session() {
             var b = new Json.Builder();
             var valid = this.tracklist.to_json(b);
@@ -251,8 +285,12 @@ namespace alaia {
             var g = new Json.Generator();
             g.set_root(b.get_root());
             string session = g.to_data(null);
-            string filename = Application.get_cache_filename("session.json");
-            FileUtils.set_data(filename, session.data);
+            string filename = Application.get_cache_filename(SESSION_FILE);
+            try {
+                FileUtils.set_data(filename, session.data);
+            } catch (FileError e) {
+                stdout.printf("Could not save session to %s\n",filename);
+            }
         }
         
         public void do_delete() {
@@ -270,14 +308,28 @@ namespace alaia {
         }
 
         public bool preprocess_key_press_event(Gdk.EventKey e) {
-            var t = this.tracklist.current_track;
-            if (e.keyval != Gdk.Key.Tab) {
-                return false;
-            }
-            if (t != null && this._state == AppState.NORMAL) {
-                (this.get_web_view(t) as TrackWebView).needs_direct_input(do_key_press_event,e);
-            } else {
-                this.do_key_press_event(e);
+            switch (this._state) {
+                case AppState.NORMAL:
+                    if (e.keyval != Gdk.Key.Tab)
+                        return false;
+                    var t = this.tracklist.current_track;
+                    if (t != null)
+                        (this.get_web_view(t) as TrackWebView).needs_direct_input(do_key_press_event,e);
+                    else
+                        this.do_key_press_event(e);
+                    break;
+                case AppState.TRACKLIST:
+                    if (e.keyval != Gdk.Key.Tab)
+                        return false;
+                    this.do_key_press_event(e);
+                    break;
+                case AppState.SESSIONDIALOG:
+                    if (e.keyval !=    Gdk.Key.Left
+                        && e.keyval != Gdk.Key.Right
+                        && e.keyval != Gdk.Key.Return)
+                        return false;
+                    this.do_key_press_event(e);
+                    break;
             }
             return true;
         }
@@ -292,6 +344,7 @@ namespace alaia {
                         default:
                             return;
                     }
+                    break;
                 case AppState.TRACKLIST:
                     switch (e.keyval) {
                         case Gdk.Key.Tab:
@@ -300,6 +353,20 @@ namespace alaia {
                         default:
                             return;
                     }
+                    break;
+                case AppState.SESSIONDIALOG:
+                    switch (e.keyval) {
+                        case Gdk.Key.Left:
+                            this.sessiondialog.select_restore();
+                            return;
+                        case Gdk.Key.Right:
+                            this.sessiondialog.select_newsession();
+                            return;
+                        case Gdk.Key.Return:
+                            this.sessiondialog.execute_selected();
+                            return;
+                    }
+                    break;
             }
         }
 
@@ -351,7 +418,7 @@ namespace alaia {
                     return f.get_path();
             }
 #if DEBUG
-            return "data/"+name;
+            return "data/"+Config.C+name;
 #else
             return "";
 #endif
@@ -359,10 +426,8 @@ namespace alaia {
 
         public static string get_cache_filename(string name) {
             File f = File.new_for_path(GLib.Environment.get_user_cache_dir()+Config.C+name);
-            if (f.query_exists())
-                return f.get_path();
+            return f.get_path();
 #if DEBUG
-            return "cache/"+name;
 #else
             return "";
 #endif
