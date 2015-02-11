@@ -376,8 +376,7 @@ namespace alaia {
                 WebKit.ProcessModel.MULTIPLE_SECONDARY_PROCESSES
             );
             WebKit.WebContext.get_default().set_favicon_database_directory("/tmp/alaia_favicons");
-            stdout.printf(get_data_filename("wpe")+"\n");
-            WebKit.WebContext.get_default().set_web_extensions_directory(get_data_filename("alaia/wpe"));
+            WebKit.WebContext.get_default().set_web_extensions_directory(get_data_filename("wpe"));
             Gtk.main();
             return 0;
         }
