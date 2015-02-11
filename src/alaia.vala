@@ -268,8 +268,7 @@ namespace alaia {
 
         public void new_session() {
             this.sessiondialog.disappear();
-            this.tracklist.emerge();
-            this._state = AppState.TRACKLIST;
+            this.show_tracklist();
         }
 
         public void restore_session() {
