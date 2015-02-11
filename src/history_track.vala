@@ -1,4 +1,8 @@
 namespace alaia {
+    public errordomain HistoryTrackError {
+        TRACK_JSON_INVALID
+    }
+
     public class HistoryTrack : Track {
         private WebKit.WebView web;
         private string url;
@@ -41,6 +45,36 @@ namespace alaia {
 
         public void add_nodeconnector(Connector n) {
             this.nodecontainer.add_child(n);
+        }
+
+        public HistoryTrack.from_json(TrackList tl, Json.Node n) throws HistoryTrackError {
+            this(tl, "");
+            if (n.get_node_type() != Json.NodeType.OBJECT){
+                throw new HistoryTrackError.TRACK_JSON_INVALID("Track json is invalid");
+            }
+            var obj = n.get_object();
+            foreach (unowned string name in obj.get_members()){
+                var item = obj.get_member(name);
+                switch (name){
+                    case "title":
+                        if (item.get_node_type() != Json.NodeType.VALUE)
+                            throw new HistoryTrackError.TRACK_JSON_INVALID("%s must be value", name);
+                        this.title = item.get_string();
+                        break;
+                    case "current":
+                        if (item.get_node_type() != Json.NodeType.VALUE)
+                            throw new HistoryTrackError.TRACK_JSON_INVALID("%s must be value", name);
+                        if (item.get_boolean())
+                            tl.current_track = this;
+                        break;
+                    case "first_node":
+                        var node = new SiteNode.from_json(this, item, null);
+                        break;
+                    default:
+                        stdout.printf("Invalid field in track %s\n",name);
+                        break;
+                }
+            }
         }
 
         public HistoryTrack.with_node(TrackList tl, SiteNode n) {

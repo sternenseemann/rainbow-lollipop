@@ -1,4 +1,7 @@
 namespace alaia {
+    public errordomain SiteNodeError {
+        NODE_JSON_INVALID
+    }
     public class NodeHighlight  : Clutter.Actor {
         private Clutter.Canvas c;
         private Node parent;
@@ -257,6 +260,53 @@ namespace alaia {
             (this.track.get_parent().get_last_child() as Track).recalculate_y();
             this.clickaction.clicked.connect(do_clicked);
             this.favactor.content.invalidate();
+        }
+
+        public SiteNode.from_json(HistoryTrack track, Json.Node n, Node? par) throws SiteNodeError {
+            if (n.get_node_type() != Json.NodeType.OBJECT)
+                throw new SiteNodeError.NODE_JSON_INVALID("sitenode must be object");
+            string url = "";
+            bool current = false;
+            Json.Array arr_childnodes = null;
+            var obj = n.get_object();
+            foreach (unowned string name in obj.get_members()) {
+                Json.Node item = obj.get_member(name);
+                switch(name) {
+                    case "current":
+                        if (item.get_node_type() != Json.NodeType.VALUE)
+                            throw new SiteNodeError.NODE_JSON_INVALID("%s must be value",name);
+                        current = item.get_boolean();
+                        break;
+                    case "url":
+                        if (item.get_node_type() != Json.NodeType.VALUE)
+                            throw new SiteNodeError.NODE_JSON_INVALID("%s must be value",name);
+                        url = item.get_string();
+                        break;
+                    case "nodes":
+                        if (item.get_node_type() != Json.NodeType.ARRAY)
+                            throw new SiteNodeError.NODE_JSON_INVALID("%s must be array",name);
+                        arr_childnodes = item.get_array();
+                        break;
+                    default:
+                        stdout.printf("invalid field in node onject: %s\n",name);
+                        break;
+                }
+            }
+            this(track, url, par);
+            if (arr_childnodes != null) {
+                foreach (unowned Json.Node item in arr_childnodes.get_elements()) {
+                    SiteNode cn;
+                    try {
+                        cn = new SiteNode.from_json(track, item, this);
+                    } catch (SiteNodeError e) {
+                        stdout.printf("node creation failed\n");
+                    }
+                }
+            }
+            if (current)
+                this.highlight_on();
+            else
+                this.highlight_off();
         }
 
         private bool is_current_node = false;

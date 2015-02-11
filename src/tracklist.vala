@@ -74,7 +74,20 @@ namespace alaia {
             this.add_empty_track();
         }
 
-        //TODO: write constructor that builds tracklist from json
+        public void from_json(Json.Node n){
+            if (n.get_node_type() != Json.NodeType.ARRAY)
+                stdout.printf("tracklist must be array\n");
+            Json.Array arr = n.get_array();
+            foreach (unowned Json.Node item in arr.get_elements()) {
+                HistoryTrack t;
+                try {
+                    t = new HistoryTrack.from_json(this, item);
+                    this.add_track(t);
+                } catch (HistoryTrackError e) {
+                    stdout.printf("track generation failed\n");
+                }
+            }
+        }
 
         public bool to_json(Json.Builder b) {
             b.begin_object();
@@ -92,8 +105,7 @@ namespace alaia {
             return valid;
         }
 
-        public void add_track_with_url(string url) {
-            var t = new HistoryTrack(this, url);
+        private void add_track(HistoryTrack t) {
             this.insert_child_at_index(
                 t,
                 this.get_n_children()-1
@@ -101,13 +113,14 @@ namespace alaia {
             (this.get_last_child() as Track).recalculate_y(true);
         }
 
+        public void add_track_with_url(string url) {
+            var t = new HistoryTrack(this, url);
+            this.add_track(t);
+        }
+
         public void add_track_with_node(Node n) {
             var t = new HistoryTrack.with_node(this, (n as SiteNode));
-            this.insert_child_at_index(
-                t,
-                this.get_n_children()-1
-            );
-            (this.get_last_child() as Track).recalculate_y(true);
+            this.add_track(t);
         }
 
         public Track? get_track_of_node(Node n){

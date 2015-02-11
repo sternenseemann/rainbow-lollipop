@@ -271,7 +271,29 @@ namespace alaia {
 
         public void restore_session() {
             new_session();
-            //TODO: restore data structures from json
+            Json.Parser p = new Json.Parser();
+            try {
+                p.load_from_file(Application.get_cache_filename(SESSION_FILE));
+            } catch (GLib.Error e) {
+                stdout.printf("Could not parse session json\n");
+            }
+            var root = p.get_root();
+            if (root.get_node_type() != Json.NodeType.OBJECT){
+                stdout.printf("Invalid session json\n");
+                return;
+            }
+            unowned Json.Object rootnode = root.get_object();
+            foreach (unowned string name in rootnode.get_members()) {
+                unowned Json.Node item = rootnode.get_member(name);
+                switch(name){
+                    case "tracks":
+                        this.tracklist.from_json(item);
+                        break;
+                    default:
+                        stdout.printf("Unknown session member %s\n", name);
+                        break;
+                }
+            }
         }
 
         public void save_session() {
