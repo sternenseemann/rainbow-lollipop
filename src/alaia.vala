@@ -201,11 +201,9 @@ namespace alaia {
             this.sessiondialog.disappear();
             this.tracklist_background.disappear();
             if (this._state == AppState.SESSIONDIALOG) {
-                stdout.printf("foo\n");
                 this.sessiondialog.emerge();
             }
             else {
-                stdout.printf("bar\n");
                 this.tracklist_background.emerge();
             }
         }
