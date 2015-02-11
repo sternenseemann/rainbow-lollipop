@@ -338,16 +338,12 @@ namespace alaia {
                         case Gdk.Key.Tab:
                             this.show_tracklist();
                             return;
-                        default:
-                            return;
                     }
                     break;
                 case AppState.TRACKLIST:
                     switch (e.keyval) {
                         case Gdk.Key.Tab:
                             this.hide_tracklist();
-                            return;
-                        default:
                             return;
                     }
                     break;
