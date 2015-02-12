@@ -307,6 +307,17 @@ namespace alaia {
                 this.highlight_on();
             else
                 this.highlight_off();
+
+
+            //Restore Favicon from cache
+            var favdb = WebKit.WebContext.get_default().get_favicon_database();
+            favdb.get_favicon.begin(url,null, (obj, res) => {
+                Cairo.Surface fav;
+                try {
+                    fav = favdb.get_favicon.end(res);
+                } catch (Error e) { return; }
+                this.set_favicon(fav);
+            });
         }
 
         private bool is_current_node = false;
