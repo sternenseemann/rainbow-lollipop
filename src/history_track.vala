@@ -211,6 +211,12 @@ namespace alaia {
         public void do_load_committed(WebKit.LoadEvent e) {
             switch (e) {
                 case WebKit.LoadEvent.STARTED:
+                    // Ignore loading the current_node of a saved session
+                    if (this.web.get_uri() == null || this.web.get_uri() == "")
+                        break;
+
+                    // Ignore if the node has the same URL as the
+                    // currently displayed website
                     if (this._current_node != null
                             && this._current_node is SiteNode
                             && this.web.get_uri() == (this._current_node as SiteNode).url+"/") {

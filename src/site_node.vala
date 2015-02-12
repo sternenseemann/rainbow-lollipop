@@ -303,10 +303,11 @@ namespace alaia {
                     }
                 }
             }
+
+            this.stop_spinner();
+
             if (current)
-                this.highlight_on();
-            else
-                this.highlight_off();
+                this.track.current_node = this;
 
 
             //Restore Favicon from cache
