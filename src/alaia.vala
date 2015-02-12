@@ -14,6 +14,15 @@ namespace alaia {
         SESSIONDIALOG
     }
 
+    public uint count_char(string s, unichar x) {
+        uint r = 0;
+        for (int i = 0; i < s.char_count(); i++) {
+            if (s.get_char(i) == x)
+                r++;
+        }
+        return r;
+    }
+
 
     public class TrackWebView : WebKit.WebView {
         public HistoryTrack track{ get;set; }
