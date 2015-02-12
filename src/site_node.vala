@@ -311,7 +311,10 @@ namespace alaia {
 
             //Restore Favicon from cache
             var favdb = WebKit.WebContext.get_default().get_favicon_database();
-            favdb.get_favicon.begin(url,null, (obj, res) => {
+            string favurl = url;
+            if (!favurl.has_suffix("/"))
+                favurl+="/";
+            favdb.get_favicon.begin(favurl,null, (obj, res) => {
                 Cairo.Surface fav;
                 try {
                     fav = favdb.get_favicon.end(res);
