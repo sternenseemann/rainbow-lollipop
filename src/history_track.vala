@@ -68,7 +68,14 @@ namespace alaia {
                             tl.current_track = this;
                         break;
                     case "first_node":
-                        var node = new SiteNode.from_json(this, item, null);
+                        SiteNode node;
+                        try {
+                            node = new SiteNode.from_json(this, item, null);
+                        } catch (SiteNodeError e) {
+                            stdout.printf("Could not restore rootnode\n");
+                            break;
+                        }
+                        this.first_node = node;
                         break;
                     default:
                         stdout.printf("Invalid field in track %s\n",name);
