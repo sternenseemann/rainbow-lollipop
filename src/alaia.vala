@@ -249,6 +249,10 @@ namespace alaia {
                 w.track = t;
                 w.context_menu.connect(do_web_context_menu);
                 w.get_context().download_started.connect(t.log_download);
+                w.authenticate.connect((request) => {
+                    new AuthenticationDialog(this.win.get_stage(), request);
+                    return true;
+                });
                 this.webviews.set(t,w);
                 this.webviews_container.append_page(w);
             }
