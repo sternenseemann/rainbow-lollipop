@@ -74,7 +74,7 @@ namespace alaia {
     }
 
     interface IHintProvider {
-        public abstract Gee.ArrayList<AutoCompletionHint> get_hints();
+        public abstract Gee.ArrayList<AutoCompletionHint> get_hints(string url);
     }
 
     class AutoCompletionHint : Clutter.Actor {
@@ -86,28 +86,6 @@ namespace alaia {
         }
 
         public void render() {
-        }
-    }
-
-    class URLHintProvider : IHintProvider {
-        private static URLHintProvider instance = null;
-        protected URLHintProvider() {
-        }
-
-        public static URLHintProvider S() {
-            if (URLHintProvider.instance == null)
-                URLHintProvider.instance = new URLHintProvider();
-            return URLHintProvider.instance;
-        }
-
-        public Gee.ArrayList<AutoCompletionHint> get_hints() {
-            var ret = new Gee.ArrayList<AutoCompletionHint>();
-            return ret;
-        }
-    }
-
-    class URLHint : AutoCompletionHint {
-        public new void render() {
         }
     }
 }
