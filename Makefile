@@ -15,6 +15,7 @@ SRC = src/alaia.vala \
       src/session_select.vala \
       src/authentication_dialog.vala \
       src/history.vala \
+      src/searchengine.vala \
 
 # LIBS werden fuer valac und gcc aufgeloest. VALALIBS und CLIBS
 # jeweils nur fuer valac und gcc.

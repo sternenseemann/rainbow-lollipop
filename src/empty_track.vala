@@ -53,6 +53,7 @@ namespace alaia {
             var new_hints = new Gee.ArrayList<AutoCompletionHint>();
             string fragment = this.url_entry.get_text();
             if (fragment.length > 0){
+                new_hints.add_all(DuckDuckGo.S().get_hints(fragment));
                 new_hints.add_all(History.S().get_hints(fragment));
             }
 
