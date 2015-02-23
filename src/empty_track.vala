@@ -13,23 +13,25 @@ namespace alaia {
             this.enter_button = new Gtk.Button.with_label("Go");
             this.enter_button.clicked.connect(do_activate);
             this.hbox = new Gtk.Grid();
-            this.background_color = Clutter.Color.from_string(Config.c.colorscheme.empty_track);
             this.hbox.add(this.url_entry);
             this.hbox.add(this.enter_button);
             this.url_entry.expand=true;
             this.url_entry.activate.connect(do_activate);
+            this.url_entry.changed.connect(do_changed);
             this.actor = new GtkClutter.Actor.with_contents(this.hbox);
+            this.actor.background_color = Clutter.Color.from_string(Config.c.colorscheme.empty_track);
             this.actor.height=26;
             this.actor.y = Config.c.track_height/2-this.actor.height/2;
-            this.actor.add_constraint(
-                new Clutter.BindConstraint(this, Clutter.BindCoordinate.WIDTH, 0)
-            );
+            this.actor.x_expand=true;
             this.add_constraint(
                 new Clutter.BindConstraint(tl, Clutter.BindCoordinate.WIDTH, 0)
             );
             this.actor.transitions_completed.connect(do_transitions_completed);
             this.hbox.show_all();
             this.actor.visible = false;
+            var boxlayout = new Clutter.BoxLayout();
+            boxlayout.orientation = Clutter.Orientation.VERTICAL;
+            this.set_layout_manager(boxlayout);
             this.add_child(this.actor);
         }
 
@@ -46,6 +48,36 @@ namespace alaia {
             Application.S().hide_tracklist();
         }
 
+        private void do_changed() {
+            //Order new hints from hintproviders based on entry-text
+            var new_hints = new Gee.ArrayList<AutoCompletionHint>();
+            string fragment = this.url_entry.get_text();
+            if (fragment.length > 0){
+                new_hints.add_all(History.S().get_hints(fragment));
+            }
+
+            //Check which hints have to be dropped
+            var to_delete = new Gee.ArrayList<AutoCompletionHint>();
+            foreach (Clutter.Actor existing_hint in this.get_children()) {
+                if (existing_hint != this.actor
+                        && existing_hint is AutoCompletionHint
+                        && !new_hints.contains((AutoCompletionHint)existing_hint)){
+                    to_delete.add((AutoCompletionHint)existing_hint);
+                }
+            }
+
+            // Add the new hints
+            foreach (AutoCompletionHint new_hint in new_hints) {
+                if (!this.contains(new_hint))
+                    this.add_child(new_hint);
+            }
+
+            //Drop unnecessary hints
+            foreach (AutoCompletionHint del_hint in to_delete) {
+                this.remove_child(del_hint);
+            }
+        }
+
         private void do_transitions_completed() {
             if (this.actor.opacity == 0x00) {
                 this.actor.visible=false;
@@ -53,7 +85,7 @@ namespace alaia {
         }
 
         protected override int calculate_height(){
-            return Config.c.track_height;
+            return 26;
         }
 
         public new void emerge() {
