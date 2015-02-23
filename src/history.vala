@@ -96,6 +96,14 @@ namespace alaia {
                                 url,
                                 "Surf directly to \n%s".printf(url)
                 );
+                var favdb = WebKit.WebContext.get_default().get_favicon_database();
+                favdb.get_favicon.begin(url,null, (obj, res) => {
+                    Cairo.Surface fav;
+                    try {
+                        fav = favdb.get_favicon.end(res);
+                    } catch (Error e) { return; }
+                    hint.set_icon(fav);
+                });
                 hint.execute.connect((tl) => {
                     tl.add_track_with_url(url);
                 });

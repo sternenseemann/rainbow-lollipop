@@ -120,7 +120,8 @@ namespace alaia {
 
         private Clutter.Text a_heading;
         private Clutter.Text a_text;
-        private Clutter.Canvas a_icon;
+        private Clutter.Actor a_icon;
+        private Clutter.Canvas a_icon_canvas;
 
         public signal void execute(TrackList tl);
 
@@ -148,10 +149,26 @@ namespace alaia {
             this.a_text.x_expand = true;
             this.add_child(this.a_text);
 
+            this.a_icon = new Clutter.Actor();
+            this.a_icon.height=this.a_icon.width = 80;
+            this.a_icon.x = 10;
+            this.a_icon.y = 10;
+            this.a_icon_canvas = new Clutter.Canvas();
+            this.a_icon_canvas.set_size(Config.c.favicon_size,Config.c.favicon_size);
+            this.a_icon_canvas.draw.connect(do_draw_icon);
+            this.a_icon.content = this.a_icon_canvas;
+            this.add_child(this.a_icon);
+            this.a_icon_canvas.invalidate();
+
             this.reactive = true;
             var clickaction = new Clutter.ClickAction();
             clickaction.clicked.connect(this.trigger_execute);
             this.add_action(clickaction);
+        }
+
+        public void set_icon(Cairo.Surface px) {
+            this.icon = px;
+            this.a_icon_canvas.invalidate();
         }
 
         public void trigger_execute(Clutter.Actor a){
@@ -159,6 +176,26 @@ namespace alaia {
             Application.S().hide_tracklist();
             (this.get_parent() as EmptyTrack).clear_urlbar();
             this.execute(tracklist);
+        }
+
+        private bool do_draw_icon(Cairo.Context cr, int w, int h) {
+            cr.set_source_rgba(0,0,0,0);
+            cr.set_operator(Cairo.Operator.SOURCE);
+            cr.paint();
+            if (this.icon == null)
+                return true;
+            var fvcx = new Cairo.Context(this.icon);
+            double x1,x2,y1,y2;
+            fvcx.clip_extents(out x1,out y1,out x2,out y2);
+            double width = x2-x1;
+            double height = y2-y1;
+            cr.save();
+            cr.scale(w/width,h/height);
+            cr.set_source_surface(this.icon,0,0);
+            cr.set_operator(Cairo.Operator.SOURCE);
+            cr.paint();
+            cr.restore();
+            return true;
         }
     }
 }
