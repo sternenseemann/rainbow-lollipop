@@ -131,7 +131,7 @@ namespace alaia {
             this.text = text;
 
             this.background_color = Clutter.Color.from_string(Config.c.colorscheme.tracklist);
-            this.height = 100;
+            this.height = 115;
             this.x_expand = true;
 
             this.a_heading = new Clutter.Text.with_text("Sans 12", this.heading);
@@ -152,10 +152,10 @@ namespace alaia {
 
             this.a_icon = new Clutter.Actor();
             this.a_icon.height=this.a_icon.width = 80;
-            this.a_icon.x = 10;
-            this.a_icon.y = 10;
+            this.a_icon.x = 15;
+            this.a_icon.y = 15;
             this.a_icon_canvas = new Clutter.Canvas();
-            this.a_icon_canvas.set_size(Config.c.favicon_size,Config.c.favicon_size);
+            this.a_icon_canvas.set_size(80,80);
             this.a_icon_canvas.draw.connect(do_draw_icon);
             this.a_icon.content = this.a_icon_canvas;
             this.add_child(this.a_icon);
@@ -189,12 +189,10 @@ namespace alaia {
             cr.set_source_rgba(0,0,0,0);
             cr.set_operator(Cairo.Operator.SOURCE);
             cr.paint();
-            cr.save();
             cr.scale(w/width,h/height);
             cr.set_source_surface(this.icon,0,0);
             cr.set_operator(Cairo.Operator.SOURCE);
             cr.paint();
-            cr.restore();
             return true;
         }
     }
