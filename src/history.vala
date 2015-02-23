@@ -20,7 +20,7 @@ namespace alaia {
 
         private static History instance;
 
-        public History() {
+        private History() {
         }
 
         public static History S() {
