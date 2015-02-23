@@ -14,5 +14,7 @@
     "colorscheme":      "solarized_dark",
 
     "ipc_vent_port":    26010,
-    "ipc_sink_port":    26011
+    "ipc_sink_port":    26011,
+
+    "urlhint_limit":    10
 }

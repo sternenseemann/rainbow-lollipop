@@ -2,6 +2,7 @@
 
 # src files. ein find . -name *.vala sollte auch gehen
 SRC = src/alaia.vala \
+      src/database.vala \
       src/track.vala \
       src/empty_track.vala \
       src/history_track.vala \
@@ -13,13 +14,14 @@ SRC = src/alaia.vala \
       src/ipc.vala \
       src/session_select.vala \
       src/authentication_dialog.vala \
+      src/history.vala \
 
 # LIBS werden fuer valac und gcc aufgeloest. VALALIBS und CLIBS
 # jeweils nur fuer valac und gcc.
 # z.b. valac -pkg libpq  || gcc -lpq
 VALALIBS =  
 CLIBS = 
-LIBS = gtk+-3.0 clutter-1.0 clutter-gtk-1.0 webkit2gtk-4.0 gee-1.0 libzmq
+LIBS = gtk+-3.0 clutter-1.0 clutter-gtk-1.0 webkit2gtk-4.0 gee-1.0 libzmq sqlite3
 EXT_LIBS = webkit2gtk-web-extension-4.0 gee-1.0 libzmq
 
 CC = gcc

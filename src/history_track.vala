@@ -230,6 +230,7 @@ namespace alaia {
                         break;
                     }
                     this.log_call(this.web.get_uri());
+                    History.S().log_call(this.web.get_uri());
                     break;
                 case WebKit.LoadEvent.REDIRECTED:
                     break;
