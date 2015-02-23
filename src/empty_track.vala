@@ -78,6 +78,10 @@ namespace alaia {
             }
         }
 
+        public void clear_urlbar(){
+            this.url_entry.set_text("");
+        }
+
         private void do_transitions_completed() {
             if (this.actor.opacity == 0x00) {
                 this.actor.visible=false;
@@ -114,10 +118,47 @@ namespace alaia {
         protected string text = "";
         protected Cairo.Surface icon = null;
 
-        public AutoCompletionHint() {
+        private Clutter.Text a_heading;
+        private Clutter.Text a_text;
+        private Clutter.Canvas a_icon;
+
+        public signal void execute(TrackList tl);
+
+        public AutoCompletionHint(string heading, string text) {
+            this.heading = heading;
+            this.text = text;
+
+            this.background_color = Clutter.Color.from_string(Config.c.colorscheme.tracklist);
+            this.height = 100;
+            this.x_expand = true;
+
+            this.a_heading = new Clutter.Text.with_text("Sans 12", this.heading);
+            this.a_heading.color=  Clutter.Color.from_string("#eeeeee");
+            this.a_heading.x = 120;
+            this.a_heading.y = 10;
+            this.a_heading.height = 30;
+            this.a_heading.x_expand = true;
+            this.add_child(this.a_heading);
+
+            this.a_text = new Clutter.Text.with_text("Sans 10", this.text);
+            this.a_text.color=  Clutter.Color.from_string("#eeeeee");
+            this.a_text.x = 120;
+            this.a_text.y = 30;
+            this.a_text.height = 30;
+            this.a_text.x_expand = true;
+            this.add_child(this.a_text);
+
+            this.reactive = true;
+            var clickaction = new Clutter.ClickAction();
+            clickaction.clicked.connect(this.trigger_execute);
+            this.add_action(clickaction);
         }
 
-        public void render() {
+        public void trigger_execute(Clutter.Actor a){
+            var tracklist = Application.S().tracklist;
+            Application.S().hide_tracklist();
+            (this.get_parent() as EmptyTrack).clear_urlbar();
+            this.execute(tracklist);
         }
     }
 }

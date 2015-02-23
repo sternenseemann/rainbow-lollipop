@@ -91,7 +91,14 @@ namespace alaia {
             stmnt.bind_int(lim_param_pos, Config.c.urlhint_limit);
             AutoCompletionHint hint;
             while(stmnt.step() == Sqlite.ROW) {
-                hint = new AutoCompletionHint(stmnt.column_text(0), stmnt.column_text(0));
+                string url = stmnt.column_text(0);
+                hint = new AutoCompletionHint(
+                                url,
+                                "Surf directly to \n%s".printf(url)
+                );
+                hint.execute.connect((tl) => {
+                    tl.add_track_with_url(url);
+                });
                 ret.add(hint);
             }
             return ret;
