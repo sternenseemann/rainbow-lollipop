@@ -1,12 +1,6 @@
 using Sqlite;
 
 namespace alaia {
-    private const string DBINIT = """
-        CREATE TABLE History (
-            HIS_URL VARCHAR,
-            HIS_CALLS INT,
-        );
-    """;
 
     class Database {
         private static Database instance;
@@ -14,19 +8,16 @@ namespace alaia {
         private bool initialized=false;
 
         private Database () {
-            string dbpath = Application.get_data_filename("alaia.sqlite3");
-            int err = Sqlite.Database.open_v2(dbpath, out this.db, Sqlite.OPEN_READWRITE);
+            string dbpath = Application.get_cache_filename("alaia.sqlite3");
+            int err = Sqlite.Database.open(dbpath, out this.db);
             if (err != Sqlite.OK) {
-                err = Sqlite.Database.open_v2(dbpath, out this.db, Sqlite.OPEN_CREATE);
-                if (err != Sqlite.OK) {
-                    warning("Could not create database\n");
-                }
-                err = this.db.exec(DBINIT);
-                if (err != Sqlite.OK) {
-                    warning("Could not create tables\n");
-                }
-                
-                
+                warning("Could not create database %s\n", this.db.errmsg());
+                return;
+            }
+            err = this.db.exec(History.DBINIT);
+            if (err != Sqlite.OK) {
+                warning("Could not create tables %s\n", this.db.errmsg());
+                return;
             }
             this.initialized = true;
         }
