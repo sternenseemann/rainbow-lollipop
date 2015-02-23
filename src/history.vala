@@ -6,6 +6,12 @@ namespace alaia {
                 HIS_CALLS INT NOT NULL
             );
         """;
+        private static const string LOG_HINTQRY = """
+            SELECT HIS_URL FROM HISTORY
+            WHERE HIS_URL LIKE $URL
+            ORDER BY HIS_CALLS DESC
+            LIMIT $LIM;
+        """;
         private static const string LOG_QRY = """
             SELECT COUNT(HIS_CALLS) AS CNT FROM History WHERE HIS_URL = $URL;
         """;
@@ -66,17 +72,29 @@ namespace alaia {
             assert(url_param_pos > 0);
             stmnt.bind_text(url_param_pos, url);
             stmnt.step();
-
         }
 
-        public Gee.ArrayList<AutoCompletionHint> get_hints(string url) {
+        public Gee.ArrayList<AutoCompletionHint> get_hints(string url_fragment) {
             var ret = new Gee.ArrayList<AutoCompletionHint>();
+            unowned Sqlite.Database db = Database.S().get_db();
+            Sqlite.Statement stmnt;
+            int err = db.prepare_v2(LOG_HINTQRY, LOG_HINTQRY.length, out stmnt);
+            if (err != Sqlite.OK) {
+                warning("Could not prepare LOG_HINTQRY: %s", db.errmsg());
+                return ret;
+            }
+            int url_param_pos = stmnt.bind_parameter_index("$URL");
+            int lim_param_pos = stmnt.bind_parameter_index("$LIM");
+            assert (url_param_pos > 0);
+            assert (lim_param_pos > 0);
+            stmnt.bind_text(url_param_pos, "%%%s%%".printf(url_fragment));
+            stmnt.bind_int(lim_param_pos, Config.c.urlhint_limit);
+            AutoCompletionHint hint;
+            while(stmnt.step() == Sqlite.ROW) {
+                hint = new AutoCompletionHint(stmnt.column_text(0), stmnt.column_text(0));
+                ret.add(hint);
+            }
             return ret;
-        }
-    }
-
-    class URLHint : AutoCompletionHint {
-        public new void render() {
         }
     }
 }
