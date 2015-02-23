@@ -33,6 +33,8 @@ namespace alaia {
         public uint32 ipc_vent_port {get; set; default = 26010;}
         public uint32 ipc_sink_port {get; set; default = 26011;}
 
+        public uint16 urlhint_limit {get; set; default = 10;}
+
         private void process(Json.Node n) throws ConfigError {
             if (n.get_node_type() != Json.NodeType.OBJECT) {
                 throw new ConfigError.INVALID_FORMAT("Expected root Object. Got %s", n.type_name());
@@ -113,6 +115,13 @@ namespace alaia {
                             throw new ConfigError.INVALID_FORMAT("%s must be Value", name);
                         }
                         this.ipc_sink_port = (uint32) item.get_int();
+                        break;
+
+                    case "urlhint_limit":
+                        if(item.get_node_type() != Json.NodeType.VALUE) {
+                            throw new ConfigError.INVALID_FORMAT("%s must be Value", name);
+                        }
+                        this.urlhint_limit = (uint16) item.get_int();
                         break;
 
                     default:
