@@ -1,22 +1,42 @@
 namespace alaia {
+    /**
+     * Errors for HistoryTrack
+     */
     public errordomain HistoryTrackError {
-        TRACK_JSON_INVALID
+        TRACK_JSON_INVALID // Thrown if a json does not properly represent a HistoryTrack
     }
 
+    /**
+     * The History Track is the core element of this browsers system.
+     * A track represents both a space, that a website can be loaded in a parallel fashion
+     * to other tracks (what tabs in regular browsers essentially do) and a local browsing
+     * history of this space.
+     * The history is represented by a tree of nodes that in turn represent single calls
+     * to websites.
+     */
     public class HistoryTrack : Track {
         private WebKit.WebView web;
         private string url;
         private Clutter.Actor separator;
         private Clutter.Actor nodecontainer;
         private Clutter.Text _title;
-        private TrackList _tracklist;
+        /**
+         * reference to the tracklist that this track belongs to.
+         */
         public TrackList tracklist {get {return this._tracklist;}}
+        private TrackList _tracklist;
         private GtkClutter.Actor close_button;
         public Clutter.ClickAction clickaction;
         private Clutter.Color color;
         private Clutter.Canvas c;
 
-        private Node? _current_node;
+        /**
+         * The node that represents the website which is currently being displayed
+         * In this HistoryTrack's WebView.
+         * If this property is set, it automatically causes the webview to load
+         * the site of the new node.
+         * TODO: Add check if node really belongs to this HistoryTrack
+         */
         public Node? current_node {
             get {
                 return this._current_node;
@@ -31,9 +51,17 @@ namespace alaia {
                     (this._current_node as SiteNode).toggle_highlight();
             }
         }
+        private Node? _current_node;
+
+        /**
+         * reference to the root node of this HistoryTrack's node tree
+         */
         private Node first_node;
         private bool reload_needed = true;
 
+        /**
+         * Add a node to this HistoryTrack
+         */
         public void add_node(Node n, bool recursive=false) {
             this.nodecontainer.add_child(n);
             if (recursive) {
@@ -43,10 +71,17 @@ namespace alaia {
             }
         }
 
+        /**
+         * Add a Nodeconnector to this HistoryTrack
+         */
         public void add_nodeconnector(Connector n) {
             this.nodecontainer.add_child(n);
         }
 
+        /**
+         * Create a HistoryTrack from an appropriate JSON-node
+         * Used to restore sessions.
+         */
         public HistoryTrack.from_json(TrackList tl, Json.Node n) throws HistoryTrackError {
             this(tl, "");
             if (n.get_node_type() != Json.NodeType.OBJECT){
@@ -84,6 +119,11 @@ namespace alaia {
             }
         }
 
+        /**
+         * Create a HistoryTrack from an existing nodes.
+         * This will incorporate all children of the given note into the track
+         * Used in the "create track from branch" feature
+         */
         public HistoryTrack.with_node(TrackList tl, SiteNode n) {
             this(tl, n.url);
             this.web.load_uri(n.url);
@@ -103,6 +143,9 @@ namespace alaia {
             this.add_childnodes(n);
         }
 
+        /**
+         * Recursively add all childnodes of a Node n to this track
+         */
         private void add_childnodes(Node n) {
             foreach (Node m in n.childnodes) {
                 m.track = this;
@@ -113,6 +156,10 @@ namespace alaia {
             }
         }
 
+        /**
+         * Default constructor for HistoryTrack
+         * Creates and initializes track UI
+         */
         public HistoryTrack(TrackList tl, string url) {
             base(tl);
             this.web = Application.S().get_web_view(this);
@@ -185,6 +232,9 @@ namespace alaia {
             this.nodecontainer.add_action(action);
         }
 
+        /**
+         * Draws this HistoryTrack's background
+         */
         private bool do_draw(Cairo.Context cr, int w, int h) {
             cr.set_source_rgba(0,0,0,0);
             cr.set_operator(Cairo.Operator.SOURCE);
@@ -206,6 +256,9 @@ namespace alaia {
             return true;
         }
 
+        /**
+         * The title displayed on top of this Track
+         */
         public string title {
             get {
                 return this._title.text;
@@ -215,6 +268,10 @@ namespace alaia {
             }
         }
 
+        /**
+         * Callback that is being called every time this HistoryTrack's
+         * associated WebView signals a change in the website's loading state
+         */
         public void do_load_committed(WebKit.LoadEvent e) {
             switch (e) {
                 case WebKit.LoadEvent.STARTED:
@@ -243,16 +300,30 @@ namespace alaia {
             }
         }
 
+        /**
+         * Callback that is called when there is a faviconavailable for the current node
+         * TODO: check if it is possible to bind this directly to the concerned node.
+         *       relaying it here may cause the false node to be assigned a wrong icon
+         */
         public void do_favicon_loaded() {
             this.finish_call(this.web.get_favicon());
         }
 
+        /**
+         * Callback to observe if the current node has changed:
+         * TODO: there seems to be some redundancy with the code of the current_node
+         *       property. check if it is really necessary to do it like that
+         */
         private void do_node_changed(GLib.Object self, GLib.ParamSpec p) {
             Application.S().show_web_view(this);
             if (this.reload_needed && this._current_node is SiteNode)
                 this.web.load_uri((this._current_node as SiteNode).url);
         }
 
+        /**
+         * Callback to a mouseclick on the track.
+         * Fires up context menu if clicked
+         */
         private void do_clicked(Clutter.Actor a) {
             switch(this.clickaction.get_button()) {
                 case 3:
@@ -262,6 +333,10 @@ namespace alaia {
             }
         }
 
+        /**
+         * Causes HistoryTrack and Browser to go to the previous node and load
+         * it's associated website.
+         */
         public void go_back() {
             Node? prv = this.current_node.get_previous();
             if (prv != null) {
@@ -269,16 +344,26 @@ namespace alaia {
             }
         }
 
-        //TODO: implement
+        /**
+         * Go to one of the following nodes
+         * TODO: implement
+         */
         public void go_forward() {
         }
 
+        /**
+         * Calculates how many pixels this HistoryTrack needs in vertical space
+         */
         protected override int calculate_height() {
             int h = Config.c.track_spacing+((Config.c.node_height+Config.c.track_spacing)*(this.first_node.get_splits()+1));
             this.height = h;
             return h;
         }
 
+        /**
+         * Log a call to a website by creating a new SiteNode and making it the
+         * current_node of this HistoryTrack
+         */
         public void log_call(string uri) {
             if (this._current_node is SiteNode &&
                 uri != (this._current_node as SiteNode).url) {
@@ -290,6 +375,14 @@ namespace alaia {
             }
         }
 
+        /**
+         * Log a download by creating a DownloadNode.
+         * TODO: currently we can only place downloadnodes correctly
+         *       after a sitenode has already been created.
+         *       maybe we can somehow determine if there should be a download
+         *       node instead of a site node in the phase of the WebKit loading state
+         *       WebKit.LoadEvent.STARTED
+         */
         public void log_download(WebKit.Download d) {
             var fsn = this._current_node;
             if (Application.S().tracklist.current_track == this){
@@ -299,6 +392,10 @@ namespace alaia {
             }
         }
 
+        /**
+         * Stops the current node indicating that it is loading and sets
+         * it's favicon, if there is any.
+         */
         public void finish_call(Cairo.Surface? favicon) {
             if(this._current_node is SiteNode) {
                 if (favicon != null){
@@ -318,12 +415,18 @@ namespace alaia {
             this.close_button.opacity = 0x00;
         }
 
+        /**
+         * Delete this HistoryTrack
+         */
         public new void delete_track() {
             this.close_button.destroy();
             Application.S().destroy_web_view(this);
             base.delete_track();
         }
 
+        /**
+         * Serialize this HistoryTrack to JSON
+         */
         public void to_json(Json.Builder b) {
             b.begin_object();
             b.set_member_name("title");

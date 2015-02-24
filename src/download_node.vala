@@ -1,8 +1,16 @@
 namespace alaia {
+    /**
+     * A form of Progress-Meter
+     * Used by DownloadNodes to display the current progress of a download.
+     */
     class ProgressBullet : Clutter.Actor {
         private Clutter.Canvas c;
         private DownloadNode parent;
         private double fraction = 50.0;
+
+        /**
+         * Returns a new ProgressBullet
+         */
         public ProgressBullet(DownloadNode parent) {
             this.parent = parent;
             this.c = new Clutter.Canvas();
@@ -15,6 +23,9 @@ namespace alaia {
             this.c.invalidate();
         }
 
+        /**
+         * Draws the bar
+         */
         public bool do_draw(Cairo.Context cr, int w, int h) {
             cr.set_source_rgba(0,0,0,0);
             cr.set_operator(Cairo.Operator.SOURCE);
@@ -39,18 +50,27 @@ namespace alaia {
             return true;
         }
 
+        /**
+         * Set the fraction to be displayed
+         */
         public void set_fraction(double fraction) {
             this.fraction = fraction;
             this.c.invalidate();
         }
     }
 
+    /**
+     * A special kind of Node wich represents a download and shows its progress
+     */
     class DownloadNode : Node {
         private WebKit.Download dl;
         private bool finished=false;
         private ProgressBullet progress;
         private Clutter.Text text;
 
+        /**
+         * Returns a new Download node
+         */
         public DownloadNode(HistoryTrack track, WebKit.Download download, Node? par) {
             base(track,par);
             this.dl = download;
@@ -70,6 +90,11 @@ namespace alaia {
             GLib.Idle.add(this.update);
         }
 
+        /**
+         * Updates the state of the ProgressNode of this DownloadNode as long
+         * as the download has not finished. Updating happens asynchronously
+         * over the Gtk mainloop.
+         */
         public bool update() {
             this.progress.set_fraction(this.dl.get_estimated_progress());
             double percent = this.dl.get_estimated_progress()*100;
@@ -82,10 +107,17 @@ namespace alaia {
             return false;
         }
 
+        /**
+         * Returns true if the Node is marked as finished
+         */
         public bool is_finished() {
             return this.finished;
         }
 
+        /**
+         * Determines which application should be used best to display the file
+         * passed in, and launches it. Prints a warning if there is no success
+         */
         private void open_path(File f) {
             try {
                 var handler = f.query_default_handler(null);
@@ -97,16 +129,25 @@ namespace alaia {
             }
         }
 
+        /**
+         * Open the folder in which this downloads resides
+         */
         public void open_folder() {
             var f = File.new_for_uri(this.dl.get_destination());
             this.open_path(f.get_parent());
         }
 
+        /**
+         * Open the download with an appropriate program.
+         */
         public void open_download() {
             var f = File.new_for_uri(this.dl.get_destination());
             this.open_path(f);
         }
 
+        /**
+         * Pass clickevents up to the Node-class
+         */
         private new void do_clicked(Clutter.Actor _) {
             base.do_clicked();
             stdout.printf("ohai\n");

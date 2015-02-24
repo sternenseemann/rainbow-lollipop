@@ -1,4 +1,12 @@
 namespace alaia {
+    /**
+     * A UI-construct that is displayed in the Tracklist
+     * It has two main purposes:
+     *  1. Display a GtkEntry that enables the user to enter URLs or desired destinations
+     *     in any other form and a "Go"-Button to cause the browser surfing to the given
+     *     location.
+     *  2. Display hints based on the input given in the url-entry mentioned in 1.
+     */
     class EmptyTrack : Track {
         private Gtk.Entry url_entry;
         private Gtk.Button enter_button;
@@ -6,6 +14,9 @@ namespace alaia {
         private GtkClutter.Actor actor; 
         private TrackList tracklist;
 
+        /**
+         * Returns a new Emtpy Track
+         */
         public EmptyTrack(TrackList tl) {
             base(tl);
             this.tracklist = tl;
@@ -35,6 +46,11 @@ namespace alaia {
             this.add_child(this.actor);
         }
 
+        /**
+         * Add "http://" to a url, if it is not present
+         * TODO: Use HTTPS-Everywhere API (eff.org somewhat) to add "https://" instead
+         *       of "http://" wherever it is available
+         */
         private string complete_url(string url) {
             if (!url.has_prefix("http://") && !url.has_prefix("https://")) {
                 return "http://" + url;
@@ -42,12 +58,20 @@ namespace alaia {
             return url; 
         }
 
+        /**
+         * Callback that causes the browser to load the entered url in a new track
+         * when enter is pressed in the URL entry
+         */
         private void do_activate() {
             var url = this.complete_url(this.url_entry.get_text());
             this.tracklist.add_track_with_url(url);
             Application.S().hide_tracklist();
         }
 
+        /**
+         * Callback that updates the displayed list of hints every time
+         * The content of the URL-Entry changes.
+         */
         private void do_changed() {
             //Order new hints from hintproviders based on entry-text
             var new_hints = new Gee.ArrayList<AutoCompletionHint>();
@@ -79,20 +103,34 @@ namespace alaia {
             }
         }
 
+        /**
+         * Erases any content from the URL entry
+         */
         public void clear_urlbar(){
             this.url_entry.set_text("");
         }
 
+        /**
+         * Finishes a disappear-transition
+         */
         private void do_transitions_completed() {
             if (this.actor.opacity == 0x00) {
                 this.actor.visible=false;
             }
         }
 
+        /**
+         * Returns the needed height of this EmptyTrack
+         * TODO: Check if really still necessary or if it would be better to use
+         *       Clutter box-layouts.
+         */
         protected override int calculate_height(){
             return 26;
         }
 
+        /**
+         * Fade in
+         */
         public new void emerge() {
             base.emerge();
             this.actor.visible = true;
@@ -102,6 +140,9 @@ namespace alaia {
             this.url_entry.grab_focus();
         }
 
+        /**
+         * Fade out
+         */
         public new void disappear() {
             base.disappear();
             this.actor.save_easing_state();
@@ -110,10 +151,17 @@ namespace alaia {
         }
     }
 
+    /**
+     * Every Class that wants to provide hints for the autocompletion of EmptyTrack
+     * Must fulfill this interface.
+     */
     interface IHintProvider {
         public abstract Gee.ArrayList<AutoCompletionHint> get_hints(string url);
     }
 
+    /**
+     * Represents an autocompletion hint for EmtpyTrack
+     */
     class AutoCompletionHint : Clutter.Actor {
         protected string heading = "";
         protected string text = "";
@@ -124,8 +172,17 @@ namespace alaia {
         private Clutter.Actor a_icon;
         private Clutter.Canvas a_icon_canvas;
 
+        /**
+         * This signal will be triggered when the user wants to actually
+         * use this AutoCompletionHint. The actual logic must be specified
+         * By the HintProvider that issued this AutoCompletionHint as callback
+         * to this signal.
+         */
         public signal void execute(TrackList tl);
 
+        /**
+         * Create an AutoCompletionHint with the given heading and text
+         */
         public AutoCompletionHint(string heading, string text) {
             this.heading = heading;
             this.text = text;
@@ -167,11 +224,18 @@ namespace alaia {
             this.add_action(clickaction);
         }
 
+        /**
+         * Set the icon of this autocompletion hint
+         */
         public void set_icon(Cairo.Surface px) {
             this.icon = px;
             this.a_icon_canvas.invalidate();
         }
 
+        /**
+         * Common logic that occurs everytime when a user decides to use a
+         * Completion hint. e.g. set the application state to normal browsing mode
+         */
         public void trigger_execute(Clutter.Actor a){
             var tracklist = Application.S().tracklist;
             Application.S().hide_tracklist();
@@ -179,7 +243,10 @@ namespace alaia {
             this.execute(tracklist);
         }
 
-        //FIXME: only last entry has icon displayed, all entries are supposed to have one.
+        /**
+         * Renders this AutoCompletionHint's icon
+         * FIXME: only last entry has icon displayed, all entries are supposed to have one.
+         */
         private bool do_draw_icon(Cairo.Context cr, int w, int h) {
             var fvcx = new Cairo.Context(this.icon);
             double x1,x2,y1,y2;

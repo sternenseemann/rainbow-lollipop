@@ -3,38 +3,113 @@ using Clutter;
 using FileUtils;
 
 namespace alaia {
+    /**
+     * Errors for the Config class
+     */
     public errordomain ConfigError {
-        INVALID_FORMAT
+       INVALID_FORMAT // Dropped on config file JSON parse-error
     }
 
+    /**
+     * Errors for the Colorscheme class
+     */
     public errordomain ColorschemeError {
-        INVALID_FORMAT
+        INVALID_FORMAT // Dropped on config file JSON parse-error
     }
 
+    /**
+     * The Config class holds all values that are definable by the user
+     * The configuration is being read-in from a file in JSON format.
+     */
     class Config {
+        /**
+         * Defines, which prefix is used for files belonging to this
+         * program in various subfolders. e.g. in xdg-relevant folders
+         *   ~/.cache/<C>/file.json
+         *   /usr/local/share/<C>/file.png
+         * This constant is used by
+         * Application.get_config_filename(string s),
+         * Application.get_data_filename(string s) and
+         * Application.get_cache_filename(string s).
+         */
         public const string C = "/alaia/";
+
+        /**
+         * Name of subfolders in which the colorschemes reside
+         */
         public const string C_COLORS = "colors/";
 
+        /**
+         * Holds a reference to the colorscheme that is currently in use
+         */
         public Colorscheme colorscheme {get; set;}
         private string colorscheme_name = "";
         
+        /**
+         * Reference to a global instance of Config
+         */
         public static Config c;
 
+        /**
+         * Height of the tracks in pixel
+         * @deprecated
+         */
         public uint8 track_height {get; set; default = 0x80;}
+        /**
+         * Distance between a tracks top border and it's topmost node and
+         * distance between a tracks bottom border and it's bottommost node
+         * in pixels
+         */
         public uint8 track_spacing {get; set; default = 0x10;}
+        /**
+         * Alpha value of any Track
+         * Valid values are 0x00-0xFF
+         */
         public uint8 track_opacity {get; set; default = 0xE0;}
+        /**
+         * Size (width and height) of a single node in pixels
+         */
         public uint8 node_height {get; set; default = 0x40;}
+        /**
+         * Space between two neighbouring nodes in pixels
+         */
         public uint8 node_spacing {get; set; default = 0x10;}
+        /**
+         * Size of the favicon that is being displayed inside a node in pixels
+         */
         public uint8 favicon_size {get; set; default = 24;}
+        /**
+         * The multiplier that is used to brighten colors
+         * @deprecated
+         */
         public uint8 color_multiplier {get; set; default = 15;}
+        /**
+         * Thickness of the line that connects two nodes in pixels
+         */
         public double connector_stroke {get; set; default = 2.0;}
+        /**
+         * Thickness of the line that frames a node
+         */
         public double bullet_stroke {get; set; default = 5.0;}
 
+        /**
+         * Port of the ipc component, that delegates calls
+         */
         public uint32 ipc_vent_port {get; set; default = 26010;}
+        /**
+         * Port of the ipc component, that collects answers to delegated calls
+         */
         public uint32 ipc_sink_port {get; set; default = 26011;}
 
+        /**
+         * Maximum Amount of URL-hints, that are being shown to the user
+         */
         public uint16 urlhint_limit {get; set; default = 10;}
 
+        /**
+         * Parses the config values from JSON and stores them into the according
+         * Class members
+         */
         private void process(Json.Node n) throws ConfigError {
             if (n.get_node_type() != Json.NodeType.OBJECT) {
                 throw new ConfigError.INVALID_FORMAT("Expected root Object. Got %s", n.type_name());
@@ -131,12 +206,18 @@ namespace alaia {
              
         }
         
+        /**
+         * Use the default config
+         */
         private static void loadDefault() {
             stdout.printf("Using default config\n");
             Config.c = new Config();
             Config.c.colorscheme = new Colorscheme.default();
         }
 
+        /**
+         * Try to load the configfile. If it fails, fallback to default config
+         */
         public static void load() {
             string configdata;
             try {
@@ -165,15 +246,36 @@ namespace alaia {
             Config.c = config;
         }
     }
-
+    /**
+     * Represents a colorscheme. For now, the colorscheme mainly defines two
+     * Colors for displaying several gui-elements like the tracklist and its
+     * background. Further it features an array of colors which is used to
+     * assign colors to the HistoryTrack, thereby making them optically discriminable
+     * and aesthetically appealing.
+     * Colors are noted in HTML-markup format (e.g #ff0000 for red or #f00 for red)
+     * Theoretically, every notation that can be parsed by Clutter.Color.from_string(string s)
+     * is valid.
+     */
     class Colorscheme {
+        /**
+         * The background-color of the Tracklist
+         */
         public string tracklist {get;set; default="#141414";}
+        /**
+         * The background-color of the Empty Track
+         */
         public string empty_track {get;set; default="#505050";}
 
         public const string[] defaultcolors = {"#f00","#0f0"};
 
+        /**
+         * ArrayList that stores the colors that can be assigned to HistoryTracks
+         */
         public Gee.ArrayList<string> tracks {get; set; default=new Gee.ArrayList<string>();}
         
+        /**
+         * Parses the value of an entry of "tracks"
+         */
         private void process_tracks(Json.Array n) {
             foreach (unowned Json.Node tc in n.get_elements()) {
                 if (tc.get_node_type() != Json.NodeType.VALUE) 
@@ -182,6 +284,9 @@ namespace alaia {
             }
         }
 
+        /**
+         * Parses a Colorscheme JSON
+         */
         private void process(Json.Node n) throws ColorschemeError {
             if (n.get_node_type() != Json.NodeType.OBJECT) {
                 throw new ColorschemeError.INVALID_FORMAT("Expected Object");
@@ -217,6 +322,9 @@ namespace alaia {
         public Colorscheme() {
         }
 
+        /**
+         * Constructs a default Colorscheme
+         */
         public Colorscheme.default() {
             this.tracks.add("#f00");
             this.tracks.add("#ff0");
@@ -226,6 +334,9 @@ namespace alaia {
             this.tracks.add("#f0f");
         }
 
+        /**
+         * Loads a colorscheme file. If it fails, it defaults to the default colorscheme.
+         */
         public static Colorscheme load(string name) {
             string colorschemedata;
             try {
@@ -250,7 +361,6 @@ namespace alaia {
                 return new Colorscheme.default();
             }
             return cs;
-            
         }
     }
 }

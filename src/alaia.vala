@@ -7,13 +7,22 @@ using Gee;
 
 
 namespace alaia {
-
+    /**
+     * AppState enumerates the states in which the application
+     * currently resides.
+     * NORMAL - Browsing mode. Screen space is occupied by a WebView
+     * TRACKLIST - WebViews are overlayed by a list of Tracks
+     * SESSIONDIALOG - Screen is occupied by a restore-session-dialog
+     */
     enum AppState {
         NORMAL,
         TRACKLIST,
         SESSIONDIALOG
     }
 
+    /**
+     * Counts how often the unichar x occurs in the string s
+     */
     public uint count_char(string s, unichar x) {
         uint r = 0;
         for (int i = 0; i < s.char_count(); i++) {
@@ -23,18 +32,46 @@ namespace alaia {
         return r;
     }
 
-
+    /**
+     * Extended Version of WebKit's WebView which is able to store
+     * A reference to a HistoryTrack along with it and offers methods
+     * To communicate with the web-extension-process of this view.
+     */
     public class TrackWebView : WebKit.WebView {
+        /**
+         * Stores a reference to the HistoryTrack that is associated with
+         * This WebView
+         */
         public HistoryTrack track{ get;set; }
 
         public TrackWebView() {
         }
 
+        /**
+         * Asks The web-extension-process wheter this webview currently
+         * Needs input from the keyboard e.g. to fill content into a
+         * HTML form-element.
+         */
         public async void needs_direct_input(IPCCallback cb, Gdk.EventKey e) {
             ZMQVent.needs_direct_input(this, cb, e);
         }
     }
 
+    /**
+     * The ContextMenu of Items displayed in the TrackList.
+     * It displays different Actions according to what object has been clicked on:
+     *
+     * Track:
+     *    - Close Track
+     * Node:
+     *    - Close Branch
+     *    - New Track from Branch
+     *    + SiteNode:
+     *       - Copy URL
+     *    + DownloadNode:
+     *       - Open the downloaded File
+     *       - Open the folder in which the downloaded file resides.
+     */
     class ContextMenu : Gtk.Menu {
         private Gtk.ImageMenuItem new_track_from_node;
         private Gtk.ImageMenuItem delete_branch;
@@ -44,7 +81,10 @@ namespace alaia {
         private Gtk.ImageMenuItem open_download;
         private Node? node;
         private Track? track;
-        
+
+        /**
+         * Initializes the ContextMenu
+         */
         public ContextMenu () {
             //Nodes
             this.new_track_from_node = new Gtk.ImageMenuItem.with_label("New Track from Branch");
@@ -95,6 +135,11 @@ namespace alaia {
             this.show_all();
         }
 
+        /**
+         * This method shows/hides actions of the menu according to whether
+         * they are needed or not. The context is expressed by the combination
+         * of either a track and a node, a track without a node or nothing.
+         */
         public void set_context(Track? track, Node? node) {
             this.track = track;
             this.node = node;
@@ -108,6 +153,9 @@ namespace alaia {
             this.delete_branch.visible = this.node != null;
         }
 
+        /**
+         * Callbacks
+         */
         public void do_new_track_from_node(Gtk.MenuItem m) {
             if (this.node != null)
                 this.node.move_to_new_track();
@@ -136,6 +184,9 @@ namespace alaia {
         }
     }
 
+    /**
+     * The main Application Class
+     */
     class Application : Gtk.Application {
         private const string SESSION_FILE = "session.json";
         private static Application app;
@@ -143,22 +194,43 @@ namespace alaia {
         private GtkClutter.Window win;
         private ContextMenu _context;
         public ContextMenu context {get{return _context;}}
+
+        /**
+         * Holds references to all Webviews that are currently being used by
+         * Tracks
+         */
         private Gee.HashMap<HistoryTrack,WebKit.WebView> webviews;
+        /**
+         * Organizes the webviews.
+         */
         private Gtk.Notebook webviews_container;
+        /**
+         * Wrapper to embed webviews into a clutter environment
+         */
         private GtkClutter.Actor webact;
 
+        /**
+         * Holds a reference to the tracklist
+         */
         public TrackList tracklist {get;set;}
         private TrackListBackground tracklist_background;
+
         private RestoreSessionDialog sessiondialog;
         
+        /**
+         * The state the application is currently in.
+         * Application states are enumerated by the enum AppState
+         */
         private AppState _state;
-
         public AppState state {
             get {
                 return this._state;
             }
         }
 
+        /**
+         * Application Constructor
+         */
         private Application()  {
             GLib.Object(
                 application_id : "de.grindhold.alaia",
@@ -166,10 +238,10 @@ namespace alaia {
                 register_session : true
             );
 
-            //Load config
-
+            // Load config
             Config.load();
 
+            // Initialize the IPC-Classes
             ZMQVent.init();
             ZMQSink.init();
             
@@ -178,11 +250,13 @@ namespace alaia {
             else
                 this._state = AppState.TRACKLIST;
 
+            // Initialize stuff to display WebViews
             this.webviews = new Gee.HashMap<HistoryTrack, TrackWebView>();
             this.webviews_container = new Gtk.Notebook();
             this.webviews_container.show_tabs = false;
             this.webact = new GtkClutter.Actor.with_contents(this.webviews_container);
 
+            // Initialize the main window
             this.win = new GtkClutter.Window();
             this.win.set_title("alaia");
             this.win.maximize();
@@ -192,20 +266,24 @@ namespace alaia {
 
             this._context = new ContextMenu();
 
+            // Bind webview-stuff to mainwindow
             var stage = this.win.get_stage();
             this.webact.add_constraint(new Clutter.BindConstraint(
                 stage, Clutter.BindCoordinate.SIZE, 0)
             );
             stage.add_child(this.webact);
-            stage.reactive = true;
+            stage.reactive = true; // Make sure, stage emits key-presses and mouse-clicks.
 
+            // Create and initialize modals
             this.tracklist_background = new TrackListBackground(stage);
             stage.add_child(this.tracklist_background);
             this.sessiondialog = new RestoreSessionDialog(stage);
             stage.add_child(this.sessiondialog);
 
+            // Initialize Tracklist
             this.tracklist = (TrackList)this.tracklist_background.get_first_child();
 
+            // Show everything that is needed on screen.
             this.win.show_all();
             this.sessiondialog.disappear();
             this.tracklist_background.disappear();
@@ -217,7 +295,10 @@ namespace alaia {
             }
         }
 
-        //TODO: exchange Gtk.Action for GLib.Simpleaction as soon as webkitgtk is ready for it
+        /**
+         * Callback that initializes the context menu on a webview
+         * TODO: exchange Gtk.Action for GLib.Simpleaction as soon as webkitgtk is ready for it
+         */
         public bool do_web_context_menu(WebKit.ContextMenu cm, Gdk.Event e, WebKit.HitTestResult htr){
             var w = this.webviews_container.get_nth_page(this.webviews_container.page) as WebView;
             WebKit.ContextMenuItem mi;
@@ -243,6 +324,11 @@ namespace alaia {
             return false;
         }
 
+        /**
+         * Obtain The WebView that is associated to the given HistoryTrack
+         * If no WebView Exists yet, it shall be created and added to the
+         * Applications WebView-List
+         */
         public WebKit.WebView get_web_view(HistoryTrack t) {
             if (!this.webviews.has_key(t)) {
                 var w = new TrackWebView();
@@ -259,11 +345,20 @@ namespace alaia {
             return this.webviews.get(t);
         }
 
+        /**
+         * Destroys the WebView associated with the given HistoryTrack
+         * Does nothing if there is no associated WebView
+         */
         public void destroy_web_view(HistoryTrack t) {
             if (this.webviews.has_key(t))
                 this.webviews[t].destroy();
         }
     
+        /**
+         * Puts the WebView that corresponds to the given HistoryTrack
+         * Into the foreground, thereby moving the currently displayed WebView
+         * To the background.
+         */
         public void show_web_view(HistoryTrack t) {
             if (this.webviews.has_key(t)){
                 var page = this.webviews_container.page_num(this.webviews[t]);
@@ -272,16 +367,30 @@ namespace alaia {
             }
         }
 
+        /**
+         * Checks whether there lies a sessionfile in the cache which can be used
+         * To reconstruct a browsing session. This should happen when you start the
+         * Program.
+         */
         public bool old_session_available() {
             return FileUtils.test(GLib.Environment.get_user_cache_dir()+Config.C+SESSION_FILE,
                                     FileTest.EXISTS);
         }
 
+        /**
+         * Sets visibility of modal dialogs so, that the user can start browsing
+         * in a new untouched session.
+         */
         public void new_session() {
             this.sessiondialog.disappear();
             this.show_tracklist();
         }
 
+        /**
+         * Restores a session from a JSON-file. Performs basic validity checks on the
+         * Sessionfile. See Also: The [Class].from_json(JsonNode n)-Constructors
+         * Of several Classes around the Project
+         */
         public void restore_session() {
             new_session();
             Json.Parser p = new Json.Parser();
@@ -309,6 +418,9 @@ namespace alaia {
             }
         }
 
+        /**
+         * Serializes the current session and writes it to a text-file in JSON format.
+         */
         public void save_session() {
             var b = new Json.Builder();
             var valid = this.tracklist.to_json(b);
@@ -325,20 +437,47 @@ namespace alaia {
             }
         }
         
+        /**
+         * Callback to close the application.
+         */
         public void do_delete() {
             this.save_session();
             Gtk.main_quit();
         }
 
+        /**
+         * Display the tracklist as Modal View on screen
+         */
         public void show_tracklist() {
             this.tracklist_background.emerge();
             this._state = AppState.TRACKLIST;
         }
+
+        /**
+         * Hide the tracklist as Modal View on screen
+         */
         public void hide_tracklist() {
             this.tracklist_background.disappear();
             this._state = AppState.NORMAL;
         }
 
+        /**
+         * First Callback an occuring key-event will pass through
+         * This method will determine, wheter it is necessary to obtain any further
+         * Information from web-extension-procecsses.
+         * Further it will determine wheter the occured event is relevant for the
+         * current application state and drop it, if not so.
+         *
+         * If there is no necessity to obtain further information from the
+         * web-extensions, the event will be plainly forwarded to
+         * do_key_press_event(Gdk.EventKey e)
+         *
+         * If it is necessary, it will forward the need for information by calling
+         * an appropriate method of TrackWebView and passing do_key_press_event(Gdk.EventKey e)
+         * as callback and the incoming Gdk.EventKey e.
+         * the method of TrackWebView will call do_key_press_event eventually in an asnychronous
+         * manner
+         */
         public bool preprocess_key_press_event(Gdk.EventKey e) {
             switch (this._state) {
                 case AppState.NORMAL:
@@ -366,6 +505,12 @@ namespace alaia {
             return true;
         }
 
+        /**
+         * This method executes actions according to an incoming preprocessed
+         * Gdk.EventKey e (See preprocess_key_press_event(Gdk.EventKey e) for furhter info)
+         * The action that will be taken is depending on which state the application
+         * Is currently in.
+         */
         public void do_key_press_event(Gdk.EventKey e) {
             switch (this._state) {
                 case AppState.NORMAL:
@@ -398,10 +543,17 @@ namespace alaia {
             }
         }
 
+        /**
+         * Obtains the singleton instance of Application
+         */
         public static Application S() {
             return Application.app;
         }
         
+        /**
+         * The main method. Initializes GtkClutter and WebKit
+         * Then launches the Gtk-Mainloop.
+         */
         public static int main(string[] args) {
             if (GtkClutter.init(ref args) != Clutter.InitError.SUCCESS){
                 stdout.printf("Could not initialize GtkClutter");
@@ -416,6 +568,10 @@ namespace alaia {
             return 0;
         }
 
+        /**
+         * Returns the full path to name of the given configfile.
+         * On *nix-systems it uses the XDG-specifications
+         */
         public static string get_config_filename(string name) {
             File f = File.new_for_path(GLib.Environment.get_user_config_dir()+Config.C+name);
             if (f.query_exists())
@@ -435,6 +591,10 @@ namespace alaia {
 #endif
         }
 
+        /**
+         * Returns the full path to name of the given datafile.
+         * On *nix-systems it uses the XDG-specifications
+         */
         public static string get_data_filename(string name) {
             File f = File.new_for_path(GLib.Environment.get_user_data_dir()+Config.C+name);
             if (f.query_exists())
@@ -451,6 +611,10 @@ namespace alaia {
 #endif
         }
 
+        /**
+         * Returns the full path to name of the given cachefile.
+         * On *nix-systems it uses the XDG-specifications
+         */
         public static string get_cache_filename(string name) {
             File f = File.new_for_path(GLib.Environment.get_user_cache_dir()+Config.C+name);
             return f.get_path();

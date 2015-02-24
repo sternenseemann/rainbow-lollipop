@@ -1,23 +1,51 @@
 namespace alaia {
+    /**
+     * A History class that logs calls to URLs into a SQL Database
+     * It serves as HintProvider and can deliver hints to URLS that have
+     * Already been surfed to.
+     * TODO: There should be a third column which is called HIS_TITLE
+     *       An URL should also qualify for being a hint when it's associated HTML-title
+     *       contains the searched string fragment.
+     *       Fuzzy searching would also be awesome.
+     */
     class History : IHintProvider {
+        /**
+         * Statement that creates the tables necessary for this class
+         */
         public const string DBINIT = """
             CREATE TABLE IF NOT EXISTS History (
                 HIS_URL VARCHAR PRIMARY KEY,
                 HIS_CALLS INT NOT NULL
             );
         """;
+
+        /**
+         * Statement to generate hints
+         */
         private static const string LOG_HINTQRY = """
             SELECT HIS_URL FROM HISTORY
             WHERE HIS_URL LIKE $URL
             ORDER BY HIS_CALLS DESC
             LIMIT $LIM;
         """;
+
+        /**
+         * Statement to Check if an URL has already been logged
+         */
         private static const string LOG_QRY = """
             SELECT COUNT(HIS_CALLS) AS CNT FROM History WHERE HIS_URL = $URL;
         """;
+
+        /**
+         * Statement to Insert a new URL into the log
+         */
         private static const string LOG_INSERT = """
             INSERT INTO History (HIS_URL, HIS_CALLS) VALUES ($URL, 1);
         """;
+
+        /**
+         * Statement to increment a logged URLs call counter
+         */
         private static const string LOG_UPDATE = """
             UPDATE History SET
                 HIS_CALLS = 1+(SELECT HIS_CALLS FROM History WHERE HIS_URL = $URL)
@@ -29,6 +57,9 @@ namespace alaia {
         private History() {
         }
 
+        /**
+         * Returns the singleton instance of History
+         */
         public static History S() {
             if (History.instance == null) {
                 History.instance = new History();
@@ -36,6 +67,9 @@ namespace alaia {
             return History.instance;
         }
 
+        /**
+         * Logs a callto an URL into the History Database
+         */
         public static void log_call(string url) {
             // Check if entry already exists in db
             unowned Sqlite.Database  db = Database.S().get_db();
@@ -74,6 +108,12 @@ namespace alaia {
             stmnt.step();
         }
 
+        /**
+         * Generates a list of URL-Related Hints. An URL qualifies for being
+         * a hint by containing the searched url_fragment. If more than
+         * one is found, the URLs are ordered descendingly by the number of their
+         * calls.
+         */
         public Gee.ArrayList<AutoCompletionHint> get_hints(string url_fragment) {
             var ret = new Gee.ArrayList<AutoCompletionHint>();
             unowned Sqlite.Database db = Database.S().get_db();
