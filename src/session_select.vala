@@ -1,4 +1,8 @@
 namespace alaia {
+    /**
+     * Implements a dialog that let's the user choose whether he wants
+     * to restore the saved browsing session or rather start a new one
+     */
     class RestoreSessionDialog : Clutter.Actor {
         private const int BOX_SIZE = 200;
         private const int BOX_DISTANCE = 70;
@@ -18,6 +22,9 @@ namespace alaia {
         private Clutter.Canvas newsession_canvas;
         private Clutter.Text newsession_text;
 
+        /**
+         * Creates a new RestorSessionDialog
+         */
         public RestoreSessionDialog (Clutter.Actor stage) {
             this.visible = true;
             this.background_color = Clutter.Color.from_string(Config.c.colorscheme.tracklist);
@@ -122,6 +129,9 @@ namespace alaia {
             this.select_restore();
         }
 
+        /**
+         * Focus the restore button and optically emphasize it
+         */
         public void select_restore() {
             this.newsession_iconactor.save_easing_state();
             this.newsession_text.save_easing_state();
@@ -138,6 +148,9 @@ namespace alaia {
             this.selected = RESTORE;
         }
 
+        /**
+         * Focus the new session button and optically emphasize it
+         */
         public void select_newsession() {
             this.newsession_iconactor.save_easing_state();
             this.newsession_text.save_easing_state();
@@ -154,6 +167,9 @@ namespace alaia {
             this.selected = NEWSESSION;
         }
 
+        /**
+         * Execute an action according to which button is selected
+         */
         public void execute_selected() {
             if (this.selected == RESTORE)
                 Application.S().restore_session();
@@ -161,6 +177,9 @@ namespace alaia {
                 Application.S().new_session();
         }
 
+        /**
+         * Fade in
+         */
         public void emerge() {
             this.visible = true;
             this.save_easing_state();
@@ -168,6 +187,9 @@ namespace alaia {
             this.restore_easing_state();
         }
 
+        /**
+         * Fade out
+         */
         public void disappear() {
             this.save_easing_state();
             this.opacity = 0x00;

@@ -1,5 +1,12 @@
 namespace alaia {
+    /**
+     * TrackListBackground is a half-transparent overlay over the WebViews
+     * that optically emphasizes, that TrackList is a modal.
+     */
     public class TrackListBackground : Clutter.Actor {
+        /**
+         * Construct a new TrackListBackground
+         */
         public TrackListBackground(Clutter.Actor stage) {
             var tl = new TrackList(this);
             this.visible = true;
@@ -17,6 +24,9 @@ namespace alaia {
             this.add_child(tl);
         }
 
+        /**
+         * Fade in
+         */
         public void emerge() {
             var tl = (TrackList)this.get_first_child();
             if (tl != null)
@@ -27,6 +37,9 @@ namespace alaia {
             this.restore_easing_state();
         }
 
+        /**
+         * Fade out
+         */
         public void disappear() {
             var tl = (TrackList)this.get_first_child();
             if (tl != null)
@@ -44,7 +57,19 @@ namespace alaia {
 
     }
 
+    /**
+     * Represents a list of the currently opened HistoryTracks
+     * The Tracklist also contains a special Track which is called
+     * the EmptyTrack. The Empty Track offers users the possibility
+     * To open new Websites
+     */
     public class TrackList : Clutter.Actor {
+        /**
+         * Holds a reference to the currently active HistoryTrack
+         * of this TrackList
+         * The current_track is always the HistoryTrack that's associated
+         * WebView is currently displayed in the foreground
+         */
         public HistoryTrack? current_track {
             get {
                 return this._current_track;
@@ -52,11 +77,12 @@ namespace alaia {
             set {
                 this._current_track = value;
             }
-            
         }
-
         private HistoryTrack? _current_track;
 
+        /**
+         * Create a new TrackList
+         */
         public TrackList(TrackListBackground tbl) {
             this.add_constraint(
                 new Clutter.BindConstraint(tbl, Clutter.BindCoordinate.WIDTH,0)
@@ -74,6 +100,9 @@ namespace alaia {
             this.add_empty_track();
         }
 
+        /**
+         * Rebuild a tracklist from a JSON
+         */
         public void from_json(Json.Node n){
             if (n.get_node_type() != Json.NodeType.ARRAY)
                 stdout.printf("tracklist must be array\n");
@@ -89,6 +118,9 @@ namespace alaia {
             }
         }
 
+        /**
+         * Serialize this TrackList to JSON
+         */
         public bool to_json(Json.Builder b) {
             b.begin_object();
             b.set_member_name("tracks");
@@ -105,6 +137,9 @@ namespace alaia {
             return valid;
         }
 
+        /**
+         * Add the given HistoryTrack to this TrackList
+         */
         private void add_track(HistoryTrack t) {
             this.insert_child_at_index(
                 t,
@@ -113,16 +148,28 @@ namespace alaia {
             (this.get_last_child() as Track).recalculate_y(true);
         }
 
+        /**
+         * Generate a new Track from the given url and add it to this
+         * Tracklist
+         */
         public void add_track_with_url(string url) {
             var t = new HistoryTrack(this, url);
             this.add_track(t);
         }
 
+        /**
+         * Generate a new Track from the given node and add it to
+         *  this Tracklist
+         */
         public void add_track_with_node(Node n) {
             var t = new HistoryTrack.with_node(this, (n as SiteNode));
             this.add_track(t);
         }
 
+        /**
+         * Returns the Track that the given Node belongs to
+         * Returns null if no Track belongs to the given Node
+         */
         public Track? get_track_of_node(Node n){
             foreach (Clutter.Actor t in this.get_children()) {
                 if (t is HistoryTrack && (t as HistoryTrack).contains(n)) {
@@ -132,6 +179,9 @@ namespace alaia {
             return null;
         }
 
+        /**
+         * Add an EmptyTrack to this TrackList
+         */
         private void add_empty_track() {
             this.add_child(
                 new EmptyTrack(this)
@@ -144,6 +194,9 @@ namespace alaia {
             }
         }
 
+        /**
+         * Fade in
+         */
         public void emerge() {
             for (int i = 0; i < this.get_n_children(); i++) {
                 Track t = (this.get_child_at_index(i) as Track);
@@ -159,6 +212,9 @@ namespace alaia {
             this.restore_easing_state();
         }
 
+        /**
+         * Fade out
+         */
         public void disappear() {
             for (int i = 0; i < this.get_n_children(); i++) {
                 Track t = (this.get_child_at_index(i) as Track);

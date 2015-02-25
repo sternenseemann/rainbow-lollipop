@@ -1,4 +1,10 @@
 namespace alaia {
+    /**
+     * Represents an Authentication Dialog that lets the user
+     * enter credentials to log into e.g. an HTTP Basic Auth protected server
+     * TODO: This is NONTESTED code and should be considered completely unfunctional
+     *       Change this fact.
+     */
     class AuthenticationDialog : Clutter.Actor {
         private static const int FRAME_WIDTH = 300;
         private static const int FRAME_HEIGHT = 200;
@@ -19,6 +25,10 @@ namespace alaia {
         private Gtk.Button ok;
         private Gtk.Button cancel;
     
+        /**
+         * Construct a new AuthenticationDialog
+         * TODO: Make stock-buttons
+         */
         public AuthenticationDialog(Clutter.Actor stage, WebKit.AuthenticationRequest r) {
             this.request = r;
             this.background_color = Clutter.Color.from_string(Config.c.colorscheme.empty_track);
@@ -28,7 +38,6 @@ namespace alaia {
 
             this.username_entry = new Gtk.Entry();
             this.password_entry = new Gtk.Entry();
-            //TODO: Make stock-buttons
             this.ok = new Gtk.Button.from_icon_name("action-ok", Gtk.IconSize.MENU);
             this.cancel = new Gtk.Button.from_icon_name("action-cancel", Gtk.IconSize.MENU);
             this.ok.clicked.connect(this.do_ok);
@@ -72,6 +81,10 @@ namespace alaia {
             this.frame.add_child(this.a_cancel);
         }
 
+        /**
+         * Execute OK on the AuthenticatonRequest callback
+         * and pass the entered credentials to it.
+         */
         public void do_ok(Gtk.Widget b) {
             var c = new WebKit.Credential(
                 this.username_entry.get_text(),
@@ -83,15 +96,26 @@ namespace alaia {
             this.destroy();
         }
 
+        /**
+         * Execute Cancel on the AuthenticationRequest callback
+         */
         public void do_cancel(Gtk.Widget b) {
             this.request.cancel();
             this.disappear();
             this.destroy();
         }
 
+        /**
+         * Fade in
+         * TODO: implement if needed or remove this todo
+         */
         public void emerge() {
         }
 
+        /**
+         * Fade out
+         * TODO: implement if needed or remove this todo
+         */
         public void disappear() {
         }
     }

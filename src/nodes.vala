@@ -2,10 +2,16 @@ using Gee;
 using Math;
 
 namespace alaia {
+    /**
+     * Converts the 8bit representation of a color into a float between 0.0 and 1.0
+     */
     private float col_h2f(int col) {
         return (float)col/255;
     }
 
+    /**
+     * rounds a float and returns the rounded number as integer
+     */
     private int rnd(float f) {
         int i = (int)f;
         float d = f - (float)i;
@@ -14,15 +20,26 @@ namespace alaia {
         return i;
     }
 
+    /**
+     * A Constraint that keeps an area aligned to
+     * The source's right border and the target's left border.
+     * Used to assign an area to NodeConnectors
+     */
     public class ConnectorConstraint : Clutter.Constraint {
         private Clutter.Actor source;
         private Clutter.Actor target;
         
+        /**
+         * Create a new node Connector from source to target
+         */
         public ConnectorConstraint(Clutter.Actor source, Clutter.Actor target) {
             this.source=source;
             this.target=target;
         }
-        
+
+        /**
+         * Updates the area depending on source's and target's positions
+         */
         public override void update_allocation(Clutter.Actor a, Clutter.ActorBox alloc) {
             var sourcebox = this.source.get_allocation_box();
             var targetbox = this.target.get_allocation_box();
@@ -37,12 +54,19 @@ namespace alaia {
             (a.content as Clutter.Canvas).set_size(rnd(alloc.x2-alloc.x1), rnd(alloc.y2-alloc.y1));
         }
     }
-    
+
+    /**
+     * An Actor that draws a connecting line between two nodes
+     * You can configure the connectors thickness with the config-entry 'connector_stroke'
+     */
     public class Connector : Clutter.Actor {
         private Clutter.Canvas c;
         private Node previous;
         private Node next;
 
+        /**
+         * Create a new Connector from the Node previous to the Node next
+         */
         public Connector(Node previous, Node next) {
             this.previous = previous;
             this.next = next;
@@ -60,6 +84,10 @@ namespace alaia {
             previous.track.add_nodeconnector(this);
             
         }
+
+        /**
+         * Draws the Connector line
+         */
         public bool do_draw(Cairo.Context cr, int w, int h) {
             cr.set_source_rgba(0,0,0,0);
             cr.set_operator(Cairo.Operator.SOURCE);
@@ -79,12 +107,19 @@ namespace alaia {
             return true;
         }
 
+        /**
+         * Fade in
+         */
         public void emerge() {
             this.visible = true;
             this.save_easing_state();
             this.opacity = 0xFF;
             this.restore_easing_state();
         }
+
+        /**
+         * Fade out
+         */
         public void disappear() {
             this.save_easing_state();
             this.opacity = 0x00;
@@ -93,15 +128,36 @@ namespace alaia {
     }
 
 
+    /**
+     * This class represents a Node. A node is a point in the history-tree
+     * of a track. A node represents a call to a website and the result of
+     * those calls.
+     */
     public class Node : Clutter.Actor {
+        /**
+         * Reference to the node that spawned this node
+         */
         private Node? previous;
-        private Gee.ArrayList<Node> _childnodes; //special list only for nodes
+        /**
+         * Contains all nodes that have been spawned from this node
+         */
         public Gee.ArrayList<Node> childnodes {get {return this._childnodes;}}
+        private Gee.ArrayList<Node> _childnodes; //special list only for nodes
+        /**
+         * The HistoryTrack that this Node belongs to
+         */
         public HistoryTrack track {get; set;}
+        /**
+         * The color in which this Node is displayed. The color is being derived
+         * from the associated Track's color
+         */
         public Clutter.Color color {get;set;}
         private Connector? connector;
         protected Clutter.ClickAction clickaction;
 
+        /**
+         * Constructs a node
+         */
         public Node(HistoryTrack track, Node? par) {
             if (par != null) {
                 par.childnodes.add(this);
@@ -132,10 +188,17 @@ namespace alaia {
             this.add_action(this.clickaction);
         }
 
+        /**
+         * Declares this node a rootnode by removing the reference to any previous Node
+         */
         public void make_root_node() {
             this.previous = null; 
         }
 
+        /**
+         * Takes this node an all it's childnodes, creates a new track, removes said
+         * nodes from their current track and assigns them to the newly created track
+         */
         public void move_to_new_track() {
             var prv = this.previous;
             if (prv != null) {
@@ -149,10 +212,21 @@ namespace alaia {
             this.track.tracklist.add_track_with_node(this);
         }
 
+        /**
+         * Returns the Index in the childnodes-list of the given child-node
+         * TODO: Assert that the given node is actually a child of this node
+         */
         public int index_of_child(Node n) {
             return this.childnodes.index_of(n);
         }
 
+        /**
+         * Returns, into how many side-branches this node holds
+         * (in general the number of children-1) except when the
+         * node has only one child.
+         * This is used to calculate how much offset a node must have in order
+         * to render a proper non-entangled graphical tree representation
+         */
         public int get_splits() {
             int r = 0;
             foreach (Node n in this.childnodes) {
@@ -164,6 +238,9 @@ namespace alaia {
             return r;
         }
 
+        /**
+         * Returns how many splits there are until the given childnode-index
+         */
         public int get_splits_until(int index) {
             int r = 0;
             for (int i = 0; i < index; ++i) {
@@ -172,6 +249,11 @@ namespace alaia {
             return r;
         }
 
+        /**
+         * Takes care of recursively deleting this node and all child nodes
+         * Causes this Node's track to recalculate its height and rerender
+         * the node-tree
+         */
         public void delete_node(bool rec_initial=true) {
             var prv = this.previous;
             Gee.ArrayList<Node> nodes = new Gee.ArrayList<Node>();
@@ -190,6 +272,9 @@ namespace alaia {
             }
         }
 
+        /**
+         * Handles right-clicking on a node
+         */
         public void do_clicked() {
             switch (this.clickaction.get_button()) {
                 case 3: //Right mousebutton
@@ -202,12 +287,19 @@ namespace alaia {
                                               // state after they have been clicked.
         }
 
+        /**
+         * Lets each childnode of this node recalculate it's y-coordinate positions
+         */
         public void recalculate_nodes() {
             foreach (Node n in this.childnodes) {
                 n.recalculate_y(this);
             }
         }
 
+        /**
+         * Recalculates this Node's y-coordinate position for the graphical tree
+         * representation.
+         */
         public void recalculate_y(Node? call_origin) {
             if (this.previous != null && call_origin != this.previous) {
                 this.previous.recalculate_y(this);
@@ -223,10 +315,18 @@ namespace alaia {
             }
         }
 
+        /**
+         * Returns this Node's previous node if any.
+         * If it returns null, this node is a root node.
+         */
         public Node? get_previous() {
             return this.previous;
         }
 
+        /**
+         * Deletes any reference to this node from a parent node and destroys
+         * the Connector that connects the two.
+         */
         private void detach_childnodes() {
             foreach (Node n in this.childnodes) {
                 n.detach_childnodes();
@@ -235,12 +335,18 @@ namespace alaia {
             this.connector.destroy();
         }
 
+        /**
+         * Ensures that this Node and its Connector have colors according to its Track
+         */
         protected void adapt_to_track() {
             if (this.previous != null) {
                 this.connector = new Connector(this.previous, this);
             }
         }
 
+        /**
+         * Serialize this nodes and its childnodes recursively into JSON
+         */
         public void to_json(Json.Builder b) {
             b.set_member_name("nodes");
             b.begin_array();
@@ -250,6 +356,5 @@ namespace alaia {
             }
             b.end_array();
         }
-
     }
 }

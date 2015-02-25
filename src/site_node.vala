@@ -1,11 +1,22 @@
 namespace alaia {
+    /**
+     * Errors for the class SiteNode
+     */
     public errordomain SiteNodeError {
-        NODE_JSON_INVALID
+        NODE_JSON_INVALID // Thrown if a JSON is no proper SiteNode representation
     }
+
+    /**
+     * Draws a bright Halo-like gradient which is used to express that
+     * A Node currently has the focus.
+     */
     public class NodeHighlight  : Clutter.Actor {
         private Clutter.Canvas c;
         private Node parent;
 
+        /**
+         * Create a new Node Highlight
+         */
         public NodeHighlight(Node parent) {
             this.parent = parent;
             this.c = new Clutter.Canvas();
@@ -19,6 +30,9 @@ namespace alaia {
             this.c.invalidate();
         }
 
+        /**
+         * Draw the node highlight
+         */
         public bool do_draw(Cairo.Context cr, int w, int h) {
             cr.set_source_rgba(0,0,0,0);
             cr.set_operator(Cairo.Operator.SOURCE);
@@ -43,11 +57,17 @@ namespace alaia {
         }
     }
 
+    /**
+     * An animated Actor that is used to indicate that a node is currently loading
+     */
     public class NodeSpinner : Clutter.Actor {
         private Clutter.Canvas c;
         private Node parent;
         private bool running = false;
 
+        /**
+         * Creates a new NodeSpinner
+         */
         public NodeSpinner(Node parent){
             this.parent = parent;
             this.c = new Clutter.Canvas();
@@ -75,6 +95,9 @@ namespace alaia {
             this.restore_easing_state();
         }
 
+        /**
+         * Stop the spinning and make the Node spinner invisible
+         */
         public void stop(){
             this.running = false;
             this.save_easing_state();
@@ -82,6 +105,9 @@ namespace alaia {
             this.restore_easing_state();
         }
 
+        /**
+         * Make the spinner visible and start spinning
+         */
         public void start(){
             this.running = true;
             this.set_easing_mode(Clutter.AnimationMode.EASE_IN_OUT_BOUNCE);
@@ -92,6 +118,9 @@ namespace alaia {
             this.restore_easing_state();
         }
 
+        /**
+         * Draw the NodeSpinner
+         */
         public bool do_draw(Cairo.Context cr, int w, int h) {
             cr.set_source_rgba(0,0,0,0);
             cr.set_operator(Cairo.Operator.SOURCE);
@@ -112,10 +141,16 @@ namespace alaia {
 
     }
 
+    /**
+     * An Actor that represents the physical body of a Node
+     */
     public class NodeBullet : Clutter.Actor {
         private Clutter.Canvas c;
         private Node parent;
 
+        /**
+         * Create a new NodeBullet
+         */
         public NodeBullet(Node parent) {
             this.parent = parent;
             this.c = new Clutter.Canvas();
@@ -128,6 +163,9 @@ namespace alaia {
             this.c.invalidate();
         }
 
+        /**
+         * Draw the NodeBullet
+         */
         public bool do_draw(Cairo.Context cr, int w, int h) {
             cr.set_source_rgba(0,0,0,0);
             cr.set_operator(Cairo.Operator.SOURCE);
@@ -150,6 +188,11 @@ namespace alaia {
         }
     }
 
+    /**
+     * A tooltip that can be attached to an actor
+     * TODO: Maybe could be made cooler by attaching to
+     *       The Actor's mouse-over events instead of manually coding it there
+     */
     public class Tooltip : Clutter.Actor {
         private const uint8 OPACITY = 0xAF;
         private const string COLOR = "#121212";
@@ -169,6 +212,9 @@ namespace alaia {
             this.add_child(this.textactor);
         }
 
+        /**
+         * Fade in
+         */
         public void emerge() {
             this.scale_x = 1/this.get_parent().scale_x;
             this.visible = true;
@@ -188,6 +234,9 @@ namespace alaia {
             }
         }
 
+        /**
+         * Fade out
+         */
         public void disappear() {
             this.save_easing_state();
             this.textactor.save_easing_state();
@@ -198,7 +247,14 @@ namespace alaia {
         }
     }
 
+    /**
+     * A tooltip which attaches to a node and inherits its color for
+     * text display
+     */
     public class NodeTooltip : Tooltip {
+        /**
+         * Create a new NodeTooltip
+         */
         public NodeTooltip (Node node, string text) {
             base(node, text);
             var c = node.track.get_background_color().lighten();
@@ -209,6 +265,11 @@ namespace alaia {
         }
     }
 
+    /**
+     * Represents a call to a Website and its response in a History Track
+     * A SiteNode is normally generated when a Site yields neither a Download
+     * nor an HTTP-Errorcode
+     */
     public class SiteNode : Node {
         private Cairo.Surface favicon;
         private Clutter.Actor favactor;
@@ -220,6 +281,9 @@ namespace alaia {
         
         private string _url;
 
+        /**
+         * Holds the URL of the website that has been called to create this node
+         */
         [Description(nick="url of this node", blurb="The url that this node represents")]
         public string url {
             get {
@@ -227,6 +291,9 @@ namespace alaia {
             }
         }
 
+        /**
+         * Create a new SiteNode
+         */
         public SiteNode(HistoryTrack track, string url, Node? par) {
             base(track, par);
             this._url = url;
@@ -262,6 +329,11 @@ namespace alaia {
             this.favactor.content.invalidate();
         }
 
+        /**
+         * Create a SiteNode from JSON. Usually used to restore a SiteNode
+         * from a serialized Session
+         * Will recursively Restore all this SiteNode's childnodes
+         */
         public SiteNode.from_json(HistoryTrack track, Json.Node n, Node? par) throws SiteNodeError {
             if (n.get_node_type() != Json.NodeType.OBJECT)
                 throw new SiteNodeError.NODE_JSON_INVALID("sitenode must be object");
@@ -326,10 +398,20 @@ namespace alaia {
 
         private bool is_current_node = false;
 
+        /**
+         * Whatever. Empty method...
+         * TODO: Check if really necessary
+         */
         public void finish_loading() {
 
         }
 
+        /**
+         * Adapts this nodes appearance to the HistoryTrack that it currently resides
+         * in. All subcomponents of this Node then have a color that matches the Track
+         * This is for example needed when a Branch of nodes is moved to a new Track
+         * By the create-new-track-from-branch-feature.
+         */
         public new void adapt_to_track() {
             base.adapt_to_track();
             this.color = this.track.get_background_color().lighten();
@@ -339,7 +421,9 @@ namespace alaia {
             this.url_tooltip.content.invalidate();
         }
 
-
+        /**
+         * Toggle this Node's NodeHighlight's visibility
+         */
         public void toggle_highlight() {
             this.is_current_node = !this.is_current_node;
             if (this.is_current_node) {
@@ -349,6 +433,9 @@ namespace alaia {
             }
         }
 
+        /**
+         * Sets the NodeHighlight of this Node visible
+         */
         public void highlight_on(bool recursive=false) {
             this.is_current_node = true;
             this.highlight.save_easing_state();
@@ -362,6 +449,9 @@ namespace alaia {
             }
         }
 
+        /**
+         * Sets the NodeHighlight of this Node invisible
+         */
         public void highlight_off(bool recursive=false) {
             this.is_current_node=false;
             this.highlight.save_easing_state();
@@ -375,6 +465,10 @@ namespace alaia {
             }
         }
 
+        /**
+         * Activates the Highlight when the mouse enters this SiteNode
+         * and the SiteNode is not the current_node of its HistoryTrack
+         */
         private bool do_enter_event(Clutter.CrossingEvent e) {
             if (!this.is_current_node) {
                 this.highlight.save_easing_state();
@@ -385,6 +479,10 @@ namespace alaia {
             return true;
         }
 
+        /**
+         * Deactivates the Highlight when the mouse leaves this SiteNode
+         * except when this SiteNode is its HistoryTrack's current_node
+         */
         private bool do_leave_event(Clutter.CrossingEvent e) {
             if (!this.is_current_node) {
                 this.highlight.save_easing_state();
@@ -400,10 +498,17 @@ namespace alaia {
             }
         }
 
+        /**
+         * Stop this SiteNode's NodeSpinner. Thereby stop indicating
+         * That this Node is currently loading.
+         */
         public void stop_spinner() {
             this.spinner.stop();
         }
 
+        /**
+         * Scale and Draw the favicon of this SiteNode
+         */
         public bool do_draw_favactor(Cairo.Context cr, int w, int h) {
             var fvcx = new Cairo.Context(this.favicon);
             double x1,x2,y1,y2;
@@ -422,11 +527,19 @@ namespace alaia {
             return true;
         }
 
+        /**
+         * Set the favicon of this SiteNode
+         */
         public void set_favicon(Cairo.Surface px) {
             this.favicon=px;
             this.favactor_canvas.invalidate();
         }
 
+        /**
+         * Enable left mouse button clicks on this SiteNode
+         * A Click will cause the WebView of this SiteNode's associated
+         * Track to load the url that is stored within this SiteNode
+         */
         private new void do_clicked(Clutter.Actor a) {
             base.do_clicked();
             switch (this.clickaction.get_button()) {
@@ -437,6 +550,9 @@ namespace alaia {
             }
         }
 
+        /**
+         * Serializes this SiteNode into JSON
+         */
         public new void to_json(Json.Builder b) {
             b.begin_object();
             base.to_json(b);

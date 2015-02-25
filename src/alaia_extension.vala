@@ -1,5 +1,11 @@
 using Gee;
 
+/**
+ * This Worker receives IPC-Calls from the main-thread, processes them and
+ * returns appropriate answers.
+ * The Worker only anwers if the page id of this webextension is the same as
+ * the page id that the IPC-Call was issued for. Otherwise it will drop the request
+ */
 public class ZMQWorker {
     private static const string VENT = "tcp://127.0.0.1:26010";
     private static const string SINK = "tcp://127.0.0.1:26011";
@@ -9,10 +15,20 @@ public class ZMQWorker {
     private static ZMQ.Socket receiver;
     private static ZMQ.Socket sender;
 
+    /**
+     * Initialize by storing a reference to the AlaiaExtension that this Worder handles
+     */
     public static void init(AlaiaExtension e) {
         ZMQWorker.aext = e;
     }
 
+    /**
+     * Mainmethod of the IPC communication thread
+     * Opens sockets for communication
+     * Registers itself with the ZMQVent
+     * Then starts an endless loop thread to wait for input from the ZMQVent, delegate the
+     * calls to a handler and return the obtained results to the ZMQSink.
+     */
     public static void* run() {
         var ctx = new ZMQ.Context(1);
         ZMQWorker.receiver = ZMQ.Socket.create(ctx, ZMQ.SocketType.PULL);
@@ -50,14 +66,21 @@ public class ZMQWorker {
     private static const string REGISTER = "reg";
     private static const string SEPARATOR = "-";
 
+    /**
+     * Handles IPC-Requests.
+     * Returns null if the requests page id does not correspond to
+     * this webexension's page id.
+     * Returns an error-message if the methods somehow fail
+     *
+     *    Needs direct input
+     *    Valid request example:
+     *           ndi-5-<callid>
+     *    Does the page with the id 5 need direct input?
+     *    Valid answer example:
+     *           r_ndi-5-1-<callid>  means yes
+     *           r_ndi-5-0-<callid>  means no
+     */
     private static string? handle_request(string input) {
-        // Needs direct input
-        // Valid request example:
-        //        ndi-5-<callid>
-        // Does the page with the id 5 need direct input?
-        // Valid answer example:
-        //        r_ndi-5-1-<callid>  means yes
-        //        r_ndi-5-0-<callid>  means no
         if (input.has_prefix(ZMQWorker.NEEDS_DIRECT_INPUT)) {
             string[] splitted = input.split("-");
             uint64 pageid = uint64.parse(splitted[1]);
@@ -88,6 +111,9 @@ public class ZMQWorker {
     }
 }
 
+/**
+ * The webextension class for a WebView
+ */
 public class AlaiaExtension : Object {
     private WebKit.WebPage page;
     private WebKit.WebExtension ext;
@@ -102,7 +128,11 @@ public class AlaiaExtension : Object {
         this.direct_input_tags.add("BUTTON");
         this.direct_input_tags.add("SUBMIT");
     }
-    
+
+    /**
+     * Returns true if the currently active DOM-Element is
+     * one of the input-requiring elements INPUT, TEXTAREA, BUTTON or SUBMIT
+     */
     public bool needs_direct_input() {
         WebKit.DOM.Document doc = this.page.get_dom_document();
         WebKit.DOM.Element active = doc.active_element;
@@ -112,10 +142,17 @@ public class AlaiaExtension : Object {
             return false;
     }
 
+    /**
+     * Returns the page_id of this webextension's page
+     */
     public uint64 get_page_id() {
         return this.page_id;
     }
 
+    /**
+     * Starts the ZMQWorker to handle IPC requests as soon as the page has been
+     * loaded sufficiently.
+     */
     public void on_page_created(WebKit.WebExtension extension, WebKit.WebPage page) {
         this.page = page;
         this.ext = extension;
@@ -128,12 +165,16 @@ public class AlaiaExtension : Object {
     }
 }
 
+/**
+ * Starting point function for WebExtensions
+ *
+ * TODO: migrate thread notation to non-deprecated constructor
+ *       see compiler warning.
+ */
 [CCode (cname = "G_MODULE_EXPORT webkit_web_extension_initialize", instance_pos = -1)]
 void webkit_web_extension_initialize(WebKit.WebExtension extension) {
     AlaiaExtension aext = new AlaiaExtension();
     extension.page_created.connect(aext.on_page_created);
-    //TODO: migrate thread notation to non-deprecated constructor
-    //      see compiler warning.
     ZMQWorker.init(aext);
 }
 
