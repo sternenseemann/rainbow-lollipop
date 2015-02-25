@@ -91,7 +91,7 @@ namespace alaia {
         /**
          * Logs a callto an URL into the History Database
          */
-        public static void log_call(string url) {
+        public void log_call(string url) {
             // Check if entry already exists in db
             unowned Sqlite.Database  db = Database.S().get_db();
             Sqlite.Statement stmnt;

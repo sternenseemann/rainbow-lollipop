@@ -159,7 +159,7 @@ namespace alaia {
             ZMQSink.receiver = ZMQ.Socket.create(ctx, ZMQ.SocketType.PULL);
             ZMQSink.receiver.bind("tcp://127.0.0.1:"+Config.c.ipc_sink_port.to_string());
             try {
-                unowned Thread<void*> worker_thread = Thread.create<void*>(ZMQSink.run, true);
+                Thread.create<void*>(ZMQSink.run, true);
             } catch (ThreadError e) {
                 stdout.printf("Sink broke down\n");
             }
@@ -181,12 +181,10 @@ namespace alaia {
          */
         private static void handle_response(string input) {
             if (input.has_prefix(IPCProtocol.REGISTER)) {
-                string[] splitted = input.split(IPCProtocol.SEPARATOR);
                 ZMQVent.register_site();
             }
             if (input.has_prefix(IPCProtocol.NEEDS_DIRECT_INPUT_RET)) {
                 string[] splitted = input.split(IPCProtocol.SEPARATOR);
-                uint64 page_id = uint64.parse(splitted[1]);
                 int result = int.parse(splitted[2]);
                 uint32 call_id = int.parse(splitted[3]);
                 IPCCallbackWrapper? cbw = ZMQSink.callbacks.get(call_id);

@@ -322,7 +322,6 @@ namespace alaia {
          */
         public bool do_web_context_menu(WebKit.ContextMenu cm, Gdk.Event e, WebKit.HitTestResult htr){
             var w = this.webviews_container.get_nth_page(this.webviews_container.page) as WebView;
-            WebKit.ContextMenuItem mi;
             //GLib.SimpleAction a;
             Gtk.Action a;
             cm.remove_all();

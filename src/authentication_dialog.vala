@@ -25,6 +25,7 @@ namespace alaia {
      * enter credentials to log into e.g. an HTTP Basic Auth protected server
      * TODO: This is NONTESTED code and should be considered completely unfunctional
      *       Change this fact.
+     * TODO: Create a heading that tells the user what just happens
      */
     class AuthenticationDialog : Clutter.Actor {
         private static const int FRAME_WIDTH = 300;
@@ -39,7 +40,6 @@ namespace alaia {
         private GtkClutter.Actor a_ok;
         private GtkClutter.Actor a_cancel;
         private Clutter.Actor frame;
-        private Clutter.Text heading;
 
         private Gtk.Entry username_entry;
         private Gtk.Entry password_entry;
