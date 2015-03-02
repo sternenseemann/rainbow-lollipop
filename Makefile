@@ -31,7 +31,7 @@ CC = gcc
 VFLAGS = --thread -D DEBUG --vapidir=vapi
 
 # programmname.
-TARGET = alaia
+TARGET = rainbow-lollipop
 EXTENSION = alaiawebextension
 
 ######################################################
