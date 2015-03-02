@@ -38,7 +38,7 @@ EXTENSION = alaiawebextension
 # haende weg. alles andere wird automatisch gemacht !!
 ######################################################
  
-CFLAGS = $(shell pkg-config --cflags --libs glib-2.0 gobject-2.0)
+CFLAGS = $(shell pkg-config --cflags --libs glib-2.0 gobject-2.0) -fstack-protector-strong
 ifneq ($(LIBS), )
 CFLAGS += $(shell pkg-config --cflags --libs $(LIBS))
 endif
