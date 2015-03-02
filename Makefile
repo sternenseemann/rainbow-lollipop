@@ -99,7 +99,7 @@ $(TARGET): $(FOLDERS) $(VAPIFILES) $(CFILES) $(OBJ)
 $(EXTENSION):
 	valac $(addprefix --pkg , $(EXT_LIBS)) --vapidir=vapi --library=$@ -X -fPIC -X -shared -o $@.so src/alaia_extension.vala
 	rm $(EXTENSION).vapi
-	mv $(EXTENSION).so data/alaia/wpe/
+	mv $(EXTENSION).so data/$(TARGET)/wpe/
 
 all: $(TARGET) $(EXTENSION)
 
@@ -112,7 +112,7 @@ install: $(TARGET)
 
 uninstall:
 	rm -rf /usr/local/share/$(TARGET)
-	find /usr/local/share/icons -name alaia.png | xargs -I{} rm {}
-	rm /usr/local/share/applications/alaia.desktop
+	find /usr/local/share/icons -name rainbow-lollipop.png | xargs -I{} rm {}
+	rm /usr/local/share/applications/rainbow-lollipop.desktop
 	rm -rf /etc/$(TARGET)
 	rm /usr/local/bin/$(TARGET)

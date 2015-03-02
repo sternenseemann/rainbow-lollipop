@@ -1,16 +1,16 @@
 [Desktop Entry]
 Type=Application
 Version=1.0
-Name=Rainbow Submarine
+Name=Rainbow Lollipop
 GenericName=Browser
 GenericName[de]=Weltnetz-Stöberer
 GenericName[fi]=Selain
 GenericName[pl]=Przeglądarka
 GenericName[se]=webbläsare
-tryExec=alaia
-Exec=alaia %u
+tryExec=rainbow-lollipop
+Exec=rainbow-lollipop %u
 Comment=The Visual History Browser
-Icon=alaia
+Icon=rainbow-lollipop
 Terminal=false
-Categories=Gtk;Internet;
+Categories=Network;Gtk;Internet;
 MimeType=text/html;
