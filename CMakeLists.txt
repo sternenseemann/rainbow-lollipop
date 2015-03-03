@@ -97,6 +97,13 @@ PACKAGES
 )
 
 add_library("alaiaextension" SHARED ${VALA_EXTENSION_C})
-add_executable("rainbow-lollipop" ${VALA_BINARY_C})
+add_executable(${PROJECT_NAME} ${VALA_BINARY_C})
 
-install()
+install(FILES "cfg/config.json" DESTINATION /etc)
+install(DIRECTORY "data/rainbow-lollipop" DESTINATION share)
+install(DIRECTORY "data/icons" DESTINATION share)
+install(DIRECTORY "data/applications" DESTINATION share)
+install(TARGETS "alaiaextension" ${PROJECT_NAME}
+    RUNTIME DESTINATION bin
+    LIBRARY DESTINATION lib/${PROJECT_NAME}
+)

@@ -53,7 +53,7 @@ namespace alaia {
          * Application.get_data_filename(string s) and
          * Application.get_cache_filename(string s).
          */
-        public const string C = "/alaia/";
+        public const string C = "/rainbow-lollipop/";
 
         /**
          * Name of subfolders in which the colorschemes reside
