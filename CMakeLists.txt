@@ -43,6 +43,11 @@ add_definitions(${WEBKIT_CFLAGS} ${WEBKIT_CFLAGS_OTHER})
 link_libraries(${WEBKIT_LIBRARIES})
 link_directories(${WEBKIT_LIBRARY_DIRS})
 
+pkg_check_modules(WEBKIT_EXT REQUIRED webkit2gtk-web-extension-4.0)
+add_definitions(${WEBKIT_EXT_CFLAGS} ${WEBKIT_EXT_CFLAGS_OTHER})
+link_libraries(${WEBKIT_EXT_LIBRARIES})
+link_directories(${WEBKIT_EXT_LIBRARY_DIRS})
+
 pkg_check_modules(SQLITE3 REQUIRED sqlite3)
 add_definitions(${SQLITE3_CFLAGS} ${SQLITE3_CFLAGS_OTHER})
 link_libraries(${SQLITE3_LIBRARIES})
@@ -53,7 +58,7 @@ add_definitions(${ZMQ_CFLAGS} ${ZMQ_CFLAGS_OTHER})
 link_libraries(${ZMQ_LIBRARIES})
 link_directories(${ZMQ_LIBRARY_DIRS})
 
-vala_precompile(VALA_C
+vala_precompile(VALA_BINARY_C
     "src/dummy.vala"
     "src/track.vala"
     "src/database.vala"
@@ -82,5 +87,16 @@ OPTIONS
     --thread
 )
 
-add_executable("rainbow-lollipop" ${VALA_C})
+vala_precompile(VALA_EXTENSION_C
+    "src/dummy2.vala"
+    "src/alaia_extension.vala"
+PACKAGES
+    webkit2gtk-web-extension-4.0
+    libzmq
+    gee-1.0
+)
 
+add_library("alaiaextension" SHARED ${VALA_EXTENSION_C})
+add_executable("rainbow-lollipop" ${VALA_BINARY_C})
+
+install()

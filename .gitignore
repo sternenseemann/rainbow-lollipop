@@ -2,7 +2,7 @@
 .build
 
 rainbow-lollipop
-alaiawebextension.so
+libalaiaextension.so
 alaiawebextension.vapi
 
 CMakeCache.txt
@@ -11,4 +11,5 @@ CMakeFiles/
 Makefile
 src/*.c
 src/dummy.vala_valac.stamp
+src/dummy2.vala_valac.stamp
 cmake_install.cmake
