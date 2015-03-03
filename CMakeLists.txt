@@ -99,7 +99,7 @@ PACKAGES
 add_library("alaiaextension" SHARED ${VALA_EXTENSION_C})
 add_executable(${PROJECT_NAME} ${VALA_BINARY_C})
 
-install(FILES "cfg/config.json" DESTINATION /etc)
+install(FILES "cfg/config.json" DESTINATION /etc/${PROJECT_NAME})
 install(DIRECTORY "data/rainbow-lollipop" DESTINATION share)
 install(DIRECTORY "data/icons" DESTINATION share)
 install(DIRECTORY "data/applications" DESTINATION share)
