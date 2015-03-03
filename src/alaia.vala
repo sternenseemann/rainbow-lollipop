@@ -583,9 +583,19 @@ namespace alaia {
                 WebKit.ProcessModel.MULTIPLE_SECONDARY_PROCESSES
             );
             WebKit.WebContext.get_default().set_favicon_database_directory("/tmp/alaia_favicons");
-            WebKit.WebContext.get_default().set_web_extensions_directory(get_data_filename("wpe"));
+            WebKit.WebContext.get_default().set_web_extensions_directory(get_lib_directory());
             Gtk.main();
             return 0;
+        }
+
+        /**
+         * Returns the location in which the webextensions are most likely stored
+         */
+        public static string get_lib_directory() {
+            File f = File.new_for_path("/usr/lib/"+Config.C);
+            if (f.query_exists())
+                return f.get_path();
+            return "/usr/local/lib/"+Config.C;
         }
 
         /**
