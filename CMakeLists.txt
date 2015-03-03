@@ -85,6 +85,7 @@ PACKAGES
     sqlite3
 OPTIONS
     --thread
+    --vapidir=vapi
 )
 
 vala_precompile(VALA_EXTENSION_C
@@ -94,6 +95,8 @@ PACKAGES
     webkit2gtk-web-extension-4.0
     libzmq
     gee-1.0
+OPTIONS
+    --vapidir=vapi
 )
 
 add_library("alaiaextension" SHARED ${VALA_EXTENSION_C})
