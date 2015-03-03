@@ -23,7 +23,7 @@ using Json;
 using Clutter;
 using FileUtils;
 
-namespace alaia {
+namespace RainbowLollipop {
     /**
      * Errors for the Config class
      */

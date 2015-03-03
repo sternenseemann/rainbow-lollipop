@@ -22,7 +22,7 @@
 using Gee;
 using Math;
 
-namespace alaia {
+namespace RainbowLollipop {
     /**
      * Converts the 8bit representation of a color into a float between 0.0 and 1.0
      */

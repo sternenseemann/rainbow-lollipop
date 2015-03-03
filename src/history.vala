@@ -19,7 +19,7 @@
 # If not, see http://www.gnu.org/licenses/.
 *********************************************************************/
 
-namespace alaia {
+namespace RainbowLollipop {
     /**
      * A History class that logs calls to URLs into a SQL Database
      * It serves as HintProvider and can deliver hints to URLS that have

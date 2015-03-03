@@ -19,7 +19,7 @@
 # If not, see http://www.gnu.org/licenses/.
 *********************************************************************/
 
-namespace alaia {
+namespace RainbowLollipop {
     /**
      * Implements a dialog that let's the user choose whether he wants
      * to restore the saved browsing session or rather start a new one

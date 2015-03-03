@@ -27,7 +27,7 @@ using WebKit;
 using Gee;
 
 
-namespace alaia {
+namespace RainbowLollipop {
     /**
      * AppState enumerates the states in which the application
      * currently resides.

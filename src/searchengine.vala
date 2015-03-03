@@ -19,7 +19,7 @@
 # If not, see http://www.gnu.org/licenses/.
 *********************************************************************/
 
-namespace alaia {
+namespace RainbowLollipop {
     /**
      * Represents the DuckDuckGo Searchengine as a hintprovider
      * See duckduckgo at https://duckduckgo.com

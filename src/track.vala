@@ -21,7 +21,7 @@
 
 using WebKit;
 
-namespace alaia {
+namespace RainbowLollipop {
     /**
      * This class provides colors for newly created tracks.
      * By iterating through a list of colors that is specified

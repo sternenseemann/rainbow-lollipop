@@ -19,7 +19,7 @@
 # If not, see http://www.gnu.org/licenses/.
 *********************************************************************/
 
-namespace alaia {
+namespace RainbowLollipop {
     /**
      * Used to wrap all the data that is necessary to call a callback to a
      * successfully completed IPC call including the callback itself

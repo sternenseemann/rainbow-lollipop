@@ -19,7 +19,7 @@
 # If not, see http://www.gnu.org/licenses/.
 *********************************************************************/
 
-namespace alaia {
+namespace RainbowLollipop {
     /**
      * A UI-construct that is displayed in the Tracklist
      * It has two main purposes:

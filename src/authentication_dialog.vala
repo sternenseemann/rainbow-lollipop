@@ -19,7 +19,7 @@
 # If not, see http://www.gnu.org/licenses/.
 *********************************************************************/
 
-namespace alaia {
+namespace RainbowLollipop {
     /**
      * Represents an Authentication Dialog that lets the user
      * enter credentials to log into e.g. an HTTP Basic Auth protected server

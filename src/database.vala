@@ -21,7 +21,7 @@
 
 using Sqlite;
 
-namespace alaia {
+namespace RainbowLollipop {
     /**
      * Wrapper around Sqlite3 as Singleton.
      * Is used to cache Data e.g. The called urls and how often they have been called

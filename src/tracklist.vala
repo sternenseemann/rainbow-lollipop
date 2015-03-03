@@ -19,7 +19,7 @@
 # If not, see http://www.gnu.org/licenses/.
 *********************************************************************/
 
-namespace alaia {
+namespace RainbowLollipop {
     /**
      * TrackListBackground is a half-transparent overlay over the WebViews
      * that optically emphasizes, that TrackList is a modal.
