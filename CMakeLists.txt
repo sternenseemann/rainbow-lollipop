@@ -85,7 +85,7 @@ PACKAGES
     sqlite3
 OPTIONS
     --thread
-    --vapidir=vapi
+    --vapidir=${CMAKE_SOURCE_DIR}/vapi
 )
 
 vala_precompile(VALA_EXTENSION_C
@@ -96,7 +96,7 @@ PACKAGES
     libzmq
     gee-1.0
 OPTIONS
-    --vapidir=vapi
+    --vapidir=${CMAKE_SOURCE_DIR}/vapi
 )
 
 add_library("alaiaextension" SHARED ${VALA_EXTENSION_C})
