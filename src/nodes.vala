@@ -1,4 +1,4 @@
-/********************************************************************
+/*******************************************************************
 # Copyright 2014 Daniel 'grindhold' Brendle
 #
 # This file is part of Rainbow Lollipop.
@@ -289,7 +289,13 @@ namespace RainbowLollipop {
             this.destroy();
             prv.recalculate_y(null);
             if (rec_initial){
-                (prv.track.get_parent().get_last_child() as Track).recalculate_y(true);
+                if (prv == null) {
+                    //This was the root node. the track is not necessary anymore, delete it.
+                    this.track.delete_track();
+                } else {
+                    //Recalculate the tracks height in case there is some free space now
+                    (prv.track.get_parent().get_last_child() as Track).recalculate_y(true);
+                }
             }
         }
 
