@@ -49,7 +49,6 @@ namespace RainbowLollipop {
          *   ~/.cache/<C>/file.json
          *   /usr/local/share/<C>/file.png
          * This constant is used by
-         * Application.get_config_filename(string s),
          * Application.get_data_filename(string s) and
          * Application.get_cache_filename(string s).
          */
@@ -237,16 +236,30 @@ namespace RainbowLollipop {
         }
 
         /**
-         * Try to load the configfile. If it fails, fallback to default config
+         * Try to load the users configfile. If the user has no own configfile
+         * in his XDG-userconfig-folder, the method will attempt to copy the default
+         * configfile to the user's configdir. If this fails, the method will fall back
+         * to a hardcoded default configuration
          */
         public static void load() {
             string configdata;
+            string configpath;
             try {
-                FileUtils.get_contents(Application.get_config_filename("config.json"),
-                                       out configdata);
+                configpath = "%s%sconfig.json".printf(GLib.Environment.get_user_config_dir(),C);
+                FileUtils.get_contents(configpath, out configdata);
             } catch (GLib.FileError e) {
-                Config.loadDefault();
-                return;
+                try {
+                    string def_cfg_data;
+                    FileUtils.get_contents(
+                        Application.get_data_filename("default_cfg.json"),
+                        out def_cfg_data
+                    );
+                    FileUtils.set_contents(configpath, def_cfg_data);
+                    configdata = def_cfg_data;
+                } catch (GLib.FileError e) {
+                    Config.loadDefault();
+                    return;
+                }
             }
 
             var p = new Json.Parser();

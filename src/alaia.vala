@@ -599,29 +599,6 @@ namespace RainbowLollipop {
         }
 
         /**
-         * Returns the full path to name of the given configfile.
-         * On *nix-systems it uses the XDG-specifications
-         */
-        public static string get_config_filename(string name) {
-            File f = File.new_for_path(GLib.Environment.get_user_config_dir()+Config.C+name);
-            if (f.query_exists())
-                return f.get_path();
-            foreach (string dir in GLib.Environment.get_system_config_dirs()) {
-                f = File.new_for_path(dir+Config.C+name);
-                if (f.query_exists())
-                    return f.get_path();
-            }
-            f = File.new_for_path("/etc"+Config.C+name);
-            if (f.query_exists())
-                return f.get_path();
-#if DEBUG
-            return "cfg/"+name;
-#else
-            return "";
-#endif
-        }
-
-        /**
          * Returns the full path to name of the given datafile.
          * On *nix-systems it uses the XDG-specifications
          */
