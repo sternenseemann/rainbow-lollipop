@@ -33,7 +33,11 @@ add_definitions(${CLUTTERGTK_CFLAGS} ${CLUTTERGTK_CFLAGS_OTHER})
 link_libraries(${CLUTTERGTK_LIBRARIES})
 link_directories(${CLUTTERGTK_LIBRARY_DIRS})
 
-pkg_check_modules(GEE REQUIRED gee-1.0)
+pkg_check_modules(GEE gee-0.8)
+if (NOT GEE_FOUND)
+    pkg_check_modules(GEE REQUIRED gee-1.0)
+    SET(GEE10 TRUE)
+endif()
 add_definitions(${GEE_CFLAGS} ${GEE_CFLAGS_OTHER})
 link_libraries(${GEE_LIBRARIES})
 link_directories(${GEE_LIBRARY_DIRS})
@@ -58,46 +62,92 @@ add_definitions(${ZMQ_CFLAGS} ${ZMQ_CFLAGS_OTHER})
 link_libraries(${ZMQ_LIBRARIES})
 link_directories(${ZMQ_LIBRARY_DIRS})
 
-vala_precompile(VALA_BINARY_C
-    "src/dummy.vala"
-    "src/track.vala"
-    "src/database.vala"
-    "src/empty_track.vala"
-    "src/alaia.vala"
-    "src/history_track.vala"
-    "src/tracklist.vala"
-    "src/nodes.vala"
-    "src/site_node.vala"
-    "src/download_node.vala"
-    "src/config.vala"
-    "src/ipc.vala"
-    "src/session_select.vala"
-    "src/authentication_dialog.vala"
-    "src/history.vala"
-    "src/searchengine.vala"
-PACKAGES
-    gtk+-3.0
-    clutter-1.0
-    clutter-gtk-1.0
-    webkit2gtk-4.0
-    gee-1.0
-    libzmq 
-    sqlite3
-OPTIONS
-    --thread
-    --vapidir=${CMAKE_SOURCE_DIR}/vapi
-)
+if (GEE10)
+    vala_precompile(VALA_BINARY_C
+        "src/dummy.vala"
+        "src/track.vala"
+        "src/database.vala"
+        "src/empty_track.vala"
+        "src/alaia.vala"
+        "src/history_track.vala"
+        "src/tracklist.vala"
+        "src/nodes.vala"
+        "src/site_node.vala"
+        "src/download_node.vala"
+        "src/config.vala"
+        "src/ipc.vala"
+        "src/session_select.vala"
+        "src/authentication_dialog.vala"
+        "src/history.vala"
+        "src/searchengine.vala"
+    PACKAGES
+        gtk+-3.0
+        clutter-1.0
+        clutter-gtk-1.0
+        webkit2gtk-4.0
+        gee-1.0
+        libzmq 
+        sqlite3
+    OPTIONS
+        --thread
+        --vapidir=${CMAKE_SOURCE_DIR}/vapi
+    )
+else()
+    vala_precompile(VALA_BINARY_C
+        "src/dummy.vala"
+        "src/track.vala"
+        "src/database.vala"
+        "src/empty_track.vala"
+        "src/alaia.vala"
+        "src/history_track.vala"
+        "src/tracklist.vala"
+        "src/nodes.vala"
+        "src/site_node.vala"
+        "src/download_node.vala"
+        "src/config.vala"
+        "src/ipc.vala"
+        "src/session_select.vala"
+        "src/authentication_dialog.vala"
+        "src/history.vala"
+        "src/searchengine.vala"
+    PACKAGES
+        gtk+-3.0
+        clutter-1.0
+        clutter-gtk-1.0
+        webkit2gtk-4.0
+        gee-0.8
+        libzmq 
+        sqlite3
+    OPTIONS
+        --thread
+        --vapidir=${CMAKE_SOURCE_DIR}/vapi
+    )
+endif()
 
-vala_precompile(VALA_EXTENSION_C
-    "src/dummy2.vala"
-    "src/alaia_extension.vala"
-PACKAGES
-    webkit2gtk-web-extension-4.0
-    libzmq
-    gee-1.0
-OPTIONS
-    --vapidir=${CMAKE_SOURCE_DIR}/vapi
-)
+
+if (GEE10)
+    vala_precompile(VALA_EXTENSION_C
+        "src/dummy2.vala"
+        "src/alaia_extension.vala"
+    PACKAGES
+        webkit2gtk-web-extension-4.0
+        libzmq
+        gee-1.0 
+    OPTIONS
+        --vapidir=${CMAKE_SOURCE_DIR}/vapi
+    )
+else()
+    vala_precompile(VALA_EXTENSION_C
+        "src/dummy2.vala"
+        "src/alaia_extension.vala"
+    PACKAGES
+        webkit2gtk-web-extension-4.0
+        libzmq
+        gee-0.8 
+    OPTIONS
+        --vapidir=${CMAKE_SOURCE_DIR}/vapi
+    )
+endif()
 
 add_library("alaiaextension" SHARED ${VALA_EXTENSION_C})
 add_executable(${PROJECT_NAME} ${VALA_BINARY_C})
