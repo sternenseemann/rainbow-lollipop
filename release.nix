@@ -10,6 +10,6 @@ let
                 
                 buildInputs = [cmake vala_0_26 pkgconfig]
                 
-            }
-    }
+            };
+    };
 in jobs
