@@ -254,6 +254,7 @@ namespace RainbowLollipop {
                         Application.get_data_filename("default_cfg.json"),
                         out def_cfg_data
                     );
+                    DirUtils.create("%s%s".printf(GLib.Environment.get_user_config_dir(),C),0755);
                     FileUtils.set_contents(configpath, def_cfg_data);
                     configdata = def_cfg_data;
                 } catch (GLib.FileError e) {
