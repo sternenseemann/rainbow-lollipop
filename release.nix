@@ -12,7 +12,7 @@ let
     };
     system = "x86_64-linux";
     jobs = rec {
-        tarball = 
+        linux_amd64 = 
             with pkgs_linux;
             stdenv.mkDerivation {
                 name = "rainbow-lollipop-tarball";
@@ -23,7 +23,7 @@ let
                                gnome3.libgee sqlite udev xorg.libpthreadstubs xorg.libXdmcp
                                xorg.libxshmfence libxkbcommon];
             };
-        windows_64 =
+        windows_64bit =
             with pkgs_windows;
             (stdenv.mkDerivation {
                 name = "rainbow-lollipop-windows";
