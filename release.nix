@@ -15,7 +15,7 @@ let
 
   jobs = rec {
     linux_amd64 = with pkgs_linux; stdenv.mkDerivation {
-      name = "rainbow-lollipop-tarball";
+      name = "rainbow-lollipop-linux";
       version = "0.0.1";
       src = ./.;
 
