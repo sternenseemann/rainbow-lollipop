@@ -188,6 +188,10 @@ namespace RainbowLollipop {
                 int result = int.parse(splitted[2]);
                 uint32 call_id = int.parse(splitted[3]);
                 IPCCallbackWrapper? cbw = ZMQSink.callbacks.get(call_id);
+                if (cbw == null) {
+                    ZMQSink.callbacks.unset(call_id);
+                    return;
+                }
                 if (result == 1) {
                     GLib.Idle.add(() => {
                         cbw.get_webview().key_press_event(cbw.get_event());
