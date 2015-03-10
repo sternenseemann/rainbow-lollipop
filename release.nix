@@ -8,8 +8,9 @@ let
 
     buildInputs = [
       cmake vala_0_26 zeromq2 pkgconfig glib gtk3 clutter_gtk webkitgtk
-      gnome3.libgee sqlite udev xorg.libpthreadstubs xorg.libXdmcp
-      xorg.libxshmfence libxkbcommon
+      gnome3.libgee sqlite
+    ] ++ optionals (!(stdenv ? cross)) [
+      udev xorg.libpthreadstubs xorg.libXdmcp xorg.libxshmfence libxkbcommon
     ];
   };
 
