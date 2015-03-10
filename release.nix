@@ -33,8 +33,10 @@ let
   };
 
   withSystem = system: let
-    pkgs = import <nixpkgs> (getSysAttrs system);
-  in rainbowLollipop pkgs;
+    sysAttrs = getSysAttrs system;
+    pkgs = import <nixpkgs> sysAttrs;
+    result = rainbowLollipop pkgs;
+  in if sysAttrs ? crossSystem then result.crossDrv else result;
 
 in {
   build = genAttrs supportedSystems withSystem;
