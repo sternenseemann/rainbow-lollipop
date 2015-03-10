@@ -65,6 +65,9 @@ namespace RainbowLollipop {
             boxlayout.orientation = Clutter.Orientation.VERTICAL;
             this.set_layout_manager(boxlayout);
             this.add_child(this.actor);
+            this.url_entry.realize.connect(() => {
+                this.url_entry.grab_focus();
+            });
         }
 
         /**
