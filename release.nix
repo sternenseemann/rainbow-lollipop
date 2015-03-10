@@ -1,40 +1,40 @@
-let
-  pkgs_linux = import <nixpkgs> {};
+with import <nixpkgs/lib>;
 
-  pkgs_windows = import <nixpkgs> {
-    crossSystem = {
-      config = "x86_64-w64-mingw32";
-      arch = "x86_64";
+let
+  rainbowLollipop = pkgs: with pkgs; stdenv.mkDerivation rec {
+    name = "rainbow-lollipop-${version}";
+    version = "0.0.1";
+    src = ./.;
+
+    buildInputs = [
+      cmake vala_0_26 zeromq2 pkgconfig glib gtk3 clutter_gtk webkitgtk
+      gnome3.libgee sqlite udev xorg.libpthreadstubs xorg.libXdmcp
+      xorg.libxshmfence libxkbcommon
+    ];
+  };
+
+  supportedSystems = [
+    "i686-linux" "x86_64-linux" "i686-w64-mingw" "x86_64-w64-mingw"
+  ];
+
+  getSysAttrs = system: if hasSuffix "-w64-mingw" system then {
+    crossSystem = let
+      is64 = hasPrefix "x86_64" system;
+    in {
+      config = system;
+      arch = if is64 then "x86_64" else "x86";
       libc = "msvcrt";
       platform = {};
-      openssl.system = "mingw64";
+      openssl.system = "mingw${optionalString is64 "64"}";
     };
+  } else {
+    inherit system;
   };
 
-  system = "x86_64-linux";
+  withSystem = system: let
+    pkgs = import <nixpkgs> (getSysAttrs system);
+  in rainbowLollipop pkgs;
 
-  jobs = rec {
-    linux_amd64 = with pkgs_linux; stdenv.mkDerivation {
-      name = "rainbow-lollipop-linux";
-      version = "0.0.1";
-      src = ./.;
-
-      buildInputs = [
-        cmake vala_0_26 zeromq2 pkgconfig glib gtk3 clutter_gtk webkitgtk
-        gnome3.libgee sqlite udev xorg.libpthreadstubs xorg.libXdmcp
-        xorg.libxshmfence libxkbcommon
-      ];
-    };
-    windows_64bit = with pkgs_windows; (stdenv.mkDerivation {
-      name = "rainbow-lollipop-windows";
-      version = "0.0.1";
-      src = ./.;
-
-      buildInputs = [
-        cmake vala_0_26 zeromq2 pkgconfig glib gtk3 clutter_gtk webkitgtk
-        gnome3.libgee sqlite udev xorg.libpthreadstubs xorg.libXdmcp
-        xorg.libxshmfence libxkbcommon
-      ];
-    }).crossDrv;
-  };
-in jobs
+in {
+  build = genAttrs supportedSystems withSystem;
+}
