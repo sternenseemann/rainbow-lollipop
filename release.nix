@@ -15,10 +15,10 @@ let
   };
 
   supportedSystems = [
-    "i686-linux" "x86_64-linux" "i686-w64-mingw" "x86_64-w64-mingw"
+    "i686-linux" "x86_64-linux" "i686-w64-mingw32" "x86_64-w64-mingw32"
   ];
 
-  getSysAttrs = system: if hasSuffix "-w64-mingw" system then {
+  getSysAttrs = system: if hasSuffix "-w64-mingw32" system then {
     crossSystem = let
       is64 = hasPrefix "x86_64" system;
     in {
