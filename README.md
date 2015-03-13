@@ -73,24 +73,4 @@ Roadmap
 Building the Project
 --------------------
 
-To compile the project, do the following steps:
-
-Install the dependencies (debian)
-
-```
- # apt-get install valac-0.26 libgtk-3-dev libgee-0.8-dev libclutter-1.0-dev libzmq-dev libwebkit2gtk-4.0-dev libclutter-gtk-1.0-dev libzmq-dev libsqlite3-dev
-```
-
-Note: On Arch Linux, you will have to specify that you want libzmq2 which is available as a package zeromq2 via yaourt.
-
-Build the program
-
-```
- $ cmake .
- $ make
- # make install/local
-```
-
-Please note, that without the make install command, the program will not work properly at the moment.
-This inconvenience comes from a hardcoded library path at the moment. I am sorry for that and i will
-fix it.
+See [the Installation Guide](./INSTALL.md).
