@@ -235,9 +235,8 @@ namespace RainbowLollipop {
 
         /**
          * Returns the Index in the childnodes-list of the given child-node
-         * TODO: Assert that the given node is actually a child of this node
          */
-        public int index_of_child(Node n) {
+        private int index_of_child(Node n) {
             return this.childnodes.index_of(n);
         }
 
@@ -333,6 +332,8 @@ namespace RainbowLollipop {
                 return;
             } else {
                 int node_index = this.previous.index_of_child((Node) this);
+                if (node_index == -1)
+                    warning("The node is not a child of its parent. This should not happen");
                 int splits_until = this.previous.get_splits_until(node_index);
                 var prvy = this.previous.y != 0 ? this.previous.y : Config.c.track_spacing;
                 this.y =  prvy + (splits_until+node_index)*(Config.c.node_height+Config.c.track_spacing);
