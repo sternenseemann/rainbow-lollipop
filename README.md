@@ -19,8 +19,9 @@ Philosophy
 ----------
 
 Rainbow Lollipop is the browser of the future. Drop all chains that hold back your
-imagination. Ask yourself: If you should've solved this problem with all the knowledge
-you have today, how would you have done it. Start from scratch. Rethink browsing the
+imagination. Ask yourself: If you were to create the first
+browser today with all the knowledge you have gained about browsing the web in the last
+twenty-five years, how would you have done it? Start from scratch. Rethink browsing the
 web.
 
 I started this project because i've seen that browsing UIs haven't changed significantly
@@ -30,7 +31,7 @@ concept which is called Track and needed to prototype it. After some experimenti
 it came to me, that there is much more to do. A browser for the time we live in should
 come with sane security standards. Why is HTTPSEverywhere still a plugin everywhere? Why
 are adblockers still plugins in a web which is contaminated with advertisement everywhere
-you go? For the end-users sake, such features should be opt-out, not opt-in.
+you go? For the end-users sake, such features should be delivered ootb.
 And there is more that we can do.
 
 Rainbow lollipop is a sandbox to try out new things, which the big browsers are too afraid
@@ -53,10 +54,10 @@ Just send a pullrequest and/or communicate with the rest on the [Mailing List](h
 Roadmap
 -------
 
-  * [x] Track based browsing
+  * [x] Track based browsing.
     Tracks are a new UI concept that replaces the currently widely known concept of Tabs
 
-  * [x] URL-Autocompletion
+  * [x] URL-Autocompletion.
     There is still some work to do to enhance UX
 
   * [ ] Integration of HTTPSEverywhere-like functionality.
@@ -65,7 +66,7 @@ Roadmap
 
   * [ ] Script-Blocking
 
-  * [ ] Darknet integration
+  * [ ] Deepweb Integration
 
   * And two more pretty features that i am not really ready to talk about yet.
 
