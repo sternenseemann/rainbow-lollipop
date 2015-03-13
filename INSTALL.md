@@ -14,8 +14,4 @@
 
 
 ## ArchLinux
-PKGBUILD will be submited to the AUR soon™.
-
-	$ yaourt -S zeromq2 # or whatever tool you like
-	$ cd archlinux/rainbow-lollipop-git
-	$ makepkg -si
+You can install rainbow lollipop from the AUR. The package is [`rainbow-lollipop-git`](https://aur.archlinux.org/packages/rainbow-lollipop-git/)
