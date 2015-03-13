@@ -90,3 +90,7 @@ Build the program
  $ make
  # make install/local
 ```
+
+Please note, that without the make install command, the program will not work properly at the moment.
+This inconvenience comes from a hardcoded library path at the moment. I am sorry for that and i will
+fix it.
