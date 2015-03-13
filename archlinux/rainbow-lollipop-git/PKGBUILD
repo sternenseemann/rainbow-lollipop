@@ -1,7 +1,7 @@
 # Maintainer: Lukas Epple <post@lukasepple.de>
 
-bearpkgname=rainbow-lollipop
-pkgname="$bearpkgname-git"
+_pkgname=rainbow-lollipop
+pkgname="$_pkgname-git"
 pkgver=229+g67f02b2
 pkgrel=1
 pkgdesc="the visual history browser"
@@ -17,17 +17,17 @@ md5sums=(SKIP)
 install=rainbow-lollipop.install
 
 pkgver() {
-  cd "$srcdir/$bearpkgname"
-  echo $(git rev-list --count HEAD)+g$(git rev-parse --short HEAD)
+  cd "$srcdir/$_pkgname"
+  echo "$(git rev-list --count HEAD)+g$(git rev-parse --short HEAD)"
 }
 
 build() {
-  cd "$srcdir/$bearpkgname"
+  cd "$srcdir/$_pkgname"
   cmake -DCMAKE_INSTALL_PREFIX="$pkgdir/usr"
   make
 }
 
 package() {
-  cd "$srcdir/$bearpkgname"
+  cd "$srcdir/$_pkgname"
   make install
 }
