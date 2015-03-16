@@ -358,6 +358,13 @@ namespace RainbowLollipop {
         }
 
         /**
+         * Causes this HistoryTrack's webview to reload
+         */
+        public void reload() {
+            Application.S().get_web_view(this).reload();
+        }
+
+        /**
          * Causes HistoryTrack and Browser to go to the previous node and load
          * it's associated website.
          */

@@ -327,7 +327,7 @@ namespace RainbowLollipop {
             cm.remove_all();
             if (w.can_go_back()) {
                 //a = new GLib.SimpleAction("navigate-back",null);
-                a = new Gtk.Action("nanvigate-back", "Go Back", null, null);
+                a = new Gtk.Action("navigate-back", "Go Back", null, null);
                 a.activate.connect(()=>{
                     this.tracklist.current_track.go_back();
                 });
@@ -335,12 +335,17 @@ namespace RainbowLollipop {
             }
             if (w.can_go_forward()) {
                 //a = new GLib.SimpleAction("navigate-forward",null);
-                a = new Gtk.Action("nanvigate-forward", "Go Forward", null, null);
+                a = new Gtk.Action("navigate-forward", "Go Forward", null, null);
                 a.activate.connect(()=>{
                     this.tracklist.current_track.go_forward();
                 });
                 cm.append(new WebKit.ContextMenuItem(a as Gtk.Action));
             }
+            a = new Gtk.Action("view-refresh", "Reload", null, null);
+            a.activate.connect(()=>{
+                this.tracklist.current_track.reload();
+            });
+            cm.append(new WebKit.ContextMenuItem(a as Gtk.Action));
             return false;
         }
 
