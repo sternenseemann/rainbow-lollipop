@@ -171,7 +171,6 @@ namespace RainbowLollipop {
          */
         private new void do_clicked(Clutter.Actor _) {
             base.do_clicked();
-            stdout.printf("ohai\n");
         }
     }
 }

@@ -519,9 +519,7 @@ namespace RainbowLollipop {
                                 this.do_key_press_event(e);
                             break;
                         case Gdk.Key.r:
-                            stdout.printf("here\n");
                             if ((bool)(e.state & Gdk.ModifierType.CONTROL_MASK) && t != null) {
-                                stdout.printf("triggering reload\n");
                                 t.reload();
                             }
                             break;
