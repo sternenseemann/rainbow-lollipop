@@ -56,7 +56,6 @@ namespace RainbowLollipop {
          * In this HistoryTrack's WebView.
          * If this property is set, it automatically causes the webview to load
          * the site of the new node.
-         * TODO: Add check if node really belongs to this HistoryTrack
          */
         public Node? current_node {
             get {
