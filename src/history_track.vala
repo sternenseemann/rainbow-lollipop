@@ -63,6 +63,10 @@ namespace RainbowLollipop {
                 return this._current_node;
             }
             set {
+                if (!this.contains(value as Clutter.Actor)){
+                    warning ("Cannot assign a Node to a track when it is not a descendant.");
+                    return;
+                }
                 this.tracklist.current_track = this;
                 if (this._current_node is SiteNode)
                     (this._current_node as SiteNode).toggle_highlight();
