@@ -510,13 +510,22 @@ namespace RainbowLollipop {
         public bool preprocess_key_press_event(Gdk.EventKey e) {
             switch (this._state) {
                 case AppState.NORMAL:
-                    if (e.keyval != Gdk.Key.Tab)
-                        return false;
                     var t = this.tracklist.current_track;
-                    if (t != null)
-                        (this.get_web_view(t) as TrackWebView).needs_direct_input(do_key_press_event,e);
-                    else
-                        this.do_key_press_event(e);
+                    switch(e.keyval) {
+                        case Gdk.Key.Tab:
+                            if (t != null)
+                                (this.get_web_view(t) as TrackWebView).needs_direct_input(do_key_press_event,e);
+                            else
+                                this.do_key_press_event(e);
+                            break;
+                        case Gdk.Key.r:
+                            stdout.printf("here\n");
+                            if ((bool)(e.state & Gdk.ModifierType.CONTROL_MASK) && t != null) {
+                                stdout.printf("triggering reload\n");
+                                t.reload();
+                            }
+                            break;
+                    }
                     break;
                 case AppState.TRACKLIST:
                     if (e.keyval != Gdk.Key.Tab)
