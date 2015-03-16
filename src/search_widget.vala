@@ -15,6 +15,7 @@ namespace RainbowLollipop {
         private WebKit.FindController find_controller;
 
         public SearchWidget(Clutter.Actor webactor, WebKit.FindController fc) {
+            // Create all necessary widgets
             this.find_controller = fc;
             this.next = new Gtk.Button.from_icon_name("go-down", Gtk.IconSize.MENU);
             this.prev = new Gtk.Button.from_icon_name("go-up", Gtk.IconSize.MENU);
@@ -25,6 +26,8 @@ namespace RainbowLollipop {
             this.a_prev = new GtkClutter.Actor.with_contents(this.prev);
             this.a_entry = new GtkClutter.Actor.with_contents(this.entry);
             this.a_close = new GtkClutter.Actor.with_contents(this.close);
+
+            // Layout the widgets
 
             var np_box = new Clutter.Actor();
             np_box.width = 40;
@@ -56,7 +59,30 @@ namespace RainbowLollipop {
             this.a_close.add_constraint(
                 new Clutter.AlignConstraint(this, Clutter.AlignAxis.X_AXIS, 0.98f)
             );
+
+            // Make the overlay slightly transparent
+
             this.opacity = 0xAA;
+
+            // Wire everything up to the webkit code
+            
+            this.find_controller.failed_to_find_text.connect(() => {
+                this.next.sensitive = false;
+                this.prev.sensitive = false;
+            });
+            this.find_controller.found_text.connect(() => {
+                this.next.sensitive = true;
+                this.prev.sensitive = true;
+            });
+            this.next.clicked.connect(() => {
+                this.find_controller.search_next();
+            });
+            this.prev.clicked.connect(() => {
+                this.find_controller.search_previous();
+            });
+            this.entry.changed.connect(() => {
+                this.find_controller.search(this.entry.get_text(), 0, 1000);
+            });
         }
     }
 }
