@@ -28,7 +28,7 @@ namespace RainbowLollipop {
 
             var np_box = new Clutter.Actor();
             np_box.width = 40;
-            np_box.height = 80;
+            np_box.height = 70;
             var np_box_layout = new Clutter.BoxLayout();
             np_box_layout.orientation = Clutter.Orientation.VERTICAL;
             np_box.set_layout_manager(np_box_layout);
@@ -43,12 +43,18 @@ namespace RainbowLollipop {
             this.add_child(this.a_close);
 
             this.background_color = Clutter.Color.from_string(Config.c.colorscheme.empty_track);
-            this.height =  100;
+            this.height = 100;
             this.add_constraint(
                 new Clutter.BindConstraint(webactor, Clutter.BindCoordinate.WIDTH, 0)
             );
             this.add_constraint(
-                new Clutter.AlignConstraint(webactor, Clutter.AlignAxis.Y_AXIS, 0.8f)
+                new Clutter.AlignConstraint(webactor, Clutter.AlignAxis.Y_AXIS, 1.0f)
+            );
+            this.a_entry.add_constraint(
+                new Clutter.BindConstraint(this, Clutter.BindCoordinate.WIDTH, -100.0f)
+            );
+            this.a_close.add_constraint(
+                new Clutter.AlignConstraint(this, Clutter.AlignAxis.X_AXIS, 0.98f)
             );
             this.opacity = 0xAA;
         }
