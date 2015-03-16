@@ -596,10 +596,14 @@ namespace RainbowLollipop {
          * Returns the location in which the webextensions are most likely stored
          */
         public static string get_lib_directory() {
-            File f = File.new_for_path("/usr/lib/"+Config.C);
+            File f = File.new_for_path("/usr/lib"+Config.C);
             if (f.query_exists())
                 return f.get_path();
-            return "/usr/local/lib/"+Config.C;
+            f = File.new_for_path("/usr/local/lib"+Config.C);
+            if (f.query_exists())
+                return f.get_path();
+            else
+                return ".";
         }
 
         /**
