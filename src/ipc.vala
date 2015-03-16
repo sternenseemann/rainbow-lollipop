@@ -159,7 +159,7 @@ namespace RainbowLollipop {
             ZMQSink.receiver = ZMQ.Socket.create(ctx, ZMQ.SocketType.PULL);
             ZMQSink.receiver.bind("tcp://127.0.0.1:"+Config.c.ipc_sink_port.to_string());
             try {
-                Thread.create<void*>(ZMQSink.run, true);
+                new Thread<void*>.try(null,ZMQSink.run);
             } catch (ThreadError e) {
                 stdout.printf("Sink broke down\n");
             }

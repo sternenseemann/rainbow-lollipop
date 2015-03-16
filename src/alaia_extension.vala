@@ -179,7 +179,7 @@ public class AlaiaExtension : Object {
         this.ext = extension;
         this.page_id = page.get_id();
         try {
-            Thread.create<void*>(ZMQWorker.run, true);
+            new Thread<void*>.try(null, ZMQWorker.run);
         } catch (ThreadError e) {
             stdout.printf("Thread failed\n");
         }

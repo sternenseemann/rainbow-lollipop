@@ -91,6 +91,7 @@ if (GEE10)
     OPTIONS
         --thread
         --vapidir=${CMAKE_SOURCE_DIR}/vapi
+        --target-glib 2.32
     )
 else()
     vala_precompile(VALA_BINARY_C
@@ -121,6 +122,7 @@ else()
     OPTIONS
         --thread
         --vapidir=${CMAKE_SOURCE_DIR}/vapi
+        --target-glib 2.32
     )
 endif()
 
@@ -135,6 +137,7 @@ if (GEE10)
         gee-1.0 
     OPTIONS
         --vapidir=${CMAKE_SOURCE_DIR}/vapi
+        --target-glib 2.32
     )
 else()
     vala_precompile(VALA_EXTENSION_C
@@ -146,6 +149,7 @@ else()
         gee-0.8 
     OPTIONS
         --vapidir=${CMAKE_SOURCE_DIR}/vapi
+        --target-glib 2.32
     )
 endif()
 
