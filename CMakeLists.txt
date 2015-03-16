@@ -80,6 +80,7 @@ if (GEE10)
         "src/authentication_dialog.vala"
         "src/history.vala"
         "src/searchengine.vala"
+        "src/search_widget.vala"
     PACKAGES
         gtk+-3.0
         clutter-1.0
@@ -111,6 +112,7 @@ else()
         "src/authentication_dialog.vala"
         "src/history.vala"
         "src/searchengine.vala"
+        "src/search_widget.vala"
     PACKAGES
         gtk+-3.0
         clutter-1.0

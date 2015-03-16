@@ -64,8 +64,14 @@ namespace RainbowLollipop {
          * This WebView
          */
         public HistoryTrack track{ get;set; }
+        private SearchWidget search;
 
-        public TrackWebView() {
+        /**
+         *
+         */
+        public TrackWebView(Clutter.Actor webactor) {
+            this.search = new SearchWidget(webactor, this.get_find_controller());
+            webactor.add_child(this.search);
         }
 
         /**
@@ -356,7 +362,7 @@ namespace RainbowLollipop {
          */
         public WebKit.WebView get_web_view(HistoryTrack t) {
             if (!this.webviews.has_key(t)) {
-                var w = new TrackWebView();
+                var w = new TrackWebView(this.webact);
                 w.track = t;
                 w.context_menu.connect(do_web_context_menu);
                 w.get_context().download_started.connect(t.log_download);
