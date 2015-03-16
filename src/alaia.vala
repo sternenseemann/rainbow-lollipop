@@ -359,6 +359,10 @@ namespace RainbowLollipop {
                     new AuthenticationDialog(this.win.get_stage(), request);
                     return true;
                 });
+                w.web_process_crashed.connect(() => {
+                    ZMQVent.unregister_site();
+                    return false;
+                });
                 this.webviews.set(t,w);
                 this.webviews_container.append_page(w);
             }
