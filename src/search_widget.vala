@@ -63,6 +63,7 @@ namespace RainbowLollipop {
             // Make the overlay slightly transparent
 
             this.opacity = 0xAA;
+            this.visible = false;
 
             // Wire everything up to the webkit code
             
@@ -82,6 +83,12 @@ namespace RainbowLollipop {
             });
             this.entry.changed.connect(() => {
                 this.find_controller.search(this.entry.get_text(), 0, 1000);
+            });
+            this.close.clicked.connect(() => {
+                this.visible = false;
+                this.entry.set_text("");
+                this.find_controller.search_finish();
+                (this.find_controller.web_view as TrackWebView).stop_search();
             });
         }
     }

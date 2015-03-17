@@ -435,6 +435,16 @@ namespace RainbowLollipop {
                 (this._current_node as SiteNode).stop_spinner();
             }
         }
+
+        /**
+         * Causes this tracks webview to show up the fulltext search overlay
+         */
+        public void search() {
+            var webview = Application.S().get_web_view(this) as TrackWebView;
+            if (webview != null) {
+                webview.start_search();
+            }
+        }
         
         public new void emerge() {
             base.emerge();

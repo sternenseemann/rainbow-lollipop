@@ -65,6 +65,7 @@ namespace RainbowLollipop {
          */
         public HistoryTrack track{ get;set; }
         private SearchWidget search;
+        private bool searchstate;
 
         /**
          *
@@ -81,6 +82,27 @@ namespace RainbowLollipop {
          */
         public async void needs_direct_input(IPCCallback cb, Gdk.EventKey e) {
             ZMQVent.needs_direct_input(this, cb, e);
+        }
+
+        /**
+         * Returns true if the searchoverlay is currently active for this webview
+         */
+        public bool is_search_active() {
+            return this.searchstate;
+        }
+
+        /**
+         * Shows up the search dialog
+         */
+        public void start_search() {
+            this.search.visible = this.searchstate = true;
+        }
+
+        /**
+         * Shuts down the search overlay
+         */
+        public void stop_search() {
+            this.searchstate = false;
         }
     }
 
@@ -519,15 +541,17 @@ namespace RainbowLollipop {
                     var t = this.tracklist.current_track;
                     switch(e.keyval) {
                         case Gdk.Key.Tab:
+                            var twv = this.get_web_view(t) as TrackWebView;
+                            if (twv.is_search_active()) {
+                                return false;
+                            }
                             if (t != null)
-                                (this.get_web_view(t) as TrackWebView).needs_direct_input(do_key_press_event,e);
+                                twv.needs_direct_input(do_key_press_event,e);
                             else
                                 this.do_key_press_event(e);
                             break;
-                        case Gdk.Key.r:
-                            if ((bool)(e.state & Gdk.ModifierType.CONTROL_MASK) && t != null) {
-                                t.reload();
-                            }
+                        default:
+                            this.do_key_press_event(e);
                             break;
                     }
                     break;
@@ -556,10 +580,21 @@ namespace RainbowLollipop {
         public void do_key_press_event(Gdk.EventKey e) {
             switch (this._state) {
                 case AppState.NORMAL:
+                    var t = this.tracklist.current_track;
                     switch (e.keyval) {
                         case Gdk.Key.Tab:
                             this.show_tracklist();
                             return;
+                        case Gdk.Key.r:
+                            if ((bool)(e.state & Gdk.ModifierType.CONTROL_MASK) && t != null) {
+                                t.reload();
+                            }
+                            break;
+                        case Gdk.Key.f:
+                            if ((bool)(e.state & Gdk.ModifierType.CONTROL_MASK) && t != null) {
+                                t.search();
+                            }
+                            break;
                     }
                     break;
                 case AppState.TRACKLIST:
