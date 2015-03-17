@@ -84,6 +84,9 @@ namespace RainbowLollipop {
             this.entry.changed.connect(() => {
                 this.find_controller.search(this.entry.get_text(), 0, 1000);
             });
+            this.entry.realize.connect( () => {
+                    this.entry.grab_focus();
+            });
             this.close.clicked.connect(() => {
                 this.visible = false;
                 this.entry.set_text("");
