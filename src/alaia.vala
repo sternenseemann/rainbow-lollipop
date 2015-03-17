@@ -637,13 +637,11 @@ namespace RainbowLollipop {
                 if (f.query_exists())
                     return f.get_path();
             }
-            string ret;
 #if DEBUG
-            ret = "data/"+Config.C+name;
+            return "data/"+Config.C+name;
 #else
-            ret =  "";
+            return "";
 #endif
-            return ret;
         }
 
         /**
@@ -652,13 +650,11 @@ namespace RainbowLollipop {
          */
         public static string get_cache_filename(string name) {
             File f = File.new_for_path(GLib.Environment.get_user_cache_dir()+Config.C+name);
-            string ret;
-            ret = f.get_path();
+            return f.get_path();
 #if DEBUG
 #else
-            ret = "";
+            return "";
 #endif
-            return ret;
         }
     }
 }
