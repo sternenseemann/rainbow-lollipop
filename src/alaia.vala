@@ -539,18 +539,18 @@ namespace RainbowLollipop {
             switch (this._state) {
                 case AppState.NORMAL:
                     var t = this.tracklist.current_track;
+                    var twv = this.get_web_view(t) as TrackWebView;
                     switch(e.keyval) {
                         case Gdk.Key.Tab:
-                            var twv = this.get_web_view(t) as TrackWebView;
-                            if (twv.is_search_active()) {
-                                return false;
-                            }
                             if (t != null)
                                 twv.needs_direct_input(do_key_press_event,e);
                             else
                                 this.do_key_press_event(e);
                             break;
                         default:
+                            if (twv.is_search_active()) {
+                                return false;
+                            }
                             this.do_key_press_event(e);
                             break;
                     }
