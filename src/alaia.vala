@@ -150,13 +150,13 @@ namespace RainbowLollipop {
          */
         public ContextMenu () {
             //Nodes
-            this.new_track_from_node = new Gtk.ImageMenuItem.with_label("New Track from Branch");
+            this.new_track_from_node = new Gtk.ImageMenuItem.with_label(_("New Track from Branch"));
             this.new_track_from_node.set_image(
                 new Gtk.Image.from_icon_name("go-jump", Gtk.IconSize.MENU)
             );
             this.new_track_from_node.activate.connect(do_new_track_from_node);
             this.add(this.new_track_from_node);
-            this.delete_branch = new Gtk.ImageMenuItem.with_label("Close Branch");
+            this.delete_branch = new Gtk.ImageMenuItem.with_label(_("Close Branch"));
             this.delete_branch.set_image(
                 new Gtk.Image.from_icon_name("edit-delete", Gtk.IconSize.MENU)
             );

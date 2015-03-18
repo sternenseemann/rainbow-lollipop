@@ -8,6 +8,9 @@ list(APPEND CMAKE_MODULE_PATH
 include(ValaPrecompile)
 include(ValaVersion)
 
+find_package(Gettext REQUIRED)
+find_program(EXTRACT_EXECUTABLE xgettext)
+
 find_package(Vala REQUIRED)
 ensure_vala_version("0.26" MINIMUM)
 
@@ -155,8 +158,38 @@ else()
     )
 endif()
 
+# Security Stuff
+
+#add_definitions(-fstack-protector-all -D_FORTIFY_SOURCE=2)
+
+# Multilanguage Stuff
+
+SET(POTFILE "${PROJECT_NAME}.pot")
+
+add_definitions(-DGETTEXT_PACKAGE="${PROJECT_NAME}")
+add_custom_target(pot ALL
+    COMMAND
+        ${EXTRACT_EXECUTABLE} --language=vala --keyword=_ --escape --sort-output --copyright-holder="Daniel 'grindhold' Brendle" --package-name="${PROJECT_NAME}" --package-version="0.0.1" --msgid-bugs-address="rainbow-lollipop-talk@lists.rainbow-lollipop.de" -o "po/${POTFILE}" src/*.vala
+    COMMENT
+        "Extracting translation strings"
+)
+add_custom_target(pofiles ALL
+    COMMAND
+        ${GETTEXT_MSGMERGE_EXECUTABLE} --backup=off -U po/de.po po/${POTFILE}
+    COMMAND
+        ${GETTEXT_MSGMERGE_EXECUTABLE} --backup=off -U po/en.po po/${POTFILE}
+    DEPENDS
+        pot
+    COMMENT
+        "Creating PO-files out of ${POTFILE}"
+)
+
+# Maintargets
+
 add_library("alaiaextension" SHARED ${VALA_EXTENSION_C})
 add_executable(${PROJECT_NAME} ${VALA_BINARY_C})
+
+# Installing
 
 install(DIRECTORY "data/rainbow-lollipop" DESTINATION share)
 install(DIRECTORY "data/icons" DESTINATION share)

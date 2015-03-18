@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rainbow-lollipop 0.0.1\n"
 "Report-Msgid-Bugs-To: rainbow-lollipop-talk@lists.rainbow-lollipop.de\n"
-"POT-Creation-Date: 2015-03-18 20:35+0100\n"
+"POT-Creation-Date: 2015-03-18 21:16+0100\n"
 "PO-Revision-Date: 2015-03-18 20:36+0100\n"
 "Last-Translator: grindhold <grindhold@skarphed.org>\n"
 "Language-Team: English\n"
@@ -16,6 +16,10 @@ msgstr ""
 "Content-Type: text/plain; charset=ASCII\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: src/alaia.vala:159
+msgid "Close Branch"
+msgstr ""
 
 #: src/alaia.vala:153
 msgid "New Track from Branch"
