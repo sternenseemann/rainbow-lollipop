@@ -2,6 +2,7 @@
 .build
 
 rainbow-lollipop
+rainbow-lollipop.pot
 libalaiaextension.so
 alaiawebextension.vapi
 
