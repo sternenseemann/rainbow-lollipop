@@ -176,7 +176,7 @@ add_definitions(-DGETTEXT_PACKAGE="${PROJECT_NAME}")
 FILE(GLOB FILES_TO_TRANSLATE "src/*.vala")
 add_custom_target(pot ALL
     COMMAND
-        ${EXTRACT_EXECUTABLE} --language=vala --keyword=_ --escape --sort-output --copyright-holder="Daniel 'grindhold' Brendle" --package-name="${PROJECT_NAME}" --package-version="0.0.1" --msgid-bugs-address="rainbow-lollipop-talk@lists.rainbow-lollipop.de" -o "po/${POTFILE}" ${FILES_TO_TRANSLATE}
+        ${EXTRACT_EXECUTABLE} --language=vala --keyword=_ --escape --sort-output --copyright-holder="Daniel 'grindhold' Brendle" --package-name="${PROJECT_NAME}" --package-version="0.0.1" --msgid-bugs-address="rainbow-lollipop-talk@lists.rainbow-lollipop.de" -o po/${POTFILE} ${FILES_TO_TRANSLATE}
     COMMAND
         sed -i 's/CHARSET/UTF-8/' po/${POTFILE}
     COMMENT
