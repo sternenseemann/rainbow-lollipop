@@ -41,6 +41,8 @@ namespace RainbowLollipop {
         SESSIONDIALOG
     }
 
+    const string GETTEXT_PACKAGE = "rainbow-lollipop";
+
     /**
      * Counts how often the unichar x occurs in the string s
      */
@@ -292,6 +294,43 @@ namespace RainbowLollipop {
         }
 
         /**
+         * Initializes the translations of this program
+         * TODO: The following section is a mess:
+         * There are three possible directories where the language-files (*.mo)
+         * could reside in:
+         *     /usr/share/locale
+         *     /usr/local/share/locale
+         *     ./data/locale
+         * because the gnu gettext-conform paths have the following structure
+         *     <localedir>/<language>/LC_MESSAGES/rainbow-lollipop.mo
+         * i would have to know the current locale at runtime in order to check for
+         * the languagefile to exist.
+         * Instead i will check statically for the english languagefile at the path
+         *     <localedir>/en/LC_MESSAGES/rainbow-lollipop.mo
+         * because i can assume that if one language file got installed, every other
+         * languagefile got installed in the same folder structure, too.
+         * In the future, specific tests and a better solution would be nice.
+         */
+        private void init_locale() {
+            Intl.setlocale(LocaleCategory.MESSAGES, "");
+            Intl.textdomain(GETTEXT_PACKAGE);
+            Intl.bind_textdomain_codeset(GETTEXT_PACKAGE, "utf-8");
+            bool found_locale = false;
+            foreach (string dir in GLib.Environment.get_system_data_dirs()) {
+                found_locale = FileUtils.test(
+                                    dir+"locale/en/LC_MESSAGES/rainbow-lollipop.mo",
+                                    FileTest.EXISTS
+                );
+                if (found_locale) {
+                    Intl.bindtextdomain(GETTEXT_PACKAGE, dir+"locale");
+                    break;
+                }
+            }
+            if (!found_locale)
+                Intl.bindtextdomain(GETTEXT_PACKAGE, "./data/locale");
+        }
+
+        /**
          * Application Constructor
          */
         private Application()  {
@@ -300,6 +339,9 @@ namespace RainbowLollipop {
                 flags: ApplicationFlags.HANDLES_COMMAND_LINE,
                 register_session : true
             );
+
+            //Internationalization
+            init_locale();
 
             // Load config
             Config.load();

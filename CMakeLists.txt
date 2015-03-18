@@ -184,6 +184,23 @@ add_custom_target(pofiles ALL
         "Creating PO-files out of ${POTFILE}"
 )
 
+SET(LOC_BUILDDIR "data/locale/")
+
+add_custom_target(mofiles ALL
+    COMMAND
+        mkdir -p ${LOC_BUILDDIR}de/LC_MESSAGES/
+    COMMAND
+        ${GETTEXT_MSGFMT_EXECUTABLE} -c -o ${LOC_BUILDDIR}/de/LC_MESSAGES/${PROJECT_NAME}.mo po/de.po
+    COMMAND
+        mkdir -p ${LOC_BUILDDIR}en/LC_MESSAGES/
+    COMMAND
+        ${GETTEXT_MSGFMT_EXECUTABLE} -c -o ${LOC_BUILDDIR}/en/LC_MESSAGES/${PROJECT_NAME}.mo po/en.po
+    DEPENDS
+        pofiles
+    COMMENT
+        "Creating MO-files"
+)
+
 # Maintargets
 
 add_library("alaiaextension" SHARED ${VALA_EXTENSION_C})
@@ -194,6 +211,7 @@ add_executable(${PROJECT_NAME} ${VALA_BINARY_C})
 install(DIRECTORY "data/rainbow-lollipop" DESTINATION share)
 install(DIRECTORY "data/icons" DESTINATION share)
 install(DIRECTORY "data/applications" DESTINATION share)
+install(DIRECTORY "data/locale" DESTINATION share)
 install(TARGETS "alaiaextension" ${PROJECT_NAME}
     RUNTIME DESTINATION bin
     LIBRARY DESTINATION lib/${PROJECT_NAME}
