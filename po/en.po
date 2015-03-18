@@ -1,0 +1,22 @@
+# English translations for rainbow-lollipop package.
+# Copyright (C) 2015 Daniel\ 'grindhold'\ Brendle
+# This file is distributed under the same license as the rainbow-lollipop package.
+# grindhold <grindhold@skarphed.org>, 2015.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: rainbow-lollipop 0.0.1\n"
+"Report-Msgid-Bugs-To: rainbow-lollipop-talk@lists.rainbow-lollipop.de\n"
+"POT-Creation-Date: 2015-03-18 20:35+0100\n"
+"PO-Revision-Date: 2015-03-18 20:36+0100\n"
+"Last-Translator: grindhold <grindhold@skarphed.org>\n"
+"Language-Team: English\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ASCII\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: src/alaia.vala:153
+msgid "New Track from Branch"
+msgstr "New Track from Branch"
