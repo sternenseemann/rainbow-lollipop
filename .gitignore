@@ -3,6 +3,7 @@
 
 rainbow-lollipop
 rainbow-lollipop.pot
+*.mo
 libalaiaextension.so
 alaiawebextension.vapi
 
