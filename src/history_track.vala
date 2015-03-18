@@ -445,6 +445,27 @@ namespace RainbowLollipop {
                 webview.start_search();
             }
         }
+
+        /**
+         * This method shall be called everytime this track
+         * is selected as the current track.
+         */
+        public new void prepare() {
+            base.prepare();
+            var wv = Application.S().get_web_view(this) as TrackWebView;
+            wv.restore_search();
+        }
+
+        /**
+         * This method shall be called everytime this track
+         * ceases to be the current_track of the Tracklist
+         * and performs cleanup operations
+         */
+        public new void cleanup() {
+            base.cleanup();
+            var wv = Application.S().get_web_view(this) as TrackWebView;
+            wv.hide_search();
+        }
         
         public new void emerge() {
             base.emerge();

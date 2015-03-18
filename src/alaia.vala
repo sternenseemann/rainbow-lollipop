@@ -104,6 +104,20 @@ namespace RainbowLollipop {
         public void stop_search() {
             this.searchstate = false;
         }
+
+        /**
+         * Hides the search overlay
+         */
+        public void hide_search() {
+            this.search.visible = false;
+        }
+
+        /**
+         * Shows the search overlay if there is currently a search going on
+         */
+        public void restore_search() {
+            this.search.visible = this.searchstate;
+        }
     }
 
     /**

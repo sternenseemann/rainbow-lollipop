@@ -96,7 +96,11 @@ namespace RainbowLollipop {
                 return this._current_track;
             }
             set {
+                if (this._current_track != null)
+                    this._current_track.cleanup();
                 this._current_track = value;
+                if (this._current_track != null)
+                    this._current_track.prepare();
             }
         }
         private HistoryTrack? _current_track;
