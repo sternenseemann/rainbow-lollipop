@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rainbow-lollipop 0.0.1\n"
 "Report-Msgid-Bugs-To: rainbow-lollipop-talk@lists.rainbow-lollipop.de\n"
-"POT-Creation-Date: 2015-03-18 23:32+0100\n"
+"POT-Creation-Date: 2015-03-19 00:03+0100\n"
 "PO-Revision-Date: 2015-03-18 23:34+0100\n"
 "Last-Translator: grindhold <grindhold@skarphed.org>\n"
 "Language-Team: English\n"
@@ -203,9 +203,19 @@ msgstr "Using default config\n"
 msgid "invalid field in node onject: %s\n"
 msgstr "invalid field in node onject: %s\n"
 
+#: src/session_select.vala:102
+msgid "new session"
+msgstr ""
+
 #: src/site_node.vala:395
 msgid "node creation failed\n"
 msgstr "node creation failed\n"
+
+#: src/session_select.vala:63
+msgid ""
+"restore\n"
+"session"
+msgstr ""
 
 #: src/site_node.vala:360
 msgid "sitenode must be object"

@@ -60,7 +60,7 @@ namespace RainbowLollipop {
             this.restore_box.background_color = Clutter.Color.from_string(Config.c.colorscheme.empty_track);
             this.restore_box.width = this.restore_box.height = BOX_SIZE;
 
-            this.restore_text = new Clutter.Text.with_text("Sans Bold 16", "restore\nsession");
+            this.restore_text = new Clutter.Text.with_text("Sans Bold 16", _("restore\nsession"));
             this.restore_text.color = Clutter.Color.from_string("#eeeeee");
             this.restore_text.width = BOX_SIZE;
             this.restore_text.height = 65;
@@ -99,7 +99,7 @@ namespace RainbowLollipop {
             this.newsession_box.background_color = Clutter.Color.from_string(Config.c.colorscheme.empty_track); 
             this.newsession_box.width = this.newsession_box.height = BOX_SIZE; 
 
-            this.newsession_text = new Clutter.Text.with_text("Sans Bold 16", "new session");
+            this.newsession_text = new Clutter.Text.with_text("Sans Bold 16", _("new session"));
             this.newsession_text.color = Clutter.Color.from_string("#eeeeee");
             this.newsession_text.width = BOX_SIZE;
             this.newsession_text.height = 30;
