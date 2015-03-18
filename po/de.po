@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rainbow-lollipop 0.0.1\n"
 "Report-Msgid-Bugs-To: rainbow-lollipop-talk@lists.rainbow-lollipop.de\n"
-"POT-Creation-Date: 2015-03-19 00:03+0100\n"
+"POT-Creation-Date: 2015-03-19 00:26+0100\n"
 "PO-Revision-Date: 2015-03-19 00:04+0100\n"
 "Last-Translator: grindhold <grindhold@skarphed.org>\n"
 "Language-Team: German\n"
@@ -18,172 +18,182 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 1.6.10\n"
 
-#: src/config.vala:143 src/config.vala:149 src/config.vala:155
-#: src/config.vala:161 src/config.vala:167 src/config.vala:173
-#: src/config.vala:179 src/config.vala:185 src/config.vala:191
-#: src/config.vala:197 src/config.vala:204 src/config.vala:210
-#: src/config.vala:217
+#: /home/grindhold/git/alaia/src/config.vala:143
+#: /home/grindhold/git/alaia/src/config.vala:149
+#: /home/grindhold/git/alaia/src/config.vala:155
+#: /home/grindhold/git/alaia/src/config.vala:161
+#: /home/grindhold/git/alaia/src/config.vala:167
+#: /home/grindhold/git/alaia/src/config.vala:173
+#: /home/grindhold/git/alaia/src/config.vala:179
+#: /home/grindhold/git/alaia/src/config.vala:185
+#: /home/grindhold/git/alaia/src/config.vala:191
+#: /home/grindhold/git/alaia/src/config.vala:197
+#: /home/grindhold/git/alaia/src/config.vala:204
+#: /home/grindhold/git/alaia/src/config.vala:210
+#: /home/grindhold/git/alaia/src/config.vala:217
 #, c-format
 msgid "%s must be Value"
 msgstr "%s muss ein Wert sein"
 
-#: src/site_node.vala:380
+#: /home/grindhold/git/alaia/src/site_node.vala:380
 #, c-format
 msgid "%s must be array"
 msgstr "%s muss ein Array sein"
 
-#: src/site_node.vala:370 src/site_node.vala:375
+#: /home/grindhold/git/alaia/src/site_node.vala:370
+#: /home/grindhold/git/alaia/src/site_node.vala:375
 #, c-format
 msgid "%s must be value"
 msgstr "%s muss ein Wert sein"
 
-#: src/alaia.vala:161
+#: /home/grindhold/git/alaia/src/alaia.vala:161
 msgid "Close Branch"
 msgstr "Zweig schließen"
 
-#: src/alaia.vala:193
+#: /home/grindhold/git/alaia/src/alaia.vala:193
 msgid "Close Track"
 msgstr "Track schließen"
 
-#: src/alaia.vala:169
+#: /home/grindhold/git/alaia/src/alaia.vala:169
 msgid "Copy URL"
 msgstr "URL Kopieren"
 
-#: src/database.vala:42
+#: /home/grindhold/git/alaia/src/database.vala:42
 #, c-format
 msgid "Could not create database %s\n"
 msgstr "Die Datenbank konnte nicht erstellt werden: %s\n"
 
-#: src/database.vala:47
+#: /home/grindhold/git/alaia/src/database.vala:47
 #, c-format
 msgid "Could not create tables %s\n"
 msgstr "Die Tabellen konnten nicht erstellt werden: %s\n"
 
-#: src/config.vala:388
+#: /home/grindhold/git/alaia/src/config.vala:388
 msgid "Could not feed schemeparser. Using default colorscheme\n"
 msgstr ""
 "Das Farbschema konnte nicht gelesen werden. Benutze Standard-Farbschema.\n"
 
-#: src/download_node.vala:149
+#: /home/grindhold/git/alaia/src/download_node.vala:149
 #, c-format
 msgid "Could not find a launcher for file: %s"
 msgstr "Es konnte kein Standardprogramm fuer %s gefunden werden."
 
-#: src/alaia.vala:692
+#: /home/grindhold/git/alaia/src/alaia.vala:692
 msgid "Could not initialize GtkClutter"
 msgstr "GtkClutter konnte nicht initialisiert werden."
 
-#: src/config.vala:381
+#: /home/grindhold/git/alaia/src/config.vala:381
 msgid "Could not load colorscheme. Using default colorscheme\n"
 msgstr ""
 "Das Farbschema konnte nicht geladen werden. Benutze Standard-Farbschema.\n"
 
-#: src/config.vala:395
+#: /home/grindhold/git/alaia/src/config.vala:395
 msgid "Could not parse scheme. Using default colorscheme\n"
 msgstr ""
 "Das Farbschema konnte nicht verarbeitet werden. Benutze Standard-"
 "Farbschema.\n"
 
-#: src/alaia.vala:513
+#: /home/grindhold/git/alaia/src/alaia.vala:513
 msgid "Could not parse session json\n"
 msgstr "Das Sitzungs-JSON konnte nicht gelesenwerden.\n"
 
-#: src/history.vala:144
+#: /home/grindhold/git/alaia/src/history.vala:144
 #, c-format
 msgid "Could not prepare LOG_HINTQRY: %s"
 msgstr "LOG_HINTQRY konnte nicht vorbereitet werden: %s"
 
-#: src/history.vala:122
+#: /home/grindhold/git/alaia/src/history.vala:122
 #, c-format
 msgid "Could not prepare LOG_INSERT: %s"
 msgstr "LOG_INSERT konnte nicht vorbereitet werden: %s"
 
-#: src/history.vala:100
+#: /home/grindhold/git/alaia/src/history.vala:100
 #, c-format
 msgid "Could not prepare LOG_QRY: %s"
 msgstr "LOG_QRY konnte nicht vorbereitet werden: %s"
 
-#: src/history.vala:115
+#: /home/grindhold/git/alaia/src/history.vala:115
 #, c-format
 msgid "Could not prepare LOG_UPDATE: %s"
 msgstr "LOG_UPDATE konnte nicht vorbereitet werden: %s"
 
-#: src/alaia.vala:549
+#: /home/grindhold/git/alaia/src/alaia.vala:549
 #, c-format
 msgid "Could not save session to %s\n"
 msgstr "Die Sitzung konnte nicht nach %s gespeichert werden.\n"
 
-#: src/database.vala:68
+#: /home/grindhold/git/alaia/src/database.vala:68
 msgid "Database is not initialized. Can not commit statement\n"
 msgstr ""
 "Die Datenbank ist nicht initialisiert. Das Statement konnte nicht abgesetzt "
 "werden.\n"
 
-#: src/config.vala:335 src/config.vala:341
+#: /home/grindhold/git/alaia/src/config.vala:335
+#: /home/grindhold/git/alaia/src/config.vala:341
 #, c-format
 msgid "Expected %s to be value"
 msgstr "Es wird ein Wert fuer %s erwartet."
 
-#: src/config.vala:327
+#: /home/grindhold/git/alaia/src/config.vala:327
 msgid "Expected Object"
 msgstr "Es wird ein Objekt erwartet."
 
-#: src/config.vala:135
+#: /home/grindhold/git/alaia/src/config.vala:135
 #, c-format
 msgid "Expected root Object. Got %s"
 msgstr "Es wird das root-Objekt erwartet. Gefunden wurde %s"
 
-#: src/config.vala:347
+#: /home/grindhold/git/alaia/src/config.vala:347
 msgid "Expected tracks to be array"
 msgstr "Die Tracks werden als Array erwartet."
 
-#: src/empty_track.vala:45
+#: /home/grindhold/git/alaia/src/empty_track.vala:45
 msgid "Go"
 msgstr "Los!"
 
-#: src/alaia.vala:414
+#: /home/grindhold/git/alaia/src/alaia.vala:414
 msgid "Go Back"
 msgstr "Zurück"
 
-#: src/alaia.vala:422
+#: /home/grindhold/git/alaia/src/alaia.vala:422
 msgid "Go Forward"
 msgstr "Vorwärts"
 
-#: src/alaia.vala:517
+#: /home/grindhold/git/alaia/src/alaia.vala:517
 msgid "Invalid session json\n"
 msgstr "Ungültiges Sitzungs-JSON\n"
 
-#: src/alaia.vala:155
+#: /home/grindhold/git/alaia/src/alaia.vala:155
 msgid "New Track from Branch"
 msgstr "Neuer Track aus diesem Zweig"
 
-#: src/alaia.vala:184
+#: /home/grindhold/git/alaia/src/alaia.vala:184
 msgid "Open"
 msgstr "Öffnen"
 
-#: src/alaia.vala:178
+#: /home/grindhold/git/alaia/src/alaia.vala:178
 msgid "Open folder"
 msgstr "Ordner Öffnen"
 
-#: src/alaia.vala:428
+#: /home/grindhold/git/alaia/src/alaia.vala:428
 msgid "Reload"
 msgstr "Neu laden"
 
-#: src/searchengine.vala:48
+#: /home/grindhold/git/alaia/src/searchengine.vala:48
 #, c-format
 msgid "Search %s"
 msgstr "%s suchen"
 
-#: src/searchengine.vala:49
+#: /home/grindhold/git/alaia/src/searchengine.vala:49
 #, c-format
 msgid "Search for %s with DuckDuckGo"
 msgstr "%s mit DuckDuckGo suchen"
 
-#: src/ipc.vala:164
+#: /home/grindhold/git/alaia/src/ipc.vala:164
 msgid "Sink broke down\n"
 msgstr "Das Waschbecken ist heruntergebrochen.\n"
 
-#: src/history.vala:158
+#: /home/grindhold/git/alaia/src/history.vala:158
 #, c-format
 msgid ""
 "Surf directly to \n"
@@ -192,35 +202,35 @@ msgstr ""
 "Direkt surfen nach\n"
 "%s"
 
-#: src/nodes.vala:336
+#: /home/grindhold/git/alaia/src/nodes.vala:336
 msgid "The node is not a child of its parent. This should not happen"
 msgstr ""
 "Diese Node ist kein Kindelement des Tracks, als dessen current_node sie "
 "zugewiesen wurde. Das sollte nicht passieren."
 
-#: src/alaia.vala:528
+#: /home/grindhold/git/alaia/src/alaia.vala:528
 #, c-format
 msgid "Unknown session member %s\n"
 msgstr "Unbekanntes Sitzungsattribut %s\n"
 
-#: src/config.vala:233
+#: /home/grindhold/git/alaia/src/config.vala:233
 msgid "Using default config\n"
 msgstr "Es wird die Standardkonfiguration benutzt.\n"
 
-#: src/site_node.vala:384
+#: /home/grindhold/git/alaia/src/site_node.vala:384
 #, c-format
 msgid "invalid field in node onject: %s\n"
 msgstr "Ungültiges Feld in Node-Objekt: %s\n"
 
-#: src/session_select.vala:102
+#: /home/grindhold/git/alaia/src/session_select.vala:102
 msgid "new session"
 msgstr "Neue Sitzung"
 
-#: src/site_node.vala:395
+#: /home/grindhold/git/alaia/src/site_node.vala:395
 msgid "node creation failed\n"
 msgstr "Node-Erstellung fehlgeschlagen\n"
 
-#: src/session_select.vala:63
+#: /home/grindhold/git/alaia/src/session_select.vala:63
 msgid ""
 "restore\n"
 "session"
@@ -228,14 +238,14 @@ msgstr ""
 "Sitzung\n"
 "fortsetzen"
 
-#: src/site_node.vala:360
+#: /home/grindhold/git/alaia/src/site_node.vala:360
 msgid "sitenode must be object"
 msgstr "SiteNode muss ein Objekt sein."
 
-#: src/tracklist.vala:141
+#: /home/grindhold/git/alaia/src/tracklist.vala:141
 msgid "track generation failed\n"
 msgstr "Track-Erstellung fehlgeschlagen\n"
 
-#: src/tracklist.vala:133
+#: /home/grindhold/git/alaia/src/tracklist.vala:133
 msgid "tracklist must be array\n"
 msgstr "Trackliste muss ein Array sein\n"
