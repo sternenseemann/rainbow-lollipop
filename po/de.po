@@ -7,21 +7,213 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rainbow-lollipop 0.0.1\n"
 "Report-Msgid-Bugs-To: rainbow-lollipop-talk@lists.rainbow-lollipop.de\n"
-"POT-Creation-Date: 2015-03-18 22:13+0100\n"
-"PO-Revision-Date: 2015-03-18 22:06+0100\n"
+"POT-Creation-Date: 2015-03-18 23:32+0100\n"
+"PO-Revision-Date: 2015-03-18 23:35+0100\n"
 "Last-Translator: grindhold <grindhold@skarphed.org>\n"
 "Language-Team: German\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=ASCII\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 1.6.10\n"
 
+#: src/config.vala:143 src/config.vala:149 src/config.vala:155
+#: src/config.vala:161 src/config.vala:167 src/config.vala:173
+#: src/config.vala:179 src/config.vala:185 src/config.vala:191
+#: src/config.vala:197 src/config.vala:204 src/config.vala:210
+#: src/config.vala:217
+#, c-format
+msgid "%s must be Value"
+msgstr "%s muss ein Wert sein"
+
+#: src/site_node.vala:380
+#, c-format
+msgid "%s must be array"
+msgstr ""
+
+#: src/site_node.vala:370 src/site_node.vala:375
+#, c-format
+msgid "%s must be value"
+msgstr ""
+
 #: src/alaia.vala:161
 msgid "Close Branch"
-msgstr "Zweig schliessen"
+msgstr ""
+
+#: src/alaia.vala:193
+msgid "Close Track"
+msgstr ""
+
+#: src/alaia.vala:169
+msgid "Copy URL"
+msgstr ""
+
+#: src/database.vala:42
+#, c-format
+msgid "Could not create database %s\n"
+msgstr ""
+
+#: src/database.vala:47
+#, c-format
+msgid "Could not create tables %s\n"
+msgstr ""
+
+#: src/config.vala:388
+msgid "Could not feed schemeparser. Using default colorscheme\n"
+msgstr ""
+
+#: src/download_node.vala:149
+#, c-format
+msgid "Could not find a launcher for file: %s"
+msgstr ""
+
+#: src/alaia.vala:692
+msgid "Could not initialize GtkClutter"
+msgstr ""
+
+#: src/config.vala:381
+msgid "Could not load colorscheme. Using default colorscheme\n"
+msgstr ""
+
+#: src/config.vala:395
+msgid "Could not parse scheme. Using default colorscheme\n"
+msgstr ""
+
+#: src/alaia.vala:513
+msgid "Could not parse session json\n"
+msgstr ""
+
+#: src/history.vala:144
+#, c-format
+msgid "Could not prepare LOG_HINTQRY: %s"
+msgstr ""
+
+#: src/history.vala:122
+#, c-format
+msgid "Could not prepare LOG_INSERT: %s"
+msgstr ""
+
+#: src/history.vala:100
+#, c-format
+msgid "Could not prepare LOG_QRY: %s"
+msgstr ""
+
+#: src/history.vala:115
+#, c-format
+msgid "Could not prepare LOG_UPDATE: %s"
+msgstr ""
+
+#: src/alaia.vala:549
+#, c-format
+msgid "Could not save session to %s\n"
+msgstr ""
+
+#: src/database.vala:68
+msgid "Database is not initialized. Can not commit statement\n"
+msgstr ""
+
+#: src/config.vala:335 src/config.vala:341
+#, c-format
+msgid "Expected %s to be value"
+msgstr ""
+
+#: src/config.vala:327
+msgid "Expected Object"
+msgstr ""
+
+#: src/config.vala:135
+#, c-format
+msgid "Expected root Object. Got %s"
+msgstr ""
+
+#: src/config.vala:347
+msgid "Expected tracks to be array"
+msgstr ""
+
+#: src/empty_track.vala:45
+msgid "Go"
+msgstr ""
+
+#: src/alaia.vala:414
+msgid "Go Back"
+msgstr ""
+
+#: src/alaia.vala:422
+msgid "Go Forward"
+msgstr ""
+
+#: src/alaia.vala:517
+msgid "Invalid session json\n"
+msgstr ""
 
 #: src/alaia.vala:155
 msgid "New Track from Branch"
-msgstr "Neuer Track aus diesem Zweig"
+msgstr ""
+
+#: src/alaia.vala:184
+msgid "Open"
+msgstr ""
+
+#: src/alaia.vala:178
+msgid "Open folder"
+msgstr ""
+
+#: src/alaia.vala:428
+msgid "Reload"
+msgstr ""
+
+#: src/searchengine.vala:48
+#, c-format
+msgid "Search %s"
+msgstr ""
+
+#: src/searchengine.vala:49
+#, c-format
+msgid "Search for %s with DuckDuckGo"
+msgstr ""
+
+#: src/ipc.vala:164
+msgid "Sink broke down\n"
+msgstr ""
+
+#: src/history.vala:158
+#, c-format
+msgid ""
+"Surf directly to \n"
+"%s"
+msgstr ""
+
+#: src/nodes.vala:336
+msgid "The node is not a child of its parent. This should not happen"
+msgstr ""
+
+#: src/alaia.vala:528
+#, c-format
+msgid "Unknown session member %s\n"
+msgstr ""
+
+#: src/config.vala:233
+msgid "Using default config\n"
+msgstr ""
+
+#: src/site_node.vala:384
+#, c-format
+msgid "invalid field in node onject: %s\n"
+msgstr ""
+
+#: src/site_node.vala:395
+msgid "node creation failed\n"
+msgstr ""
+
+#: src/site_node.vala:360
+msgid "sitenode must be object"
+msgstr ""
+
+#: src/tracklist.vala:141
+msgid "track generation failed\n"
+msgstr ""
+
+#: src/tracklist.vala:133
+msgid "tracklist must be array\n"
+msgstr ""
