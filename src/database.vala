@@ -39,12 +39,12 @@ namespace RainbowLollipop {
             string dbpath = Application.get_cache_filename("alaia.sqlite3");
             int err = Sqlite.Database.open(dbpath, out this.db);
             if (err != Sqlite.OK) {
-                warning("Could not create database %s\n", this.db.errmsg());
+                warning(_("Could not create database %s\n"), this.db.errmsg());
                 return;
             }
             err = this.db.exec(History.DBINIT);
             if (err != Sqlite.OK) {
-                warning("Could not create tables %s\n", this.db.errmsg());
+                warning(_("Could not create tables %s\n"), this.db.errmsg());
                 return;
             }
             this.initialized = true;
@@ -65,7 +65,7 @@ namespace RainbowLollipop {
          */
         public bool check_initialized() {
             if (!this.initialized) 
-                warning("Database is not initialized. Can not commit statement\n");
+                warning(_("Database is not initialized. Can not commit statement\n"));
             return this.initialized;
         } 
 

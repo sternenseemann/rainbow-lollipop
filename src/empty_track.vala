@@ -42,7 +42,7 @@ namespace RainbowLollipop {
             base(tl);
             this.tracklist = tl;
             this.url_entry = new Gtk.Entry();
-            this.enter_button = new Gtk.Button.with_label("Go");
+            this.enter_button = new Gtk.Button.with_label(_("Go"));
             this.enter_button.clicked.connect(do_activate);
             this.hbox = new Gtk.Grid();
             this.hbox.add(this.url_entry);

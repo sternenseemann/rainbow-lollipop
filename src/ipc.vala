@@ -161,7 +161,7 @@ namespace RainbowLollipop {
             try {
                 new Thread<void*>.try(null,ZMQSink.run);
             } catch (ThreadError e) {
-                stdout.printf("Sink broke down\n");
+                stdout.printf(_("Sink broke down\n"));
             }
         }
 

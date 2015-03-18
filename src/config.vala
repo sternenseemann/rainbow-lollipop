@@ -132,7 +132,7 @@ namespace RainbowLollipop {
          */
         private void process(Json.Node n) throws ConfigError {
             if (n.get_node_type() != Json.NodeType.OBJECT) {
-                throw new ConfigError.INVALID_FORMAT("Expected root Object. Got %s", n.type_name());
+                throw new ConfigError.INVALID_FORMAT(_("Expected root Object. Got %s"), n.type_name());
             }
             unowned Json.Object root = n.get_object();
             foreach (unowned string name in root.get_members()) {
@@ -140,81 +140,81 @@ namespace RainbowLollipop {
                 switch(name){
                     case "track_height":
                         if (item.get_node_type() != Json.NodeType.VALUE) {
-                            throw new ConfigError.INVALID_FORMAT("%s must be Value",name);
+                            throw new ConfigError.INVALID_FORMAT(_("%s must be Value"),name);
                         }
                         this.track_height = (uint8) item.get_int();
                         break;
                     case "track_spacing":
                         if (item.get_node_type() != Json.NodeType.VALUE) {
-                            throw new ConfigError.INVALID_FORMAT("%s must be Value",name);
+                            throw new ConfigError.INVALID_FORMAT(_("%s must be Value"),name);
                         }
                         this.track_spacing = (uint8) item.get_int();
                         break;
                     case "track_opacity":
                         if (item.get_node_type() != Json.NodeType.VALUE) {
-                            throw new ConfigError.INVALID_FORMAT("%s must be Value",name);
+                            throw new ConfigError.INVALID_FORMAT(_("%s must be Value"),name);
                         }
                         this.track_opacity = (uint8) item.get_int();
                         break;
                     case "node_height":
                         if (item.get_node_type() != Json.NodeType.VALUE) {
-                            throw new ConfigError.INVALID_FORMAT("%s must be Value",name);
+                            throw new ConfigError.INVALID_FORMAT(_("%s must be Value"),name);
                         }
                         this.node_height = (uint8) item.get_int();
                         break;
                     case "node_spacing":
                         if (item.get_node_type() != Json.NodeType.VALUE) {
-                            throw new ConfigError.INVALID_FORMAT("%s must be Value",name);
+                            throw new ConfigError.INVALID_FORMAT(_("%s must be Value"),name);
                         }
                         this.node_spacing = (uint8) item.get_int();
                         break;
                     case "favicon_size":
                         if (item.get_node_type() != Json.NodeType.VALUE) {
-                            throw new ConfigError.INVALID_FORMAT("%s must be Value",name);
+                            throw new ConfigError.INVALID_FORMAT(_("%s must be Value"),name);
                         }
                         this.favicon_size = (uint8) item.get_int();
                         break;
                     case "color_multiplier":
                         if (item.get_node_type() != Json.NodeType.VALUE) {
-                            throw new ConfigError.INVALID_FORMAT("%s must be Value",name);
+                            throw new ConfigError.INVALID_FORMAT(_("%s must be Value"),name);
                         }
                         this.color_multiplier = (uint8) item.get_int();
                         break;
                     case "connector_stroke":
                         if (item.get_node_type() != Json.NodeType.VALUE) {
-                            throw new ConfigError.INVALID_FORMAT("%s must be Value",name);
+                            throw new ConfigError.INVALID_FORMAT(_("%s must be Value"),name);
                         }
                         this.connector_stroke = (double) item.get_double();
                         break;
                     case "bullet_stroke":
                         if (item.get_node_type() != Json.NodeType.VALUE) {
-                            throw new ConfigError.INVALID_FORMAT("%s must be Value",name);
+                            throw new ConfigError.INVALID_FORMAT(_("%s must be Value"),name);
                         }
                         this.bullet_stroke = (double) item.get_double();
                         break;
                     case "colorscheme":
                         if (item.get_node_type() != Json.NodeType.VALUE) {
-                            throw new ConfigError.INVALID_FORMAT("%s must be Value",name);
+                            throw new ConfigError.INVALID_FORMAT(_("%s must be Value"),name);
                         }
                         this.colorscheme_name = item.get_string();
                         break;
 
                     case "ipc_vent_port":
                         if(item.get_node_type() != Json.NodeType.VALUE) {
-                            throw new ConfigError.INVALID_FORMAT("%s must be Value", name);
+                            throw new ConfigError.INVALID_FORMAT(_("%s must be Value"), name);
                         }
                         this.ipc_vent_port = (uint32) item.get_int();
                         break;
                     case "ipc_sink_port":
                         if(item.get_node_type() != Json.NodeType.VALUE) {
-                            throw new ConfigError.INVALID_FORMAT("%s must be Value", name);
+                            throw new ConfigError.INVALID_FORMAT(_("%s must be Value"), name);
                         }
                         this.ipc_sink_port = (uint32) item.get_int();
                         break;
 
                     case "urlhint_limit":
                         if(item.get_node_type() != Json.NodeType.VALUE) {
-                            throw new ConfigError.INVALID_FORMAT("%s must be Value", name);
+                            throw new ConfigError.INVALID_FORMAT(_("%s must be Value"), name);
                         }
                         this.urlhint_limit = (uint16) item.get_int();
                         break;
@@ -230,7 +230,7 @@ namespace RainbowLollipop {
          * Use the default config
          */
         private static void loadDefault() {
-            stdout.printf("Using default config\n");
+            stdout.printf(_("Using default config\n"));
             Config.c = new Config();
             Config.c.colorscheme = new Colorscheme.default();
         }
@@ -324,7 +324,7 @@ namespace RainbowLollipop {
          */
         private void process(Json.Node n) throws ColorschemeError {
             if (n.get_node_type() != Json.NodeType.OBJECT) {
-                throw new ColorschemeError.INVALID_FORMAT("Expected Object");
+                throw new ColorschemeError.INVALID_FORMAT(_("Expected Object"));
             }
             unowned Json.Object root = n.get_object();
             foreach (unowned string name in root.get_members()) {
@@ -332,19 +332,19 @@ namespace RainbowLollipop {
                 switch(name){
                     case "tracklist":
                         if (item.get_node_type() != Json.NodeType.VALUE) {
-                            throw new ColorschemeError.INVALID_FORMAT("Expected %s to be value",name);
+                            throw new ColorschemeError.INVALID_FORMAT(_("Expected %s to be value"),name);
                         }
                         this.tracklist = item.get_string();
                         break;
                     case "empty_track":
                         if (item.get_node_type() != Json.NodeType.VALUE) {
-                            throw new ColorschemeError.INVALID_FORMAT("Expected %s to be value",name);
+                            throw new ColorschemeError.INVALID_FORMAT(_("Expected %s to be value"),name);
                         }
                         this.empty_track = item.get_string();
                         break;
                     case "tracks":
                         if (item.get_node_type() != Json.NodeType.ARRAY) {
-                            throw new ColorschemeError.INVALID_FORMAT("Expected tracks to be array");
+                            throw new ColorschemeError.INVALID_FORMAT(_("Expected tracks to be array"));
                         }
                         this.process_tracks(item.get_array());
                         break;
@@ -378,21 +378,21 @@ namespace RainbowLollipop {
                 FileUtils.get_contents(Application.get_data_filename(Config.C_COLORS+name+".json"),
                                        out colorschemedata);
             } catch (GLib.FileError e) {
-                stdout.printf("Could not load colorscheme. Using default colorscheme\n");
+                stdout.printf(_("Could not load colorscheme. Using default colorscheme\n"));
                 return new Colorscheme.default();
             }
             var p = new Json.Parser();
             try {
                 p.load_from_data(colorschemedata);
             } catch (GLib.Error e) {
-                stdout.printf("Could not feed schemeparser. Using default colorscheme\n");
+                stdout.printf(_("Could not feed schemeparser. Using default colorscheme\n"));
                 return new Colorscheme.default();
             }
             var cs = new Colorscheme();
             try {
                 cs.process(p.get_root());
             } catch (ColorschemeError e) {
-                stdout.printf("Could not parse scheme. Using default colorscheme\n");
+                stdout.printf(_("Could not parse scheme. Using default colorscheme\n"));
                 return new Colorscheme.default();
             }
             return cs;

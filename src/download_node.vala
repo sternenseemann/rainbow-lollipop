@@ -146,7 +146,7 @@ namespace RainbowLollipop {
                 arglist.append(f);
                 handler.launch(arglist,null);
             } catch (GLib.Error e) {
-                stderr.printf("Could not find a launcher for file: %s", f.get_path());
+                stderr.printf(_("Could not find a launcher for file: %s"), f.get_path());
             }
         }
 

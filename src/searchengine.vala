@@ -45,8 +45,8 @@ namespace RainbowLollipop {
         public Gee.ArrayList<AutoCompletionHint> get_hints(string fragment){
             var ret = new Gee.ArrayList<AutoCompletionHint>();
             var hint = new AutoCompletionHint(
-                        "Search %s".printf(fragment),
-                        "Search for %s with DuckDuckGo".printf(fragment)
+                        _("Search %s").printf(fragment),
+                        _("Search for %s with DuckDuckGo").printf(fragment)
             );
             var icon_path = Application.get_data_filename("ddg.png");
             var surface = new Cairo.ImageSurface.from_png(icon_path);

@@ -97,7 +97,7 @@ namespace RainbowLollipop {
             Sqlite.Statement stmnt;
             int err = db.prepare_v2(LOG_QRY,LOG_QRY.length, out stmnt);
             if (err != Sqlite.OK) {
-                warning("Could not prepare LOG_QRY: %s", db.errmsg());
+                warning(_("Could not prepare LOG_QRY: %s"), db.errmsg());
                 return;
             }
             int url_param_pos = stmnt.bind_parameter_index("$URL");
@@ -112,14 +112,14 @@ namespace RainbowLollipop {
                 // If yes, count up
                 err = db.prepare_v2(LOG_UPDATE, LOG_UPDATE.length, out stmnt);
                 if (err != Sqlite.OK) {
-                    warning("Could not prepare LOG_UPDATE: %s", db.errmsg());
+                    warning(_("Could not prepare LOG_UPDATE: %s"), db.errmsg());
                     return;
                 }
             } else {
                 // If no, create
                 err = db.prepare_v2(LOG_INSERT, LOG_INSERT.length, out stmnt);
                 if (err != Sqlite.OK) {
-                    warning("Could not prepare LOG_INSERT: %s", db.errmsg());
+                    warning(_("Could not prepare LOG_INSERT: %s"), db.errmsg());
                     return;
                 }
             }
@@ -141,7 +141,7 @@ namespace RainbowLollipop {
             Sqlite.Statement stmnt;
             int err = db.prepare_v2(LOG_HINTQRY, LOG_HINTQRY.length, out stmnt);
             if (err != Sqlite.OK) {
-                warning("Could not prepare LOG_HINTQRY: %s", db.errmsg());
+                warning(_("Could not prepare LOG_HINTQRY: %s"), db.errmsg());
                 return ret;
             }
             int url_param_pos = stmnt.bind_parameter_index("$URL");
@@ -155,7 +155,7 @@ namespace RainbowLollipop {
                 string url = stmnt.column_text(0);
                 hint = new AutoCompletionHint(
                                 url,
-                                "Surf directly to \n%s".printf(url)
+                                _("Surf directly to \n%s").printf(url)
                 );
                 var favdb = WebKit.WebContext.get_default().get_favicon_database();
                 favdb.get_favicon.begin(url,null, (obj, res) => {

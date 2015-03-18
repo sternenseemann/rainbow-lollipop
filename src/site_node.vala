@@ -357,7 +357,7 @@ namespace RainbowLollipop {
          */
         public SiteNode.from_json(HistoryTrack track, Json.Node n, Node? par) throws SiteNodeError {
             if (n.get_node_type() != Json.NodeType.OBJECT)
-                throw new SiteNodeError.NODE_JSON_INVALID("sitenode must be object");
+                throw new SiteNodeError.NODE_JSON_INVALID(_("sitenode must be object"));
             string url = "";
             bool current = false;
             Json.Array arr_childnodes = null;
@@ -367,21 +367,21 @@ namespace RainbowLollipop {
                 switch(name) {
                     case "current":
                         if (item.get_node_type() != Json.NodeType.VALUE)
-                            throw new SiteNodeError.NODE_JSON_INVALID("%s must be value",name);
+                            throw new SiteNodeError.NODE_JSON_INVALID(_("%s must be value"),name);
                         current = item.get_boolean();
                         break;
                     case "url":
                         if (item.get_node_type() != Json.NodeType.VALUE)
-                            throw new SiteNodeError.NODE_JSON_INVALID("%s must be value",name);
+                            throw new SiteNodeError.NODE_JSON_INVALID(_("%s must be value"),name);
                         url = item.get_string();
                         break;
                     case "nodes":
                         if (item.get_node_type() != Json.NodeType.ARRAY)
-                            throw new SiteNodeError.NODE_JSON_INVALID("%s must be array",name);
+                            throw new SiteNodeError.NODE_JSON_INVALID(_("%s must be array"),name);
                         arr_childnodes = item.get_array();
                         break;
                     default:
-                        stdout.printf("invalid field in node onject: %s\n",name);
+                        stdout.printf(_("invalid field in node onject: %s\n"),name);
                         break;
                 }
             }
@@ -392,7 +392,7 @@ namespace RainbowLollipop {
                     try {
                         cn = new SiteNode.from_json(track, item, this);
                     } catch (SiteNodeError e) {
-                        stdout.printf("node creation failed\n");
+                        stdout.printf(_("node creation failed\n"));
                     }
                 }
             }

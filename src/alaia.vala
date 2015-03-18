@@ -166,7 +166,7 @@ namespace RainbowLollipop {
             this.add(this.delete_branch);
 
             //Sitenodes
-            this.copy_url = new Gtk.ImageMenuItem.with_label("Copy URL");
+            this.copy_url = new Gtk.ImageMenuItem.with_label(_("Copy URL"));
             this.copy_url.set_image(
                 new Gtk.Image.from_icon_name("edit-copy", Gtk.IconSize.MENU)
             );
@@ -175,13 +175,13 @@ namespace RainbowLollipop {
 
 
             //DownloadNodes
-            this.open_folder = new Gtk.ImageMenuItem.with_label("Open folder");
+            this.open_folder = new Gtk.ImageMenuItem.with_label(_("Open folder"));
             this.open_folder.set_image(
                 new Gtk.Image.from_icon_name("folder", Gtk.IconSize.MENU)
             );
             this.open_folder.activate.connect(do_open_folder);
             this.add(this.open_folder);
-            this.open_download = new Gtk.ImageMenuItem.with_label("Open");
+            this.open_download = new Gtk.ImageMenuItem.with_label(_("Open"));
             this.open_download.set_image(
                 new Gtk.Image.from_icon_name("document-open", Gtk.IconSize.MENU)
             );
@@ -190,7 +190,7 @@ namespace RainbowLollipop {
 
             //Track
             this.add(new Gtk.SeparatorMenuItem());
-            this.delete_track = new Gtk.ImageMenuItem.with_label("Close Track");
+            this.delete_track = new Gtk.ImageMenuItem.with_label(_("Close Track"));
             this.delete_track.set_image(
                 new Gtk.Image.from_icon_name("window-close", Gtk.IconSize.MENU)
             );
@@ -411,7 +411,7 @@ namespace RainbowLollipop {
             cm.remove_all();
             if (w.can_go_back()) {
                 //a = new GLib.SimpleAction("navigate-back",null);
-                a = new Gtk.Action("navigate-back", "Go Back", null, null);
+                a = new Gtk.Action("navigate-back", _("Go Back"), null, null);
                 a.activate.connect(()=>{
                     this.tracklist.current_track.go_back();
                 });
@@ -419,13 +419,13 @@ namespace RainbowLollipop {
             }
             if (w.can_go_forward()) {
                 //a = new GLib.SimpleAction("navigate-forward",null);
-                a = new Gtk.Action("navigate-forward", "Go Forward", null, null);
+                a = new Gtk.Action("navigate-forward", _("Go Forward"), null, null);
                 a.activate.connect(()=>{
                     this.tracklist.current_track.go_forward();
                 });
                 cm.append(new WebKit.ContextMenuItem(a as Gtk.Action));
             }
-            a = new Gtk.Action("view-refresh", "Reload", null, null);
+            a = new Gtk.Action("view-refresh", _("Reload"), null, null);
             a.activate.connect(()=>{
                 this.tracklist.current_track.reload();
             });
@@ -510,11 +510,11 @@ namespace RainbowLollipop {
             try {
                 p.load_from_file(Application.get_cache_filename(SESSION_FILE));
             } catch (GLib.Error e) {
-                stdout.printf("Could not parse session json\n");
+                stdout.printf(_("Could not parse session json\n"));
             }
             var root = p.get_root();
             if (root.get_node_type() != Json.NodeType.OBJECT){
-                stdout.printf("Invalid session json\n");
+                stdout.printf(_("Invalid session json\n"));
                 return;
             }
             unowned Json.Object rootnode = root.get_object();
@@ -525,7 +525,7 @@ namespace RainbowLollipop {
                         this.tracklist.from_json(item);
                         break;
                     default:
-                        stdout.printf("Unknown session member %s\n", name);
+                        stdout.printf(_("Unknown session member %s\n"), name);
                         break;
                 }
             }
@@ -546,7 +546,7 @@ namespace RainbowLollipop {
             try {
                 FileUtils.set_data(filename, session.data);
             } catch (FileError e) {
-                stdout.printf("Could not save session to %s\n",filename);
+                stdout.printf(_("Could not save session to %s\n"),filename);
             }
         }
         
@@ -689,7 +689,7 @@ namespace RainbowLollipop {
          */
         public static int main(string[] args) {
             if (GtkClutter.init(ref args) != Clutter.InitError.SUCCESS){
-                stdout.printf("Could not initialize GtkClutter");
+                stdout.printf(_("Could not initialize GtkClutter"));
             }
             Application.app = new Application();
             WebKit.WebContext.get_default().set_process_model(
