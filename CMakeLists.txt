@@ -84,6 +84,7 @@ if (GEE10)
         "src/history.vala"
         "src/searchengine.vala"
         "src/search_widget.vala"
+        "src/error_node.vala"
     PACKAGES
         gtk+-3.0
         clutter-1.0
@@ -116,6 +117,7 @@ else()
         "src/history.vala"
         "src/searchengine.vala"
         "src/search_widget.vala"
+        "src/error_node.vala"
     PACKAGES
         gtk+-3.0
         clutter-1.0
