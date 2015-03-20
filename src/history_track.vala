@@ -188,6 +188,10 @@ namespace RainbowLollipop {
             base(tl);
             this.web = Application.S().get_web_view(this);
             this.web.load_changed.connect(do_load_committed);
+            this.web.resource_load_started.connect ((resource, request) => {
+                if (this.web.uri == resource.uri)
+                    resource.finished.connect(this.do_finished);
+            });
             this.web.notify["favicon"].connect((e,p) => {this.do_favicon_loaded();});
             this._tracklist = tl;
             this.web.load_uri(url);
@@ -297,30 +301,20 @@ namespace RainbowLollipop {
          * associated WebView signals a change in the website's loading state
          */
         public void do_load_committed(WebKit.LoadEvent e) {
-            switch (e) {
-                case WebKit.LoadEvent.STARTED:
-                    // Ignore loading the current_node of a saved session
-                    if (this.web.get_uri() == null || this.web.get_uri() == "")
-                        break;
+            if (e == WebKit.LoadEvent.STARTED) {
+                // Ignore loading the current_node of a saved session
+                if (this.web.get_uri() == null || this.web.get_uri() == "")
+                    return;
 
-                    // Ignore if the node has the same URL as the
-                    // currently displayed website
-                    if (this._current_node != null
-                            && this._current_node is SiteNode
-                            && this.web.get_uri() == (this._current_node as SiteNode).url+"/") {
-                        break;
-                    }
-                    this.log_call(this.web.get_uri());
-                    History.S().log_call(this.web.get_uri());
-                    break;
-                case WebKit.LoadEvent.REDIRECTED:
-                    break;
-                case WebKit.LoadEvent.COMMITTED:
-                    break;
-                case WebKit.LoadEvent.FINISHED:
-                    this.finish_call(this.web.get_favicon());
-                    this.title = this.web.title;
-                    break;
+                // Ignore if the node has the same URL as the
+                // currently displayed website
+                if (this._current_node != null
+                        && this._current_node is SiteNode
+                        && this.web.get_uri() == (this._current_node as SiteNode).url+"/") {
+                    return;
+                }
+                this.log_call(this.web.get_uri());
+                History.S().log_call(this.web.get_uri());
             }
         }
 
@@ -413,6 +407,7 @@ namespace RainbowLollipop {
          *       maybe we can somehow determine if there should be a download
          *       node instead of a site node in the phase of the WebKit loading state
          *       WebKit.LoadEvent.STARTED
+         *       Same problem exists in log_error()
          */
         public void log_download(WebKit.Download d) {
             var fsn = this._current_node;
@@ -420,6 +415,31 @@ namespace RainbowLollipop {
                 this._current_node = fsn.get_previous();
                 fsn.delete_node();
                 new DownloadNode(this, d, this._current_node);
+            }
+        }
+
+        /**
+         * This method gets called when the current website finishes loading
+         * a resource.
+         * If and error occurs, it  will remove the node that represents the
+         * website and replace it with an errornode.
+         * TODO: Same as in log_download()
+         */
+        public void do_finished() {
+            var resource = this.web.get_main_resource();
+            var fsn = this._current_node;
+            uint status = resource.get_response().status_code;
+            if (status == 0 )
+                return;
+            if (status ==  200) {
+                this.finish_call(this.web.get_favicon());
+                this.title = this.web.title;
+            } else {
+                if (Application.S().tracklist.current_track == this){
+                    this._current_node = fsn.get_previous();
+                    fsn.delete_node();
+                    new ErrorNode(this, status, this._current_node);
+                }
             }
         }
 

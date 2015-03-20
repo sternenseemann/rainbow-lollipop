@@ -49,24 +49,42 @@ namespace RainbowLollipop {
             cr.set_source_rgba(0,0,0,0);
             cr.set_operator(Cairo.Operator.SOURCE);
             cr.paint();
+
+            var nh = Config.c.node_height;
+            var bs = Config.c.bullet_stroke;
+            cr.set_operator(Cairo.Operator.OVER);
+            cr.set_line_width(Config.c.bullet_stroke);
+
             cr.set_source_rgba(col_h2f(this.parent.color.red)*2,
                               col_h2f(this.parent.color.green)*2,
                               col_h2f(this.parent.color.blue)*2,
                               1);
-            cr.set_operator(Cairo.Operator.OVER);
-            cr.set_line_width(Config.c.bullet_stroke);
-            var nh = Config.c.node_height;
-            var bs = Config.c.bullet_stroke;
             cr.move_to(nh / 3, bs);
             cr.line_to(nh / 3 * 2, bs);
             cr.line_to(nh-bs, nh / 3);
             cr.line_to(nh-bs, nh / 3 * 2);
             cr.line_to(nh / 3 * 2, nh-bs);
             cr.line_to(nh / 3, nh-bs);
-            cr.line_to(bs, nh / 2 * 3);
+            cr.line_to(bs, nh / 3 * 2);
             cr.line_to(bs, nh / 3);
             cr.line_to(nh / 3, bs);
             cr.stroke();
+
+            cr.set_source_rgba(col_h2f(this.parent.color.red),
+                              col_h2f(this.parent.color.green),
+                              col_h2f(this.parent.color.blue),
+                              0.5f);
+            cr.move_to(nh / 3 - bs / 2, 0);
+            cr.line_to(nh / 3 * 2 + bs / 2, 0);
+            cr.line_to(nh, nh / 3 - bs / 2);
+            cr.line_to(nh, nh / 3 * 2 + bs / 2);
+            cr.line_to(nh / 3 * 2 + bs / 2, nh);
+            cr.line_to(nh / 3 - bs / 2, nh);
+            cr.line_to(0, nh / 3 * 2 + bs / 2);
+            cr.line_to(0, nh / 3 - bs / 2);
+            cr.line_to(nh / 3 - bs / 2, 0);
+            cr.fill();
+
             return true;
         }
     }
@@ -77,26 +95,23 @@ namespace RainbowLollipop {
      * HTTP-errorcode as text.
      */
     class ErrorNode : Node {
-        private Error e;
+        private uint e;
         private ErrorBullet bullet;
         private Clutter.Text text;
 
         /**
          * Creates and returns a new ErrorNode
          */
-        public ErrorNode(HistoryTrack track, Error error, Node? par) {
+        public ErrorNode(HistoryTrack track, uint error, Node? par) {
             base(track, par);
             this.e = error;
             this.bullet = new ErrorBullet(this);
             this.add_child(this.bullet);
-            this.text = new Clutter.Text.with_text("Monospace Bold 9", "404");
+            this.text = new Clutter.Text.with_text("Monospace Bold 9", "%u".printf(this.e));
             this.text.color = this.color.darken().darken().darken();
             this.text.x = Config.c.node_height/2-this.text.width/2;
             this.text.y = Config.c.node_height/2-this.text.height/2;
             this.add_child(this.text);
-
-            this.opacity = 0x7F;
-            this.background_color = this.color;
         }
     }
 }
