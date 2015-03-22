@@ -28,19 +28,6 @@ using Gee;
 
 
 namespace RainbowLollipop {
-    /**
-     * AppState enumerates the states in which the application
-     * currently resides.
-     * NORMAL - Browsing mode. Screen space is occupied by a WebView
-     * TRACKLIST - WebViews are overlayed by a list of Tracks
-     * SESSIONDIALOG - Screen is occupied by a restore-session-dialog
-     */
-    enum AppState {
-        NORMAL,
-        TRACKLIST,
-        SESSIONDIALOG
-    }
-
     const string GETTEXT_PACKAGE = "rainbow-lollipop";
 
     /**
@@ -286,10 +273,16 @@ namespace RainbowLollipop {
          * The state the application is currently in.
          * Application states are enumerated by the enum AppState
          */
-        private AppState _state;
-        public AppState state {
+        private IApplicationState _state;
+        public IApplicationState state {
             get {
                 return this._state;
+            }
+            set {
+                if (this._state != null)
+                    this._state.leave();
+                this._state = value;
+                this._state.enter();
             }
         }
 
@@ -350,16 +343,13 @@ namespace RainbowLollipop {
             ZMQVent.init();
             ZMQSink.init();
             
-            if (this.old_session_available())
-                this._state = AppState.SESSIONDIALOG;
-            else
-                this._state = AppState.TRACKLIST;
-
             // Initialize stuff to display WebViews
             this.webviews = new Gee.HashMap<HistoryTrack, TrackWebView>();
             this.webviews_container = new Gtk.Notebook();
             this.webviews_container.show_tabs = false;
             this.webact = new GtkClutter.Actor.with_contents(this.webviews_container);
+
+            NormalState.init(this.webact);
 
             // Initialize the main window
             this.win = new GtkClutter.Window();
@@ -382,22 +372,26 @@ namespace RainbowLollipop {
             // Create and initialize modals
             this.tracklist_background = new TrackListBackground(stage);
             stage.add_child(this.tracklist_background);
+            this.tracklist = (TrackList)this.tracklist_background.get_first_child();
+            TracklistState.init(this.tracklist_background);
+
             this.sessiondialog = new RestoreSessionDialog(stage);
             stage.add_child(this.sessiondialog);
+            SessiondialogState.init(this.sessiondialog);
 
             // Initialize Tracklist
-            this.tracklist = (TrackList)this.tracklist_background.get_first_child();
+
 
             // Show everything that is needed on screen.
             this.win.show_all();
             this.sessiondialog.disappear();
             this.tracklist_background.disappear();
-            if (this._state == AppState.SESSIONDIALOG) {
-                this.sessiondialog.emerge();
-            }
-            else {
-                this.tracklist_background.emerge();
-            }
+
+            if (this.old_session_available())
+                this.state = SessiondialogState.S();
+            else
+                this._state = TracklistState.S();
+
         }
 
         /**
@@ -491,21 +485,12 @@ namespace RainbowLollipop {
         }
 
         /**
-         * Sets visibility of modal dialogs so, that the user can start browsing
-         * in a new untouched session.
-         */
-        public void new_session() {
-            this.sessiondialog.disappear();
-            this.show_tracklist();
-        }
-
-        /**
          * Restores a session from a JSON-file. Performs basic validity checks on the
          * Sessionfile. See Also: The [Class].from_json(JsonNode n)-Constructors
          * Of several Classes around the Project
          */
         public void restore_session() {
-            new_session();
+            this.state = TracklistState.S();
             Json.Parser p = new Json.Parser();
             try {
                 p.load_from_file(Application.get_cache_filename(SESSION_FILE));
@@ -559,22 +544,6 @@ namespace RainbowLollipop {
         }
 
         /**
-         * Display the tracklist as Modal View on screen
-         */
-        public void show_tracklist() {
-            this.tracklist_background.emerge();
-            this._state = AppState.TRACKLIST;
-        }
-
-        /**
-         * Hide the tracklist as Modal View on screen
-         */
-        public void hide_tracklist() {
-            this.tracklist_background.disappear();
-            this._state = AppState.NORMAL;
-        }
-
-        /**
          * First Callback an occuring key-event will pass through
          * This method will determine, wheter it is necessary to obtain any further
          * Information from web-extension-procecsses.
@@ -592,37 +561,35 @@ namespace RainbowLollipop {
          * manner
          */
         public bool preprocess_key_press_event(Gdk.EventKey e) {
-            switch (this._state) {
-                case AppState.NORMAL:
-                    var t = this.tracklist.current_track;
-                    var twv = this.get_web_view(t) as TrackWebView;
-                    switch(e.keyval) {
-                        case Gdk.Key.Tab:
-                            if (t != null)
-                                twv.needs_direct_input(do_key_press_event,e);
-                            else
-                                this.do_key_press_event(e);
-                            break;
-                        default:
-                            if (twv.is_search_active()) {
-                                return false;
-                            }
+            if (this.state is NormalState) {
+                var t = this.tracklist.current_track;
+                var twv = this.get_web_view(t) as TrackWebView;
+                switch(e.keyval) {
+                    case Gdk.Key.Tab:
+                        if (t != null)
+                            twv.needs_direct_input(do_key_press_event,e);
+                        else
                             this.do_key_press_event(e);
-                            break;
-                    }
-                    break;
-                case AppState.TRACKLIST:
-                    if (e.keyval != Gdk.Key.Tab)
-                        return false;
-                    this.do_key_press_event(e);
-                    break;
-                case AppState.SESSIONDIALOG:
-                    if (e.keyval !=    Gdk.Key.Left
-                        && e.keyval != Gdk.Key.Right
-                        && e.keyval != Gdk.Key.Return)
-                        return false;
-                    this.do_key_press_event(e);
-                    break;
+                        break;
+                    default:
+                        if (twv.is_search_active()) {
+                            return false;
+                        }
+                        this.do_key_press_event(e);
+                        break;
+                }
+            }
+            else if (this.state is TracklistState) {
+                if (e.keyval != Gdk.Key.Tab)
+                    return false;
+                this.do_key_press_event(e);
+            }
+            else if (this.state is SessiondialogState) {
+                if (e.keyval !=    Gdk.Key.Left
+                    && e.keyval != Gdk.Key.Right
+                    && e.keyval != Gdk.Key.Return)
+                    return false;
+                this.do_key_press_event(e);
             }
             return true;
         }
@@ -634,45 +601,43 @@ namespace RainbowLollipop {
          * Is currently in.
          */
         public void do_key_press_event(Gdk.EventKey e) {
-            switch (this._state) {
-                case AppState.NORMAL:
-                    var t = this.tracklist.current_track;
-                    switch (e.keyval) {
-                        case Gdk.Key.Tab:
-                            this.show_tracklist();
-                            return;
-                        case Gdk.Key.r:
-                            if ((bool)(e.state & Gdk.ModifierType.CONTROL_MASK) && t != null) {
-                                t.reload();
-                            }
-                            break;
-                        case Gdk.Key.f:
-                            if ((bool)(e.state & Gdk.ModifierType.CONTROL_MASK) && t != null) {
-                                t.search();
-                            }
-                            break;
-                    }
-                    break;
-                case AppState.TRACKLIST:
-                    switch (e.keyval) {
-                        case Gdk.Key.Tab:
-                            this.hide_tracklist();
-                            return;
-                    }
-                    break;
-                case AppState.SESSIONDIALOG:
-                    switch (e.keyval) {
-                        case Gdk.Key.Left:
-                            this.sessiondialog.select_restore();
-                            return;
-                        case Gdk.Key.Right:
-                            this.sessiondialog.select_newsession();
-                            return;
-                        case Gdk.Key.Return:
-                            this.sessiondialog.execute_selected();
-                            return;
-                    }
-                    break;
+            if (this.state is NormalState) {
+                var t = this.tracklist.current_track;
+                switch (e.keyval) {
+                    case Gdk.Key.Tab:
+                        this.state = TracklistState.S();
+                        return;
+                    case Gdk.Key.r:
+                        if ((bool)(e.state & Gdk.ModifierType.CONTROL_MASK) && t != null) {
+                            t.reload();
+                        }
+                        break;
+                    case Gdk.Key.f:
+                        if ((bool)(e.state & Gdk.ModifierType.CONTROL_MASK) && t != null) {
+                            t.search();
+                        }
+                        break;
+                }
+            }
+            else if (this.state is TracklistState) {
+                switch (e.keyval) {
+                    case Gdk.Key.Tab:
+                        this.state = NormalState.S();
+                        return;
+                }
+            }
+            else if (this.state is SessiondialogState) {
+                switch (e.keyval) {
+                    case Gdk.Key.Left:
+                        this.sessiondialog.select_restore();
+                        return;
+                    case Gdk.Key.Right:
+                        this.sessiondialog.select_newsession();
+                        return;
+                    case Gdk.Key.Return:
+                        this.sessiondialog.execute_selected();
+                        return;
+                }
             }
         }
 

@@ -89,7 +89,7 @@ namespace RainbowLollipop {
         private void do_activate() {
             var url = this.complete_url(this.url_entry.get_text());
             this.tracklist.add_track_with_url(url);
-            Application.S().hide_tracklist();
+            Application.S().state = NormalState.S();
         }
 
         /**
@@ -262,7 +262,7 @@ namespace RainbowLollipop {
          */
         public void trigger_execute(Clutter.Actor a){
             var tracklist = Application.S().tracklist;
-            Application.S().hide_tracklist();
+            Application.S().state = NormalState.S();
             (this.get_parent() as EmptyTrack).clear_urlbar();
             this.execute(tracklist);
         }
