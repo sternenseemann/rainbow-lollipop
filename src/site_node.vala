@@ -566,7 +566,7 @@ namespace RainbowLollipop {
             switch (this.clickaction.get_button()) {
                 case 1: //Left mousebutton
                     this.track.current_node = this;
-                    Application.S().hide_tracklist();
+                    Application.S().state = NormalState.S();
                     break;
             }
         }

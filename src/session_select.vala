@@ -195,7 +195,7 @@ namespace RainbowLollipop {
             if (this.selected == RESTORE)
                 Application.S().restore_session();
             else
-                Application.S().new_session();
+                Application.S().state = TracklistState.S();
         }
 
         /**

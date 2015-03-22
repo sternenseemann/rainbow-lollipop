@@ -78,8 +78,8 @@ namespace RainbowLollipop {
             );
 
 
-            this.opacity = Application.S().state == AppState.TRACKLIST ? Config.c.track_opacity : 0x00;
-            this.visible = Application.S().state == AppState.TRACKLIST;
+            this.opacity = Application.S().state == TracklistState.S() ? Config.c.track_opacity : 0x00;
+            this.visible = Application.S().state == TracklistState.S();
 
             this.transitions_completed.connect(do_transitions_completed);
             this.background_color = TrackColorSource.get_color();
