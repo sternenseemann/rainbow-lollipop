@@ -390,7 +390,7 @@ namespace RainbowLollipop {
             if (this.old_session_available())
                 this.state = SessiondialogState.S();
             else
-                this._state = TracklistState.S();
+                this.state = TracklistState.S();
 
         }
 
