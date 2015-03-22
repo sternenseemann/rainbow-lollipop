@@ -223,9 +223,12 @@ namespace RainbowLollipop {
         public void move_to_new_track() {
             var prv = this.previous;
             if (prv != null) {
+                bool need_new_current_node = this.contains_current_node();
                 prv.childnodes.remove(this);
                 prv.recalculate_y(null);
                 (prv.track.get_parent().get_last_child() as Track).recalculate_y(true);
+                if (need_new_current_node && prv is SiteNode)
+                    prv.track.current_node = prv as SiteNode;
             }
             this.get_parent().remove_child(this);
             this.connector.destroy();
