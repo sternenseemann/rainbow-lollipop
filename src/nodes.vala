@@ -270,11 +270,29 @@ namespace RainbowLollipop {
         }
 
         /**
+         * Determines whether the subtree under this node contains the
+         * current_node of the track.
+         */
+        public bool contains_current_node() {
+            bool found = false;
+            foreach (Node n in this.childnodes) {
+                if (n == this.track.current_node || n.contains_current_node()) {
+                    return true;
+                }
+            }
+            return false; 
+        }
+
+        /**
          * Takes care of recursively deleting this node and all child nodes
          * Causes this Node's track to recalculate its height and rerender
          * the node-tree
          */
         public void delete_node(bool rec_initial=true) {
+            bool need_new_current_node = false;
+            if (rec_initial) {
+                need_new_current_node = this.contains_current_node();
+            }
             var prv = this.previous;
             Gee.ArrayList<Node> nodes = new Gee.ArrayList<Node>();
             foreach (Node n in this.childnodes) {
@@ -294,6 +312,9 @@ namespace RainbowLollipop {
                 } else {
                     //Recalculate the tracks height in case there is some free space now
                     (prv.track.get_parent().get_last_child() as Track).recalculate_y(true);
+                    if (need_new_current_node && prv is SiteNode) {
+                        this.track.current_node = prv as SiteNode;
+                    }
                 }
             }
         }
