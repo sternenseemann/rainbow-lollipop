@@ -277,7 +277,6 @@ namespace RainbowLollipop {
          * current_node of the track.
          */
         public bool contains_current_node() {
-            bool found = false;
             foreach (Node n in this.childnodes) {
                 if (n == this.track.current_node || n.contains_current_node()) {
                     return true;
