@@ -36,7 +36,7 @@ namespace RainbowLollipop {
      * to websites.
      */
     public class HistoryTrack : Track {
-        private WebKit.WebView web;
+        public TrackWebView web {get;set;}
         private string url;
         private Clutter.Actor separator;
         private Clutter.Actor nodecontainer;
@@ -148,7 +148,7 @@ namespace RainbowLollipop {
          * This will incorporate all children of the given note into the track
          * Used in the "create track from branch" feature
          */
-        public HistoryTrack.with_node(TrackList tl, SiteNode n) {
+        public HistoryTrack.with_node(TrackList tl, SiteNode n, SiteNode? cn, string search) {
             this(tl, n.url);
             this.web.load_uri(n.url);
             this.remove_child(this.first_node);
@@ -165,6 +165,8 @@ namespace RainbowLollipop {
             this.first_node.recalculate_y(null);
             
             this.add_childnodes(n);
+            if (search != "")
+                this.web.start_search(search);
         }
 
         /**

@@ -186,8 +186,8 @@ namespace RainbowLollipop {
          * Generate a new Track from the given node and add it to
          *  this Tracklist
          */
-        public void add_track_with_node(Node n) {
-            var t = new HistoryTrack.with_node(this, (n as SiteNode));
+        public void add_track_with_node(Node n, SiteNode? current_node, string search_string="") {
+            var t = new HistoryTrack.with_node(this, (n as SiteNode), current_node, search_string);
             this.add_track(t);
         }
 

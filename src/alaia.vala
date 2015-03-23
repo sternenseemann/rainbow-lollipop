@@ -83,8 +83,16 @@ namespace RainbowLollipop {
         /**
          * Shows up the search dialog
          */
-        public void start_search() {
+        public void start_search(string search_string="") {
             this.search.visible = this.searchstate = true;
+            this.search.set_search_string(search_string);
+        }
+
+        /**
+         * Returns the current search string
+         */
+        public string get_search_string() {
+            return this.search.get_search_string();
         }
 
         /**
@@ -251,7 +259,7 @@ namespace RainbowLollipop {
          * Holds references to all Webviews that are currently being used by
          * Tracks
          */
-        private Gee.HashMap<HistoryTrack,WebKit.WebView> webviews;
+        private Gee.HashMap<HistoryTrack,TrackWebView> webviews;
         /**
          * Organizes the webviews.
          */
@@ -432,7 +440,7 @@ namespace RainbowLollipop {
          * If no WebView Exists yet, it shall be created and added to the
          * Applications WebView-List
          */
-        public WebKit.WebView get_web_view(HistoryTrack t) {
+        public TrackWebView get_web_view(HistoryTrack t) {
             if (!this.webviews.has_key(t)) {
                 var w = new TrackWebView(this.webact);
                 w.track = t;

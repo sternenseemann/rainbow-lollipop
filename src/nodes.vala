@@ -221,19 +221,28 @@ namespace RainbowLollipop {
          * nodes from their current track and assigns them to the newly created track
          */
         public void move_to_new_track() {
+            SiteNode? new_track_current_node = null;
+            string new_track_search_string = "";
             var prv = this.previous;
             if (prv != null) {
                 bool need_new_current_node = this.contains_current_node();
                 prv.childnodes.remove(this);
                 prv.recalculate_y(null);
                 (prv.track.get_parent().get_last_child() as Track).recalculate_y(true);
-                if (need_new_current_node && prv is SiteNode)
-                    prv.track.current_node = prv as SiteNode;
+                if (need_new_current_node) {
+                    new_track_current_node = this.track.current_node as SiteNode;
+                    new_track_search_string = this.track.web.get_search_string(); 
+                    this.track.web.stop_search();
+                    if (prv is SiteNode)
+                        prv.track.current_node = prv as SiteNode;
+                }
             }
             this.get_parent().remove_child(this);
             this.connector.destroy();
             this.detach_childnodes();
-            this.track.tracklist.add_track_with_node(this);
+            this.track.tracklist.add_track_with_node(this, 
+                                                     new_track_current_node, 
+                                                     new_track_search_string);
         }
 
         /**

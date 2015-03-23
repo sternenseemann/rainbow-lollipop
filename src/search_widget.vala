@@ -115,5 +115,20 @@ namespace RainbowLollipop {
                 (this.find_controller.web_view as TrackWebView).stop_search();
             });
         }
+
+        /**
+         * Set the search string of this search widget
+         */
+        public void set_search_string(string searchstring) {
+            this.entry.set_text(searchstring);
+            this.find_controller.search(this.entry.get_text(), 0, 1000);
+        }
+
+        /**
+         * Get the search string of this search widget
+         */
+        public string get_search_string() {
+            return this.entry.get_text();
+        }
     }
 }
