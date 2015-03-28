@@ -618,12 +618,25 @@ namespace RainbowLollipop {
                     case Gdk.Key.r:
                         if ((bool)(e.state & Gdk.ModifierType.CONTROL_MASK) && t != null) {
                             t.reload();
+                        } else {
+                            var wv = this.get_web_view(t);
+                            if (wv != null)
+                                wv.key_press_event(e);
                         }
                         break;
                     case Gdk.Key.f:
                         if ((bool)(e.state & Gdk.ModifierType.CONTROL_MASK) && t != null) {
                             t.search();
+                        } else {
+                            var wv = this.get_web_view(t);
+                            if (wv != null)
+                                wv.key_press_event(e);
                         }
+                        break;
+                    default:
+                        var wv = this.get_web_view(t);
+                        if (wv != null)
+                            wv.key_press_event(e);
                         break;
                 }
             }
