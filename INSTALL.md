@@ -15,3 +15,6 @@
 
 ## ArchLinux
 You can install rainbow lollipop from the AUR. The package is [`rainbow-lollipop-git`](https://aur.archlinux.org/packages/rainbow-lollipop-git/)
+
+## Gentoo
+You can install rainbow lollipop using the ebuild from gentoo/www-client/rainbow-lollipop
