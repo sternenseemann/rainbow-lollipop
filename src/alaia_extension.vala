@@ -25,7 +25,7 @@ using Gee;
  * This Worker receives IPC-Calls from the main-thread, processes them and
  * returns appropriate answers.
  * The Worker only anwers if the page id of this webextension is the same as
- * the page id that the IPC-Call was issued for. Otherwise it will drop the request
+ * the page id that the IPC-Call was issued for. Otherwise it will drop the request.
  */
 public class ZMQWorker {
     private static const string VENT = "tcp://127.0.0.1:26010";
@@ -37,7 +37,7 @@ public class ZMQWorker {
     private static ZMQ.Socket sender;
 
     /**
-     * Initialize by storing a reference to the AlaiaExtension that this Worder handles
+     * Initialize by storing a reference to the AlaiaExtension that this Worker handles
      */
     public static void init(AlaiaExtension e) {
         ZMQWorker.aext = e;

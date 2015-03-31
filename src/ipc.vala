@@ -22,9 +22,9 @@
 namespace RainbowLollipop {
     /**
      * Used to wrap all the data that is necessary to call a callback to a
-     * successfully completed IPC call including the callback itself
+     * successfully completed IPC call including the callback itself.
      * It is intended to be a universally applicable class but currently
-     * it is only able to cover the needs_direct_input-usecase
+     * it is only able to cover the needs_direct_input-usecase.
      * TODO: Modify this wrapper and the code in general to be able
      *       To store arbitrary callback / parameter combinations
      */
@@ -65,16 +65,16 @@ namespace RainbowLollipop {
     }
 
     /**
-     * A callback that is called when an IPC call has finished sucessfully
+     * A callback that is called when an IPC call has finished successfully
      */
     public delegate void IPCCallback(Gdk.EventKey e);
 
     /**
-     * The ZMQVent distributes ipc calls to each available WebExtension
+     * The ZMQVent distributes ipc calls to each available WebExtension.
      * It is a Vent in the sense of the libzmq workload distributor design
      * pattern with a little exception. Along with each call goes the id
-     * Of a specific WebExtension and only this one Webextension will answer to
-     * The call.
+     * of a specific WebExtension and only this one Webextension will answer to
+     * the call.
      *
      * TODO: Introduce reasonable timeouts to the calls.
      */
@@ -96,7 +96,7 @@ namespace RainbowLollipop {
         }
 
         /**
-         * Sends a request to a WebView if this webview directly needs te input
+         * Sends a request to a WebView if this webview directly needs the input
          * from the Keyboard
          */
         public static async void needs_direct_input(TrackWebView w,IPCCallback cb, Gdk.EventKey e) {
@@ -142,8 +142,8 @@ namespace RainbowLollipop {
         private static ZMQ.Socket receiver;
 
         /**
-         * Register a callback that is being mapped to a call id
-         * When a answer to the call with the given call id arrives, the callback will
+         * Register a callback that is being mapped to a call id.
+         * When an answer to the call with the given call id arrives, the callback will
          * be executed
          */
         public static void register_callback(uint32 callid, IPCCallbackWrapper cbw) {

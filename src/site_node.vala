@@ -212,7 +212,7 @@ namespace RainbowLollipop {
     /**
      * A tooltip that can be attached to an actor
      * TODO: Maybe could be made cooler by attaching to
-     *       The Actor's mouse-over events instead of manually coding it there
+     *       the Actor's mouse-over events instead of manually coding it there
      */
     public class Tooltip : Clutter.Actor {
         private const uint8 OPACITY = 0xAF;
@@ -429,9 +429,9 @@ namespace RainbowLollipop {
 
         /**
          * Adapts this nodes appearance to the HistoryTrack that it currently resides
-         * in. All subcomponents of this Node then have a color that matches the Track
+         * in. All subcomponents of this Node then have a color that matches the Track.
          * This is for example needed when a Branch of nodes is moved to a new Track
-         * By the create-new-track-from-branch-feature.
+         * by the create-new-track-from-branch-feature.
          */
         public new void adapt_to_track() {
             base.adapt_to_track();

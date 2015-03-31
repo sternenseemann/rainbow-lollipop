@@ -22,7 +22,7 @@
 namespace RainbowLollipop {
     /**
      * This is a bullet that resembles a stopsign and renders
-     * Its parent stored errorcode as text.
+     * its parent stored errorcode as text.
      */
     class ErrorBullet : Clutter.Actor {
         private Clutter.Canvas c;

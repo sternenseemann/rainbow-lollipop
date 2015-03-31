@@ -21,7 +21,7 @@
 
 namespace RainbowLollipop {
     /**
-     * Implements a dialog that let's the user choose whether he wants
+     * Implements a dialog that lets the user choose whether he wants
      * to restore the saved browsing session or rather start a new one
      */
     class RestoreSessionDialog : Clutter.Actor {
