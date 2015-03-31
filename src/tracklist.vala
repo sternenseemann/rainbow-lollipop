@@ -79,15 +79,15 @@ namespace RainbowLollipop {
     }
 
     /**
-     * Represents a list of the currently opened HistoryTracks
+     * Represents a list of the currently opened HistoryTracks.
      * The Tracklist also contains a special Track which is called
-     * the EmptyTrack. The Empty Track offers users the possibility
-     * To open new Websites
+     * the EmptyTrack. The EmptyTrack offers users the possibility
+     * to open new Websites
      */
     public class TrackList : Clutter.Actor {
         /**
          * Holds a reference to the currently active HistoryTrack
-         * of this TrackList
+         * of this TrackList.
          * The current_track is always the HistoryTrack that's associated
          * WebView is currently displayed in the foreground
          */
@@ -184,7 +184,7 @@ namespace RainbowLollipop {
 
         /**
          * Generate a new Track from the given node and add it to
-         *  this Tracklist
+         * this Tracklist.
          */
         public void add_track_with_node(Node n, SiteNode? current_node, string search_string="") {
             var t = new HistoryTrack.with_node(this, (n as SiteNode), current_node, search_string);
@@ -192,8 +192,8 @@ namespace RainbowLollipop {
         }
 
         /**
-         * Returns the Track that the given Node belongs to
-         * Returns null if no Track belongs to the given Node
+         * Returns the Track that the given Node belongs to.
+         * Returns null if no Track belongs to the given Node.
          */
         public Track? get_track_of_node(Node n){
             foreach (Clutter.Actor t in this.get_children()) {

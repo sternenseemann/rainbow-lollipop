@@ -81,7 +81,7 @@ namespace RainbowLollipop {
     }
 
     /**
-     * A special kind of Node wich represents a download and shows its progress
+     * A special kind of Node which represents a download and shows its progress
      */
     class DownloadNode : Node {
         private WebKit.Download dl;
