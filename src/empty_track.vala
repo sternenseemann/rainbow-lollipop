@@ -184,7 +184,7 @@ namespace RainbowLollipop {
     }
 
     /**
-     * Represents an autocompletion hint for EmtpyTrack
+     * Represents an autocompletion hint for EmptyTrack
      */
     class AutoCompletionHint : Clutter.Actor {
         protected string heading = "";
@@ -257,7 +257,7 @@ namespace RainbowLollipop {
         }
 
         /**
-         * Common logic that occurs everytime when a user decides to use a
+         * Common logic that occurs every time when a user decides to use a
          * Completion hint. e.g. set the application state to normal browsing mode
          */
         public void trigger_execute(Clutter.Actor a){

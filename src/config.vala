@@ -76,8 +76,8 @@ namespace RainbowLollipop {
          */
         public uint8 track_height {get; set; default = 0x80;}
         /**
-         * Distance between a tracks top border and it's topmost node and
-         * distance between a tracks bottom border and it's bottommost node
+         * Distance between a track's top border and its topmost node and
+         * distance between a track's bottom border and its bottommost node
          * in pixels
          */
         public uint8 track_spacing {get; set; default = 0x10;}
@@ -91,7 +91,7 @@ namespace RainbowLollipop {
          */
         public uint8 node_height {get; set; default = 0x40;}
         /**
-         * Space between two neighbouring nodes in pixels
+         * Space between two adjacent nodes in pixels
          */
         public uint8 node_spacing {get; set; default = 0x10;}
         /**

@@ -44,13 +44,13 @@ namespace RainbowLollipop {
 
     /**
      * Extended Version of WebKit's WebView which is able to store
-     * A reference to a HistoryTrack along with it and offers methods
-     * To communicate with the web-extension-process of this view.
+     * a reference to a HistoryTrack along with it and offers methods
+     * to communicate with the web-extension-process of this view.
      */
     public class TrackWebView : WebKit.WebView {
         /**
          * Stores a reference to the HistoryTrack that is associated with
-         * This WebView
+         * this WebView
          */
         public HistoryTrack track{ get;set; }
         private SearchWidget search;
@@ -65,8 +65,8 @@ namespace RainbowLollipop {
         }
 
         /**
-         * Asks The web-extension-process wheter this webview currently
-         * Needs input from the keyboard e.g. to fill content into a
+         * Asks The web-extension-process whether this webview currently
+         * needs input from the keyboard e.g. to fill content into a
          * HTML form-element.
          */
         public async void needs_direct_input(IPCCallback cb, Gdk.EventKey e) {
@@ -341,7 +341,7 @@ namespace RainbowLollipop {
                 register_session : true
             );
 
-            //Internationalization
+            // Internationalization
             init_locale();
 
             // Load config
@@ -437,7 +437,7 @@ namespace RainbowLollipop {
 
         /**
          * Obtain The WebView that is associated to the given HistoryTrack
-         * If no WebView Exists yet, it shall be created and added to the
+         * If no WebView exists yet, it shall be created and added to the
          * Applications WebView-List
          */
         public TrackWebView get_web_view(HistoryTrack t) {
@@ -462,7 +462,7 @@ namespace RainbowLollipop {
 
         /**
          * Destroys the WebView associated with the given HistoryTrack
-         * Does nothing if there is no associated WebView
+         * does nothing if there is no associated WebView
          */
         public void destroy_web_view(HistoryTrack t) {
             if (this.webviews.has_key(t))
@@ -471,8 +471,8 @@ namespace RainbowLollipop {
     
         /**
          * Puts the WebView that corresponds to the given HistoryTrack
-         * Into the foreground, thereby moving the currently displayed WebView
-         * To the background.
+         * into the foreground, thereby moving the currently displayed WebView
+         * to the background.
          */
         public void show_web_view(HistoryTrack t) {
             if (this.webviews.has_key(t)){
@@ -484,8 +484,8 @@ namespace RainbowLollipop {
 
         /**
          * Checks whether there lies a sessionfile in the cache which can be used
-         * To reconstruct a browsing session. This should happen when you start the
-         * Program.
+         * to reconstruct a browsing session. This should happen when you start the
+         * program.
          */
         public bool old_session_available() {
             return FileUtils.test(GLib.Environment.get_user_cache_dir()+Config.C+SESSION_FILE,
@@ -494,8 +494,8 @@ namespace RainbowLollipop {
 
         /**
          * Restores a session from a JSON-file. Performs basic validity checks on the
-         * Sessionfile. See Also: The [Class].from_json(JsonNode n)-Constructors
-         * Of several Classes around the Project
+         * sessionfile. See Also: The [Class].from_json(JsonNode n)-Constructors
+         * of several Classes around the Project
          */
         public void restore_session() {
             this.state = TracklistState.S();
@@ -552,10 +552,10 @@ namespace RainbowLollipop {
         }
 
         /**
-         * First Callback an occuring key-event will pass through
+         * First Callback an occurring key-event will pass through
          * This method will determine, wheter it is necessary to obtain any further
-         * Information from web-extension-procecsses.
-         * Further it will determine wheter the occured event is relevant for the
+         * information from web-extension-procecsses.
+         * Further it will determine wheter the occurred event is relevant for the
          * current application state and drop it, if not so.
          *
          * If there is no necessity to obtain further information from the
@@ -606,7 +606,7 @@ namespace RainbowLollipop {
          * This method executes actions according to an incoming preprocessed
          * Gdk.EventKey e (See preprocess_key_press_event(Gdk.EventKey e) for furhter info)
          * The action that will be taken is depending on which state the application
-         * Is currently in.
+         * is currently in.
          */
         public void do_key_press_event(Gdk.EventKey e) {
             if (this.state is NormalState) {

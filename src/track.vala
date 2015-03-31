@@ -121,14 +121,14 @@ namespace RainbowLollipop {
         }
 
         /**
-         * This method shall be called everytime this track
+         * This method shall be called every time this track
          * is selected as the current track.
          */
         public void prepare() {
         }
 
         /**
-         * This method shall be called everytime this track
+         * This method shall be called every time this track
          * ceases to be the current_track of the Tracklist
          * and performs cleanup operations
          */

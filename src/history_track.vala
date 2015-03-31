@@ -53,7 +53,7 @@ namespace RainbowLollipop {
 
         /**
          * The node that represents the website which is currently being displayed
-         * In this HistoryTrack's WebView.
+         * in this HistoryTrack's WebView.
          * If this property is set, it automatically causes the webview to load
          * the site of the new node.
          */
@@ -321,7 +321,7 @@ namespace RainbowLollipop {
         }
 
         /**
-         * Callback that is called when there is a faviconavailable for the current node
+         * Callback that is called when there is a favicon available for the current node
          * TODO: check if it is possible to bind this directly to the concerned node.
          *       relaying it here may cause the false node to be assigned a wrong icon
          */
@@ -362,7 +362,7 @@ namespace RainbowLollipop {
 
         /**
          * Causes HistoryTrack and Browser to go to the previous node and load
-         * it's associated website.
+         * its associated website.
          */
         public void go_back() {
             Node? prv = this.current_node.get_previous();
@@ -423,7 +423,7 @@ namespace RainbowLollipop {
         /**
          * This method gets called when the current website finishes loading
          * a resource.
-         * If and error occurs, it  will remove the node that represents the
+         * If an error occurs, it  will remove the node that represents the
          * website and replace it with an errornode.
          * TODO: Same as in log_download()
          */
@@ -447,7 +447,7 @@ namespace RainbowLollipop {
 
         /**
          * Stops the current node indicating that it is loading and sets
-         * it's favicon, if there is any.
+         * its favicon, if there is any.
          */
         public void finish_call(Cairo.Surface? favicon) {
             if(this._current_node is SiteNode) {
@@ -469,7 +469,7 @@ namespace RainbowLollipop {
         }
 
         /**
-         * This method shall be called everytime this track
+         * This method shall be called every time this track
          * is selected as the current track.
          */
         public new void prepare() {
@@ -479,9 +479,9 @@ namespace RainbowLollipop {
         }
 
         /**
-         * This method shall be called everytime this track
+         * This method shall be called every time this track
          * ceases to be the current_track of the Tracklist
-         * and performs cleanup operations
+         * and performs cleanup operations.
          */
         public new void cleanup() {
             base.cleanup();

@@ -43,7 +43,7 @@ namespace RainbowLollipop {
 
     /**
      * A Constraint that keeps an area aligned to
-     * The source's right border and the target's left border.
+     * the source's right border and the target's left border.
      * Used to assign an area to NodeConnectors
      */
     public class ConnectorConstraint : Clutter.Constraint {
@@ -77,7 +77,7 @@ namespace RainbowLollipop {
     }
 
     /**
-     * An Actor that draws a connecting line between two nodes
+     * An Actor that draws a connecting line between two nodes.
      * You can configure the connectors thickness with the config-entry 'connector_stroke'
      */
     public class Connector : Clutter.Actor {
@@ -217,7 +217,7 @@ namespace RainbowLollipop {
         }
 
         /**
-         * Takes this node an all it's childnodes, creates a new track, removes said
+         * Takes this node an all its childnodes, creates a new track, removes said
          * nodes from their current track and assigns them to the newly created track
          */
         public void move_to_new_track() {
@@ -295,9 +295,9 @@ namespace RainbowLollipop {
         }
 
         /**
-         * Takes care of recursively deleting this node and all child nodes
+         * Takes care of recursively deleting this node and all child nodes.
          * Causes this Node's track to recalculate its height and rerender
-         * the node-tree
+         * the node-tree.
          */
         public void delete_node(bool rec_initial=true) {
             bool need_new_current_node = false;
@@ -346,7 +346,7 @@ namespace RainbowLollipop {
         }
 
         /**
-         * Lets each childnode of this node recalculate it's y-coordinate positions
+         * Lets each childnode of this node recalculate its y-coordinate positions
          */
         public void recalculate_nodes() {
             foreach (Node n in this.childnodes) {
@@ -396,7 +396,7 @@ namespace RainbowLollipop {
         }
 
         /**
-         * Ensures that this Node and its Connector have colors according to its Track
+         * Ensures that this Node and its Connector have colors according to their Track
          */
         protected void adapt_to_track() {
             if (this.previous != null) {

@@ -22,10 +22,10 @@
 namespace RainbowLollipop {
     /**
      * This Interface must be implemented by every class that
-     * represents an application state
+     * represents an application state.
      * Application states are mutually exclusive, so only
-     * one application state can be active at a time
-     * Application states are singleton classes
+     * one application state can be active at a time.
+     * Application states are singleton classes.
      */
     interface IApplicationState : GLib.Object {
         public abstract void enter();

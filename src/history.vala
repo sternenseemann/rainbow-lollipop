@@ -21,11 +21,11 @@
 
 namespace RainbowLollipop {
     /**
-     * A History class that logs calls to URLs into a SQL Database
+     * A History class that logs calls to URLs into a SQL Database.
      * It serves as HintProvider and can deliver hints to URLS that have
-     * Already been surfed to.
+     * already been surfed to.
      * TODO: There should be a third column which is called HIS_TITLE
-     *       An URL should also qualify for being a hint when it's associated HTML-title
+     *       An URL should also qualify for being a hint when its associated HTML-title
      *       contains the searched string fragment.
      *       Fuzzy searching would also be awesome.
      */
@@ -89,7 +89,7 @@ namespace RainbowLollipop {
         }
 
         /**
-         * Logs a callto an URL into the History Database
+         * Logs a call to an URL into the History Database
          */
         public void log_call(string url) {
             // Check if entry already exists in db
