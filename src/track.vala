@@ -104,7 +104,7 @@ namespace RainbowLollipop {
         /**
          * Fade in
          */
-        public void emerge() {
+        public virtual void emerge() {
             this.visible = true;
             this.save_easing_state();
             this.opacity = Config.c.track_opacity;
@@ -114,7 +114,7 @@ namespace RainbowLollipop {
         /**
          * Fade out
          */
-        public void disappear() {
+        public virtual void disappear() {
             this.save_easing_state();
             this.opacity = 0x00;
             this.restore_easing_state();

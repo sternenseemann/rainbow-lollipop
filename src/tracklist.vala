@@ -166,10 +166,7 @@ namespace RainbowLollipop {
          * Add the given HistoryTrack to this TrackList
          */
         private void add_track(HistoryTrack t) {
-            this.insert_child_at_index(
-                t,
-                this.get_n_children()-1
-            );
+            this.insert_child_below(t, null);
             (this.get_last_child() as Track).recalculate_y(true);
         }
 
@@ -223,13 +220,8 @@ namespace RainbowLollipop {
          * Fade in
          */
         public void emerge() {
-            for (int i = 0; i < this.get_n_children(); i++) {
-                Track t = (this.get_child_at_index(i) as Track);
-                if (t is EmptyTrack) {
-                    (t as EmptyTrack).emerge();
-                } else {
-                    (t as HistoryTrack).emerge();
-                }
+            foreach (Clutter.Actor t in this.get_children()){
+                (t as Track).emerge();
             }
             this.visible = true;
             this.save_easing_state();
@@ -241,13 +233,8 @@ namespace RainbowLollipop {
          * Fade out
          */
         public void disappear() {
-            for (int i = 0; i < this.get_n_children(); i++) {
-                Track t = (this.get_child_at_index(i) as Track);
-                if (t is EmptyTrack) {
-                    (t as EmptyTrack).disappear();
-                } else {
-                    (t as HistoryTrack).disappear();
-                }
+            foreach (Clutter.Actor t in this.get_children()){
+                (t as Track).disappear();
             }
             this.save_easing_state();
             this.opacity = 0x00;
