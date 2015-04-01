@@ -18,6 +18,7 @@
 # License along with Rainbow Lollipop.
 # If not, see http://www.gnu.org/licenses/.
 *********************************************************************/
+using Math;
 
 namespace RainbowLollipop {
     /**
@@ -43,8 +44,8 @@ namespace RainbowLollipop {
             this.c = new Clutter.Canvas();
             this.content = this.c;
             this.opacity = 0x33;
-            this.set_size(rnd(parent.width)+20, rnd(parent.height)+20);
-            this.c.set_size(rnd(parent.width)+20, rnd(parent.height)+20);
+            this.set_size((int)roundf(parent.width)+20, (int)roundf(parent.height)+20);
+            this.c.set_size((int)roundf(parent.width)+20, (int)roundf(parent.height)+20);
             this.c.draw.connect(do_draw);
             this.x = 0;
             this.y = 0;
@@ -96,8 +97,8 @@ namespace RainbowLollipop {
             this.y = 0;
             this.content = c;
             this.opacity = 0x00;
-            this.set_size(rnd(parent.width), rnd(parent.height));
-            this.c.set_size(rnd(parent.width), rnd(parent.height));
+            this.set_size((int)roundf(parent.width), (int)roundf(parent.height));
+            this.c.set_size((int)roundf(parent.width), (int)roundf(parent.height));
             this.c.draw.connect(do_draw);
             this.c.invalidate();
             this.transitions_completed.connect(do_transitions_completed);
@@ -178,8 +179,8 @@ namespace RainbowLollipop {
             this.x = 0;
             this.y = 0;
             this.content = c;
-            this.set_size(rnd(parent.width), rnd(parent.height));
-            this.c.set_size(rnd(parent.width), rnd(parent.height));
+            this.set_size((int)roundf(parent.width), (int)roundf(parent.height));
+            this.c.set_size((int)roundf(parent.width), (int)roundf(parent.height));
             this.c.draw.connect(do_draw);
             this.c.invalidate();
         }

@@ -31,17 +31,6 @@ namespace RainbowLollipop {
     }
 
     /**
-     * rounds a float and returns the rounded number as integer
-     */
-    private int rnd(float f) {
-        int i = (int)f;
-        float d = f - (float)i;
-        if (d > 0.5f) 
-            i++;
-        return i;
-    }
-
-    /**
      * A Constraint that keeps an area aligned to
      * the source's right border and the target's left border.
      * Used to assign an area to NodeConnectors
@@ -72,7 +61,7 @@ namespace RainbowLollipop {
                 alloc.y2 = alloc.y1+(float)Config.c.connector_stroke;
             }
             alloc.clamp_to_pixel();
-            (a.content as Clutter.Canvas).set_size(rnd(alloc.x2-alloc.x1), rnd(alloc.y2-alloc.y1));
+            (a.content as Clutter.Canvas).set_size((int)roundf(alloc.x2-alloc.x1), (int)roundf(alloc.y2-alloc.y1));
         }
     }
 
