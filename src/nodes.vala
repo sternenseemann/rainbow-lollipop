@@ -26,19 +26,8 @@ namespace RainbowLollipop {
     /**
      * Converts the 8bit representation of a color into a float between 0.0 and 1.0
      */
-    private float col_h2f(int col) {
-        return (float)col/255;
-    }
-
-    /**
-     * rounds a float and returns the rounded number as integer
-     */
-    private int rnd(float f) {
-        int i = (int)f;
-        float d = f - (float)i;
-        if (d > 0.5f) 
-            i++;
-        return i;
+    private float col_h2f(uchar col) {
+        return col/255.0f;
     }
 
     /**
@@ -72,7 +61,7 @@ namespace RainbowLollipop {
                 alloc.y2 = alloc.y1+(float)Config.c.connector_stroke;
             }
             alloc.clamp_to_pixel();
-            (a.content as Clutter.Canvas).set_size(rnd(alloc.x2-alloc.x1), rnd(alloc.y2-alloc.y1));
+            (a.content as Clutter.Canvas).set_size((int)roundf(alloc.x2-alloc.x1), (int)roundf(alloc.y2-alloc.y1));
         }
     }
 

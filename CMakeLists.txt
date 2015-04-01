@@ -20,6 +20,8 @@ pkg_check_modules(GLIB REQUIRED glib-2.0)
 add_definitions(${GLIB_CFLAGS} ${GLIB_CFLAGS_OTHER})
 link_libraries(${GLIB_LIBRARIES})
 link_directories(${GLIB_LIBRARY_DIRS})
+link_libraries(m)
+
 
 pkg_check_modules(GTK REQUIRED gtk+-3.0)
 add_definitions(${GTK_CFLAGS} ${GTK_CFLAGS_OTHER})
