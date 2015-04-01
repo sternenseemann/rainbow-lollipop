@@ -94,7 +94,7 @@ namespace RainbowLollipop {
             this.a_cancel.width = BUTTON_WIDTH;
             this.a_cancel.height = 26;
             this.a_cancel.x = FRAME_WIDTH-2*FRAME_PADDING-2*BUTTON_WIDTH;
-            this.a_ok.y = 100;
+            this.a_cancel.y = 100;
 
             this.frame.add_child(this.a_username_entry);
             this.frame.add_child(this.a_password_entry);
