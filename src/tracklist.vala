@@ -220,8 +220,7 @@ namespace RainbowLollipop {
          * Fade in
          */
         public void emerge() {
-            for (int i = 0; i < this.get_n_children(); i++) {
-                Track t = (this.get_child_at_index(i) as Track);
+            foreach (Clutter.Actor t in this.get_children()){
                 if (t is EmptyTrack) {
                     (t as EmptyTrack).emerge();
                 } else {
@@ -238,8 +237,7 @@ namespace RainbowLollipop {
          * Fade out
          */
         public void disappear() {
-            for (int i = 0; i < this.get_n_children(); i++) {
-                Track t = (this.get_child_at_index(i) as Track);
+            foreach (Clutter.Actor t in this.get_children()){
                 if (t is EmptyTrack) {
                     (t as EmptyTrack).disappear();
                 } else {
