@@ -74,8 +74,15 @@ namespace RainbowLollipop {
          * Add "http://" to a url, if it is not present
          * TODO: Use HTTPS-Everywhere API (eff.org somewhat) to add "https://" instead
          *       of "http://" wherever it is available
+         * TODO: Add context menu for search fields, and retrieve shortcuts from database
          */
         private string complete_url(string url) {
+            if (url.has_prefix("s ") || url.has_prefix("g "))
+                return "https://duckduckgo.com/?q="+url.substring(2);
+            if (url.has_prefix("wie "))
+                return "https://en.wikipedia.org/wiki/Special:Search?search="+url.substring(3);
+            if (url.has_prefix("wid "))
+	        return "https://de.wikipedia.org/wiki/Special:Search?search="+url.substring(3);
             if (!url.has_prefix("http://") && !url.has_prefix("https://")) {
                 return "http://" + url;
             }
