@@ -166,10 +166,7 @@ namespace RainbowLollipop {
          * Add the given HistoryTrack to this TrackList
          */
         private void add_track(HistoryTrack t) {
-            this.insert_child_at_index(
-                t,
-                this.get_n_children()-1
-            );
+            this.insert_child_below(t, null);
             (this.get_last_child() as Track).recalculate_y(true);
         }
 
