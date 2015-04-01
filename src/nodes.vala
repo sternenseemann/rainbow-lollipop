@@ -26,8 +26,8 @@ namespace RainbowLollipop {
     /**
      * Converts the 8bit representation of a color into a float between 0.0 and 1.0
      */
-    private float col_h2f(int col) {
-        return (float)col/255;
+    private float col_h2f(uchar col) {
+        return col/255.0f;
     }
 
     /**
