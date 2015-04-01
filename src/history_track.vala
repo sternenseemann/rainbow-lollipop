@@ -489,12 +489,12 @@ namespace RainbowLollipop {
             wv.hide_search();
         }
         
-        public new void emerge() {
+        public override void emerge() {
             base.emerge();
             this.close_button.opacity = 0xFF;
         }
 
-        public new void disappear() {
+        public override void disappear() {
             base.disappear();
             this.close_button.opacity = 0x00;
         }

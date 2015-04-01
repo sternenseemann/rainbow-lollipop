@@ -155,7 +155,7 @@ namespace RainbowLollipop {
         /**
          * Fade in
          */
-        public new void emerge() {
+        public override void emerge () {
             base.emerge();
             this.actor.visible = true;
             this.actor.save_easing_state();
@@ -167,7 +167,7 @@ namespace RainbowLollipop {
         /**
          * Fade out
          */
-        public new void disappear() {
+        public override void disappear() {
             base.disappear();
             this.actor.save_easing_state();
             this.actor.opacity = 0x00;
