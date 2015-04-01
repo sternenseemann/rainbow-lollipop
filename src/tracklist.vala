@@ -221,11 +221,7 @@ namespace RainbowLollipop {
          */
         public void emerge() {
             foreach (Clutter.Actor t in this.get_children()){
-                if (t is EmptyTrack) {
-                    (t as EmptyTrack).emerge();
-                } else {
-                    (t as HistoryTrack).emerge();
-                }
+                (t as Track).emerge();
             }
             this.visible = true;
             this.save_easing_state();
@@ -238,11 +234,7 @@ namespace RainbowLollipop {
          */
         public void disappear() {
             foreach (Clutter.Actor t in this.get_children()){
-                if (t is EmptyTrack) {
-                    (t as EmptyTrack).disappear();
-                } else {
-                    (t as HistoryTrack).disappear();
-                }
+                (t as Track).disappear();
             }
             this.save_easing_state();
             this.opacity = 0x00;
