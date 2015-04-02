@@ -84,15 +84,6 @@ namespace RainbowLollipop {
             this.transitions_completed.connect(do_transitions_completed);
             this.background_color = TrackColorSource.get_color();
             this.height = this.calculate_height();
-            (this.get_parent().get_last_child() as Track).recalculate_y(true);
-        }
-
-        /**
-         * Cause other tracks to recalculate their y positions when this Track is
-         * being deleted.
-         */
-        ~Track(){
-            (this.get_parent().get_last_child() as Track).recalculate_y(true);
         }
 
         private void do_transitions_completed() {
@@ -139,32 +130,13 @@ namespace RainbowLollipop {
          * Delete this track
          */
         public bool delete_track () {
-            Track par = (Track)this.get_parent().get_last_child();
             this.destroy();
-            par.recalculate_y();
             return false;
         }
 
         /**
          * Method that calculates the height that this Track currently needs
          */
-        protected abstract int calculate_height();
-
-        /**
-         * Recalculate the y-position of this track
-         */
-        public int recalculate_y(bool animated=true){
-            var previous = (this.get_previous_sibling() as Track);
-
-            if (animated) 
-                this.save_easing_state();
-
-            var ypos = this.y = previous != null ? previous.recalculate_y(animated) : 0;
-
-            if (animated)
-                this.restore_easing_state();
-
-            return this.calculate_height() + (int)ypos;
-        }
+        public abstract int calculate_height(bool animated=true);
     }
 }

@@ -217,7 +217,7 @@ namespace RainbowLollipop {
                 bool need_new_current_node = this.contains_current_node();
                 prv.childnodes.remove(this);
                 prv.recalculate_y(null);
-                (prv.track.get_parent().get_last_child() as Track).recalculate_y(true);
+                prv.track.calculate_height();
                 if (need_new_current_node) {
                     new_track_current_node = this.track.current_node as SiteNode;
                     new_track_search_string = this.track.web.get_search_string(); 
@@ -311,7 +311,7 @@ namespace RainbowLollipop {
                     this.track.delete_track();
                 } else {
                     //Recalculate the tracks height in case there is some free space now
-                    (prv.track.get_parent().get_last_child() as Track).recalculate_y(true);
+                    this.track.calculate_height();
                     if (need_new_current_node && prv is SiteNode) {
                         this.track.current_node = prv as SiteNode;
                     }

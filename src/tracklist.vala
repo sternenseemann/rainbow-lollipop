@@ -105,6 +105,7 @@ namespace RainbowLollipop {
         }
         private HistoryTrack? _current_track;
         private EmptyTrack empty_track;
+        private Clutter.BoxLayout boxlayout;
 
         /**
          * Create a new TrackList
@@ -123,6 +124,9 @@ namespace RainbowLollipop {
             this.notify["current-track"].connect((d,e)=>{
                         Application.S().show_web_view(this.current_track);
                     });
+            this.boxlayout = new Clutter.BoxLayout();
+            boxlayout.orientation = Clutter.Orientation.VERTICAL;
+            this.set_layout_manager(boxlayout);
             this.add_empty_track();
         }
 
@@ -168,7 +172,7 @@ namespace RainbowLollipop {
          */
         private void add_track(HistoryTrack t) {
             this.insert_child_below(t, this.empty_track);
-            (this.get_last_child() as Track).recalculate_y(true);
+            this.boxlayout.child_set_property(this, t, "x-fill",true);
         }
 
         /**
@@ -208,6 +212,7 @@ namespace RainbowLollipop {
         private void add_empty_track() {
             this.empty_track = new EmptyTrack(this);
             this.add_child(this.empty_track);
+            this.boxlayout.child_set_property(this, this.empty_track,"x-fill",true);
         }
 
         private void do_transitions_completed() {
