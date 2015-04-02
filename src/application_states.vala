@@ -136,4 +136,37 @@ namespace RainbowLollipop {
             return SessiondialogState.instance;
         }
     }
+
+    /**
+     * CONFIGDIALOG - Screen is occupied by a configuration-dialog
+     */
+    class ConfigState : GLib.Object, IApplicationState {
+        private static ConfigState instance = null;
+        private static bool initialized = false;
+
+        private ConfigDialog config_dialog = null;
+
+        public static void init (ConfigDialog cd) {
+            ConfigState.instance = new ConfigState(cd);
+            ConfigState.initialized = true;
+        }
+
+        private ConfigState(ConfigDialog cd) {
+            this.config_dialog = cd;
+        }
+
+        public void enter() {
+            this.config_dialog.emerge();
+        }
+
+        public void leave() {
+            this.config_dialog.disappear();
+        }
+
+        public static IApplicationState S() {
+            if (!ConfigState.initialized)
+                critical(_("ConfigState has not been intialized."));
+            return ConfigState.instance;
+        }
+    }
 }
