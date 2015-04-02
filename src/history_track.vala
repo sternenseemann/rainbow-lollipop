@@ -135,6 +135,7 @@ namespace RainbowLollipop {
                             break;
                         }
                         this.first_node = node;
+                        this.calculate_height();
                         break;
                     default:
                         stdout.printf("Invalid field in track %s\n",name);
@@ -381,9 +382,13 @@ namespace RainbowLollipop {
         /**
          * Calculates how many pixels this HistoryTrack needs in vertical space
          */
-        protected override int calculate_height() {
+        public override int calculate_height(bool animated=true) {
+            if (animated)
+                this.save_easing_state();
             int h = Config.c.track_spacing+((Config.c.node_height+Config.c.track_spacing)*(this.first_node.get_splits()+1));
             this.height = h;
+            if (animated)
+                this.restore_easing_state();
             return h;
         }
 

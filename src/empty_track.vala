@@ -155,7 +155,7 @@ namespace RainbowLollipop {
          * TODO: Check if really still necessary or if it would be better to use
          *       Clutter box-layouts.
          */
-        protected override int calculate_height(){
+        public override int calculate_height(bool animated=true){
             return 26;
         }
 

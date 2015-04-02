@@ -346,7 +346,7 @@ namespace RainbowLollipop {
             this.add_child(this.bullet);
             this.add_child(this.favactor);
             this.add_child(this.spinner);
-            (this.track.get_parent().get_last_child() as Track).recalculate_y();
+            this.track.calculate_height();
             this.clickaction.clicked.connect(do_clicked);
             this.favactor.content.invalidate();
         }
