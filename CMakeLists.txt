@@ -123,7 +123,7 @@ else()
         "src/search_widget.vala"
         "src/error_node.vala"
         "src/application_states.vala"
-        "src/configdialog.vala"
+        "src/config_dialog.vala"
     PACKAGES
         gtk+-3.0
         clutter-1.0
