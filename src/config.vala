@@ -127,6 +127,11 @@ namespace RainbowLollipop {
         public uint16 urlhint_limit {get; set; default = 10;}
 
         /**
+         * Determines whether urls should be rewritten to HTTPS auto,matically if possible
+         */
+        public bool https_everywhere {get; set; default = true;}
+
+        /**
          * Parses the config values from JSON and stores them into the according
          * Class members
          */
@@ -218,7 +223,12 @@ namespace RainbowLollipop {
                         }
                         this.urlhint_limit = (uint16) item.get_int();
                         break;
-
+                    case "https_everywhere":
+                        if(item.get_node_type() != Json.NodeType.VALUE) {
+                            throw new ConfigError.INVALID_FORMAT(_("%s must be Value"), name);
+                        }
+                        this.https_everywhere = item.get_boolean();
+                        break;
                     default:
                         break;
                 }
