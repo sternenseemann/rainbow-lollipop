@@ -145,9 +145,20 @@ namespace RainbowLollipop {
          * Register a callback that is being mapped to a call id.
          * When an answer to the call with the given call id arrives, the callback will
          * be executed
+         * Parallel to the callbacks registration a timeout will be scheduled.
+         * If the sink does not receive any response in time, a default action will
+         * be triggered and the callback will be forgotten
          */
         public static void register_callback(uint32 callid, IPCCallbackWrapper cbw) {
             ZMQSink.callbacks.set(callid, cbw);
+            Timeout.add(1000,()=>{
+                IPCCallbackWrapper? _cbw = ZMQSink.callbacks.get(callid);
+                if (_cbw != null) {
+                    _cbw.get_callback()(_cbw.get_event());
+                    ZMQSink.callbacks.unset(callid);
+                }
+                return false;
+            });
         }
 
         /**
