@@ -212,6 +212,7 @@ namespace RainbowLollipop {
             this.x = this.previous.x+this.previous.width+(float)Config.c.node_spacing;
             this.y = Config.c.track_spacing;
             this.queue_redraw();
+            this.previous.recalculate_y(null);
         }
 
         /**
