@@ -104,6 +104,7 @@ namespace RainbowLollipop {
             }
         }
         private HistoryTrack? _current_track;
+        private EmptyTrack empty_track;
 
         /**
          * Create a new TrackList
@@ -166,10 +167,7 @@ namespace RainbowLollipop {
          * Add the given HistoryTrack to this TrackList
          */
         private void add_track(HistoryTrack t) {
-            this.insert_child_at_index(
-                t,
-                this.get_n_children()-1
-            );
+            this.insert_child_below(t, this.empty_track);
             (this.get_last_child() as Track).recalculate_y(true);
         }
 
@@ -208,9 +206,8 @@ namespace RainbowLollipop {
          * Add an EmptyTrack to this TrackList
          */
         private void add_empty_track() {
-            this.add_child(
-                new EmptyTrack(this)
-            );
+            this.empty_track = new EmptyTrack(this);
+            this.add_child(this.empty_track);
         }
 
         private void do_transitions_completed() {
