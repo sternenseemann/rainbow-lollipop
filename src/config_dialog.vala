@@ -59,6 +59,11 @@ namespace RainbowLollipop {
         private Gtk.Label bullet_stroke_label;
         private Gtk.SpinButton bullet_stroke_spinbutton;
 
+        private Gtk.Grid security_box;
+
+        private Gtk.Label https_everywhere_label;
+        private Gtk.Switch https_everywhere_switch;
+
         private enum ConfigOption {
             TRACK_HEIGHT,
             TRACK_SPACING,
@@ -67,7 +72,8 @@ namespace RainbowLollipop {
             NODE_SPACING,
             FAVICON_SIZE,
             CONNECTOR_STROKE,
-            BULLET_STROKE
+            BULLET_STROKE,
+            HTTPS_EVERYWHERE,
         }
 
         public ConfigDialog (Clutter.Actor stage) {
@@ -158,6 +164,22 @@ namespace RainbowLollipop {
 
             this.notebook.append_page(this.ui_box, new Gtk.Label(_("UI")));
 
+            this.security_box = new Gtk.Grid();
+            this.security_box.expand = true;
+            this.security_box.column_spacing = this.security_box.row_spacing = 10;
+            this.security_box.border_width = 20;
+
+            this.https_everywhere_label = new Gtk.Label(_("Use HTTPS everywhere"));
+            this.https_everywhere_switch = new Gtk.Switch();
+            this.https_everywhere_switch.set_state(Config.c.https_everywhere);
+            this.https_everywhere_switch.activate.connect(()=>{
+                this.update_value(ConfigOption.HTTPS_EVERYWHERE);
+            });
+            this.security_box.attach(this.https_everywhere_label,0,0,1,1);
+            this.security_box.attach(this.https_everywhere_switch,1,0,1,1);
+
+            this.notebook.append_page(this.security_box, new Gtk.Label(_("Security")));
+
             this.dialog_container = new GtkClutter.Actor.with_contents(this.notebook);
             this.dialog_container.add_constraint(
                 new Clutter.BindConstraint(this, Clutter.BindCoordinate.SIZE, -100)
@@ -194,7 +216,9 @@ namespace RainbowLollipop {
                 case ConfigOption.BULLET_STROKE:
                     Config.c.bullet_stroke = this.bullet_stroke_spinbutton.get_value();
                     break;
-                
+                case ConfigOption.HTTPS_EVERYWHERE:
+                    Config.c.https_everywhere = this.https_everywhere_switch.get_state();
+                    break;
             }
             this.get_stage().queue_redraw();
             //TODO: find out why the redraw call does not reach the nodes

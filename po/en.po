@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rainbow-lollipop 0.0.1\n"
 "Report-Msgid-Bugs-To: rainbow-lollipop-talk@lists.rainbow-lollipop.de\n"
-"POT-Creation-Date: 2015-04-02 05:34+0200\n"
+"POT-Creation-Date: 2015-04-02 14:50+0200\n"
 "PO-Revision-Date: 2015-03-18 23:34+0100\n"
 "Last-Translator: grindhold <grindhold@skarphed.org>\n"
 "Language-Team: English\n"
@@ -17,30 +17,31 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: /home/grindhold/git/alaia/src/config.vala:143
-#: /home/grindhold/git/alaia/src/config.vala:149
-#: /home/grindhold/git/alaia/src/config.vala:155
-#: /home/grindhold/git/alaia/src/config.vala:161
-#: /home/grindhold/git/alaia/src/config.vala:167
-#: /home/grindhold/git/alaia/src/config.vala:173
-#: /home/grindhold/git/alaia/src/config.vala:179
-#: /home/grindhold/git/alaia/src/config.vala:185
-#: /home/grindhold/git/alaia/src/config.vala:191
-#: /home/grindhold/git/alaia/src/config.vala:197
-#: /home/grindhold/git/alaia/src/config.vala:204
-#: /home/grindhold/git/alaia/src/config.vala:210
-#: /home/grindhold/git/alaia/src/config.vala:217
+#: /home/grindhold/git/alaia/src/config.vala:148
+#: /home/grindhold/git/alaia/src/config.vala:154
+#: /home/grindhold/git/alaia/src/config.vala:160
+#: /home/grindhold/git/alaia/src/config.vala:166
+#: /home/grindhold/git/alaia/src/config.vala:172
+#: /home/grindhold/git/alaia/src/config.vala:178
+#: /home/grindhold/git/alaia/src/config.vala:184
+#: /home/grindhold/git/alaia/src/config.vala:190
+#: /home/grindhold/git/alaia/src/config.vala:196
+#: /home/grindhold/git/alaia/src/config.vala:202
+#: /home/grindhold/git/alaia/src/config.vala:209
+#: /home/grindhold/git/alaia/src/config.vala:215
+#: /home/grindhold/git/alaia/src/config.vala:222
+#: /home/grindhold/git/alaia/src/config.vala:228
 #, c-format
 msgid "%s must be Value"
 msgstr "%s must be Value"
 
-#: /home/grindhold/git/alaia/src/site_node.vala:381
+#: /home/grindhold/git/alaia/src/site_node.vala:423
 #, c-format
 msgid "%s must be array"
 msgstr "%s must be array"
 
-#: /home/grindhold/git/alaia/src/site_node.vala:371
-#: /home/grindhold/git/alaia/src/site_node.vala:376
+#: /home/grindhold/git/alaia/src/site_node.vala:413
+#: /home/grindhold/git/alaia/src/site_node.vala:418
 #, c-format
 msgid "%s must be value"
 msgstr "%s must be value"
@@ -57,8 +58,8 @@ msgstr "Close Track"
 msgid "ConfigState has not been intialized."
 msgstr ""
 
-#: /home/grindhold/git/alaia/src/config_dialog.vala:141
-#: /home/grindhold/git/alaia/src/config_dialog.vala:150
+#: /home/grindhold/git/alaia/src/config_dialog.vala:147
+#: /home/grindhold/git/alaia/src/config_dialog.vala:156
 msgid "Connector stroke width"
 msgstr ""
 
@@ -76,11 +77,11 @@ msgstr "Could not create database %s\n"
 msgid "Could not create tables %s\n"
 msgstr "Could not create tables %s\n"
 
-#: /home/grindhold/git/alaia/src/config.vala:388
+#: /home/grindhold/git/alaia/src/config.vala:398
 msgid "Could not feed schemeparser. Using default colorscheme\n"
 msgstr "Could not feed schemeparser. Using default colorscheme\n"
 
-#: /home/grindhold/git/alaia/src/download_node.vala:150
+#: /home/grindhold/git/alaia/src/download_node.vala:171
 #, c-format
 msgid "Could not find a launcher for file: %s"
 msgstr "Could not find a launcher for file: %s"
@@ -89,11 +90,11 @@ msgstr "Could not find a launcher for file: %s"
 msgid "Could not initialize GtkClutter"
 msgstr "Could not initialize GtkClutter"
 
-#: /home/grindhold/git/alaia/src/config.vala:381
+#: /home/grindhold/git/alaia/src/config.vala:391
 msgid "Could not load colorscheme. Using default colorscheme\n"
 msgstr "Could not load colorscheme. Using default colorscheme\n"
 
-#: /home/grindhold/git/alaia/src/config.vala:395
+#: /home/grindhold/git/alaia/src/config.vala:405
 msgid "Could not parse scheme. Using default colorscheme\n"
 msgstr "Could not parse scheme. Using default colorscheme\n"
 
@@ -130,26 +131,26 @@ msgstr "Could not save session to %s\n"
 msgid "Database is not initialized. Can not commit statement\n"
 msgstr "Database is not initialized. Can not commit statement\n"
 
-#: /home/grindhold/git/alaia/src/config.vala:335
-#: /home/grindhold/git/alaia/src/config.vala:341
+#: /home/grindhold/git/alaia/src/config.vala:345
+#: /home/grindhold/git/alaia/src/config.vala:351
 #, c-format
 msgid "Expected %s to be value"
 msgstr "Expected %s to be value"
 
-#: /home/grindhold/git/alaia/src/config.vala:327
+#: /home/grindhold/git/alaia/src/config.vala:337
 msgid "Expected Object"
 msgstr "Expected Object"
 
-#: /home/grindhold/git/alaia/src/config.vala:135
+#: /home/grindhold/git/alaia/src/config.vala:140
 #, c-format
 msgid "Expected root Object. Got %s"
 msgstr "Expected root Object. Got %s"
 
-#: /home/grindhold/git/alaia/src/config.vala:347
+#: /home/grindhold/git/alaia/src/config.vala:357
 msgid "Expected tracks to be array"
 msgstr "Expected tracks to be array"
 
-#: /home/grindhold/git/alaia/src/config_dialog.vala:132
+#: /home/grindhold/git/alaia/src/config_dialog.vala:138
 msgid "Favicon size"
 msgstr ""
 
@@ -173,11 +174,11 @@ msgstr "Invalid session json\n"
 msgid "New Track from Branch"
 msgstr "New Track from Branch"
 
-#: /home/grindhold/git/alaia/src/config_dialog.vala:114
+#: /home/grindhold/git/alaia/src/config_dialog.vala:120
 msgid "Node height"
 msgstr ""
 
-#: /home/grindhold/git/alaia/src/config_dialog.vala:123
+#: /home/grindhold/git/alaia/src/config_dialog.vala:129
 msgid "Node spacing"
 msgstr ""
 
@@ -207,6 +208,10 @@ msgstr "Search %s"
 msgid "Search for %s with DuckDuckGo"
 msgstr "Search for %s with DuckDuckGo"
 
+#: /home/grindhold/git/alaia/src/config_dialog.vala:181
+msgid "Security"
+msgstr ""
+
 #: /home/grindhold/git/alaia/src/application_states.vala:135
 msgid "SessiondialogState has not been intialized."
 msgstr ""
@@ -224,19 +229,19 @@ msgstr ""
 "Surf directly to \n"
 "%s"
 
-#: /home/grindhold/git/alaia/src/nodes.vala:357
+#: /home/grindhold/git/alaia/src/nodes.vala:373
 msgid "The node is not a child of its parent. This should not happen"
 msgstr "The node is not a child of its parent. This should not happen"
 
-#: /home/grindhold/git/alaia/src/config_dialog.vala:87
+#: /home/grindhold/git/alaia/src/config_dialog.vala:93
 msgid "Track height"
 msgstr ""
 
-#: /home/grindhold/git/alaia/src/config_dialog.vala:105
+#: /home/grindhold/git/alaia/src/config_dialog.vala:111
 msgid "Track opacity"
 msgstr ""
 
-#: /home/grindhold/git/alaia/src/config_dialog.vala:96
+#: /home/grindhold/git/alaia/src/config_dialog.vala:102
 msgid "Track spacing"
 msgstr ""
 
@@ -244,7 +249,7 @@ msgstr ""
 msgid "TracklistState has not been intialized."
 msgstr ""
 
-#: /home/grindhold/git/alaia/src/config_dialog.vala:159
+#: /home/grindhold/git/alaia/src/config_dialog.vala:165
 msgid "UI"
 msgstr ""
 
@@ -253,11 +258,15 @@ msgstr ""
 msgid "Unknown session member %s\n"
 msgstr "Unknown session member %s\n"
 
-#: /home/grindhold/git/alaia/src/config.vala:233
+#: /home/grindhold/git/alaia/src/config_dialog.vala:172
+msgid "Use HTTPS everywhere"
+msgstr ""
+
+#: /home/grindhold/git/alaia/src/config.vala:243
 msgid "Using default config\n"
 msgstr "Using default config\n"
 
-#: /home/grindhold/git/alaia/src/site_node.vala:385
+#: /home/grindhold/git/alaia/src/site_node.vala:427
 #, c-format
 msgid "invalid field in node onject: %s\n"
 msgstr "invalid field in node onject: %s\n"
@@ -266,7 +275,7 @@ msgstr "invalid field in node onject: %s\n"
 msgid "new session"
 msgstr ""
 
-#: /home/grindhold/git/alaia/src/site_node.vala:396
+#: /home/grindhold/git/alaia/src/site_node.vala:438
 msgid "node creation failed\n"
 msgstr "node creation failed\n"
 
@@ -276,14 +285,14 @@ msgid ""
 "session"
 msgstr ""
 
-#: /home/grindhold/git/alaia/src/site_node.vala:361
+#: /home/grindhold/git/alaia/src/site_node.vala:403
 msgid "sitenode must be object"
 msgstr "sitenode must be object"
 
-#: /home/grindhold/git/alaia/src/tracklist.vala:142
+#: /home/grindhold/git/alaia/src/tracklist.vala:146
 msgid "track generation failed\n"
 msgstr "track generation failed\n"
 
-#: /home/grindhold/git/alaia/src/tracklist.vala:134
+#: /home/grindhold/git/alaia/src/tracklist.vala:138
 msgid "tracklist must be array\n"
 msgstr "tracklist must be array\n"

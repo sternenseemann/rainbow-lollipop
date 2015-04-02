@@ -129,7 +129,7 @@ namespace RainbowLollipop {
         /**
          * Determines whether urls should be rewritten to HTTPS auto,matically if possible
          */
-        public bool https_everywhere {get; set; default = true;}
+        public bool https_everywhere {get; set; default = false;}
 
         /**
          * Parses the config values from JSON and stores them into the according
