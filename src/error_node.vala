@@ -39,6 +39,7 @@ namespace RainbowLollipop {
             this.content = c;
             this.set_size((int)roundf(parent.width), (int)roundf(parent.height));
             this.c.set_size((int)roundf(parent.width), (int)roundf(parent.height));
+            Config.c.notify.connect(config_update);
             this.c.draw.connect(do_draw);
             this.c.invalidate();
         }
@@ -87,6 +88,15 @@ namespace RainbowLollipop {
             cr.fill();
 
             return true;
+        }
+
+        /**
+         * Handles configuration updates
+         */
+        private void config_update() {
+            this.set_size((int)roundf(parent.width), (int)roundf(parent.height));
+            this.c.set_size((int)roundf(parent.width), (int)roundf(parent.height));
+            this.c.invalidate();
         }
     }
 

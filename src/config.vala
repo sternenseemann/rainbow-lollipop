@@ -42,7 +42,7 @@ namespace RainbowLollipop {
      * The Config class holds all values that are definable by the user
      * The configuration is being read-in from a file in JSON format.
      */
-    class Config {
+    class Config : GLib.Object {
         /**
          * Defines, which prefix is used for files belonging to this
          * program in various subfolders. e.g. in xdg-relevant folders
