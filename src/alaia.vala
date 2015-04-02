@@ -276,6 +276,8 @@ namespace RainbowLollipop {
         private TrackListBackground tracklist_background;
 
         private RestoreSessionDialog sessiondialog;
+
+        private ConfigDialog configdialog;
         
         /**
          * The state the application is currently in.
@@ -386,6 +388,10 @@ namespace RainbowLollipop {
             this.sessiondialog = new RestoreSessionDialog(stage);
             stage.add_child(this.sessiondialog);
             SessiondialogState.init(this.sessiondialog);
+
+            this.configdialog = new ConfigDialog(stage);
+            stage.add_child(this.configdialog);
+            ConfigState.init(this.configdialog);
 
             // Initialize Tracklist
 
@@ -573,6 +579,9 @@ namespace RainbowLollipop {
                 var t = this.tracklist.current_track;
                 var twv = this.get_web_view(t) as TrackWebView;
                 switch(e.keyval) {
+                    case Gdk.Key.F2:
+                        this.do_key_press_event(e);
+                        break;
                     case Gdk.Key.Tab:
                         if (t != null)
                             twv.needs_direct_input(do_key_press_event,e);
@@ -588,7 +597,8 @@ namespace RainbowLollipop {
                 }
             }
             else if (this.state is TracklistState) {
-                if (e.keyval != Gdk.Key.Tab)
+                if (e.keyval !=    Gdk.Key.Tab
+                    && e.keyval != Gdk.Key.F2 )
                     return false;
                 this.do_key_press_event(e);
             }
@@ -596,6 +606,12 @@ namespace RainbowLollipop {
                 if (e.keyval !=    Gdk.Key.Left
                     && e.keyval != Gdk.Key.Right
                     && e.keyval != Gdk.Key.Return)
+                    return false;
+                this.do_key_press_event(e);
+            }
+            else if (this.state is ConfigState) {
+                if (e.keyval !=    Gdk.Key.Escape
+                    && e.keyval != Gdk.Key.Tab)
                     return false;
                 this.do_key_press_event(e);
             }
@@ -614,6 +630,9 @@ namespace RainbowLollipop {
                 switch (e.keyval) {
                     case Gdk.Key.Tab:
                         this.state = TracklistState.S();
+                        return;
+                    case Gdk.Key.F2:
+                        this.state = ConfigState.S();
                         return;
                     case Gdk.Key.r:
                         if ((bool)(e.state & Gdk.ModifierType.CONTROL_MASK) && t != null) {
@@ -645,6 +664,9 @@ namespace RainbowLollipop {
                     case Gdk.Key.Tab:
                         this.state = NormalState.S();
                         return;
+                    case Gdk.Key.F2:
+                        this.state = ConfigState.S();
+                        return;
                 }
             }
             else if (this.state is SessiondialogState) {
@@ -658,6 +680,17 @@ namespace RainbowLollipop {
                     case Gdk.Key.Return:
                         this.sessiondialog.execute_selected();
                         return;
+                }
+            }
+            else if (this.state is ConfigState) {
+                switch (e.keyval) {
+                    case Gdk.Key.Escape:
+                        this.state = NormalState.S();
+                        break;
+                    case Gdk.Key.Tab:
+                        this.state = TracklistState.S();
+                        break;
+                        
                 }
             }
         }
