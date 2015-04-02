@@ -86,6 +86,7 @@ namespace RainbowLollipop {
             this.c.set_size(10,10);
             this.x = Config.c.node_height/2+Config.c.track_spacing;
             this.y = 0;
+            Config.c.notify.connect(config_update);
             this.c.draw.connect(do_draw);
             this.add_constraint(
                 new ConnectorConstraint(previous, next)
@@ -93,6 +94,14 @@ namespace RainbowLollipop {
             this.c.invalidate();
             previous.track.add_nodeconnector(this);
             
+        }
+
+        /**
+         * Handles changes in config
+         */
+        private void config_update() {
+            this.x = Config.c.node_height/2+Config.c.track_spacing;
+            this.queue_redraw();
         }
 
         /**
@@ -188,14 +197,21 @@ namespace RainbowLollipop {
             if (par != null){
                 this.connector = new Connector(par,this);
             }
-            this.height = Config.c.node_height;
-            this.width = Config.c.node_height;
+            this.height = this.width = Config.c.node_height;
+            Config.c.notify.connect(config_update);
             this.color = track.get_background_color().lighten();
             this.color = this.color.lighten();
             this.previous.recalculate_y(null);
             this.reactive = true;
             this.clickaction = new Clutter.ClickAction();
             this.add_action(this.clickaction);
+        }
+
+        protected virtual void config_update() {
+            this.height = this.width = Config.c.node_height;
+            this.x = this.previous.x+this.previous.width+(float)Config.c.node_spacing;
+            this.y = Config.c.track_spacing;
+            this.queue_redraw();
         }
 
         /**

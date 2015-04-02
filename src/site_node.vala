@@ -46,6 +46,7 @@ namespace RainbowLollipop {
             this.opacity = 0x33;
             this.set_size((int)roundf(parent.width)+20, (int)roundf(parent.height)+20);
             this.c.set_size((int)roundf(parent.width)+20, (int)roundf(parent.height)+20);
+            Config.c.notify.connect(config_update);
             this.c.draw.connect(do_draw);
             this.x = 0;
             this.y = 0;
@@ -77,6 +78,15 @@ namespace RainbowLollipop {
             cr.fill();
             return true;
         }
+
+        /**
+         * Handles changes in the configuration
+         */
+        private void config_update() {
+            this.set_size((int)roundf(parent.width), (int)roundf(parent.height));
+            this.c.set_size((int)roundf(parent.width), (int)roundf(parent.height));
+            this.c.invalidate();
+        }
     }
 
     /**
@@ -99,6 +109,7 @@ namespace RainbowLollipop {
             this.opacity = 0x00;
             this.set_size((int)roundf(parent.width), (int)roundf(parent.height));
             this.c.set_size((int)roundf(parent.width), (int)roundf(parent.height));
+            Config.c.notify.connect(config_update);
             this.c.draw.connect(do_draw);
             this.c.invalidate();
             this.transitions_completed.connect(do_transitions_completed);
@@ -138,6 +149,15 @@ namespace RainbowLollipop {
             this.rotation_angle_z += 45;
             this.opacity = 0xFF;
             this.restore_easing_state();
+        }
+
+        /**
+         * Handles changes in the configuration
+         */
+        private void config_update() {
+            this.set_size((int)roundf(parent.width), (int)roundf(parent.height));
+            this.c.set_size((int)roundf(parent.width), (int)roundf(parent.height));
+            this.c.invalidate();
         }
 
         /**
@@ -181,6 +201,7 @@ namespace RainbowLollipop {
             this.content = c;
             this.set_size((int)roundf(parent.width), (int)roundf(parent.height));
             this.c.set_size((int)roundf(parent.width), (int)roundf(parent.height));
+            Config.c.notify.connect(config_update);
             this.c.draw.connect(do_draw);
             this.c.invalidate();
         }
@@ -207,6 +228,15 @@ namespace RainbowLollipop {
             cr.arc(Config.c.node_height/2,Config.c.node_height/2,Config.c.node_height/2,0,2*Math.PI);
             cr.fill();
             return true;
+        }
+
+        /**
+         * Handles changes in the configuration
+         */
+        private void config_update() {
+            this.set_size((int)roundf(parent.width), (int)roundf(parent.height));
+            this.c.set_size((int)roundf(parent.width), (int)roundf(parent.height));
+            this.c.invalidate();
         }
     }
 
@@ -338,6 +368,7 @@ namespace RainbowLollipop {
             this.spinner = new NodeSpinner(this);
             this.highlight = new NodeHighlight(this);
 
+            Config.c.notify.connect(config_update);
             this.enter_event.connect(do_enter_event);
             this.leave_event.connect(do_leave_event);
             this.transitions_completed.connect(do_transitions_completed);
@@ -348,6 +379,17 @@ namespace RainbowLollipop {
             this.add_child(this.spinner);
             this.track.calculate_height();
             this.clickaction.clicked.connect(do_clicked);
+            this.favactor.content.invalidate();
+        }
+
+        /**
+         * Handles changes in the configuration
+         */
+        protected override void config_update() {
+            base.config_update();
+            this.favactor.height=this.favactor.width=Config.c.favicon_size;
+            this.favactor.x = this.width/2-this.favactor.width/2;
+            this.favactor.y = this.height/2-this.favactor.height/2;
             this.favactor.content.invalidate();
         }
 

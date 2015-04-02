@@ -41,7 +41,17 @@ namespace RainbowLollipop {
             this.content = c;
             this.set_size((int)roundf(parent.width), (int)roundf(parent.height));
             this.c.set_size((int)roundf(parent.width), (int)roundf(parent.height));
+            Config.c.notify.connect(config_update);
             this.c.draw.connect(do_draw);
+            this.c.invalidate();
+        }
+
+        /**
+         * Handles changes in the configuration
+         */
+        private void config_update() {
+            this.set_size((int)roundf(parent.width), (int)roundf(parent.height));
+            this.c.set_size((int)roundf(parent.width), (int)roundf(parent.height));
             this.c.invalidate();
         }
 
@@ -103,6 +113,8 @@ namespace RainbowLollipop {
             this.text.x = Config.c.node_height/2-this.text.width/2;
             this.text.y = Config.c.node_height/2-this.text.height/2;
             this.add_child(this.text);
+
+            Config.c.notify.connect(config_update);
             
             this.opacity = 0x7F;
             this.background_color = this.color;
@@ -110,6 +122,15 @@ namespace RainbowLollipop {
             this.dl.failed.connect(()=>{this.finished=true;});
             this.clickaction.clicked.connect(do_clicked);
             GLib.Idle.add(this.update);
+        }
+
+        /**
+         * Handles updated configuration
+         */
+        protected override void config_update() {
+            base.config_update();
+            this.text.x = Config.c.node_height/2-this.text.width/2;
+            this.text.y = Config.c.node_height/2-this.text.height/2;
         }
 
         /**

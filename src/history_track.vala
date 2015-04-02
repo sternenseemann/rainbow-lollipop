@@ -244,6 +244,8 @@ namespace RainbowLollipop {
             );
             this.add_child(separator);
 
+            Config.c.notify.connect(config_update);
+
             this._title = new Clutter.Text.with_text("Monospace Bold 9", "");
             this._title.color = this.background_color.lighten().lighten();
             this._title.add_constraint(
@@ -377,6 +379,13 @@ namespace RainbowLollipop {
          * TODO: implement
          */
         public void go_forward() {
+        }
+
+        /**
+         * Handles changes in config
+         */
+        private void config_update() {
+            this.calculate_height();
         }
 
         /**
