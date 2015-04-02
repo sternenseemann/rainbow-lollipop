@@ -363,9 +363,9 @@ namespace RainbowLollipop {
 
             // Initialize the main window
             this.win = new GtkClutter.Window();
-            this.win.set_title("alaia");
+            this.win.set_title("Rainbow Lollipop");
             this.win.maximize();
-            this.win.icon_name="alaia";
+            this.win.icon_name="rainbow-lollipop";
             this.win.key_press_event.connect(preprocess_key_press_event);
             this.win.destroy.connect(do_delete);
 
