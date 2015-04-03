@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rainbow-lollipop 0.0.1\n"
 "Report-Msgid-Bugs-To: rainbow-lollipop-talk@lists.rainbow-lollipop.de\n"
-"POT-Creation-Date: 2015-04-02 16:02+0200\n"
-"PO-Revision-Date: 2015-04-03 13:25+0100\n"
+"POT-Creation-Date: 2015-04-03 13:35+0200\n"
+"PO-Revision-Date: 2015-04-03 13:36+0100\n"
 "Last-Translator: grindhold <grindhold@skarphed.org>\n"
 "Language-Team: English\n"
 "Language: en\n"
@@ -47,6 +47,10 @@ msgstr "%s must be array"
 msgid "%s must be value"
 msgstr "%s must be value"
 
+#: /home/grindhold/git/alaia/src/config_dialog.vala:156
+msgid "Bullet stroke width"
+msgstr "Bullet stroke width"
+
 #: /home/grindhold/git/alaia/src/alaia.vala:156
 msgid "Close Branch"
 msgstr "Close Branch"
@@ -60,7 +64,6 @@ msgid "ConfigState has not been intialized."
 msgstr "ConfigState has not been initialized."
 
 #: /home/grindhold/git/alaia/src/config_dialog.vala:147
-#: /home/grindhold/git/alaia/src/config_dialog.vala:156
 msgid "Connector stroke width"
 msgstr "Connector stroke width"
 
