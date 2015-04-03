@@ -153,7 +153,7 @@ namespace RainbowLollipop {
             this.ui_box.attach(this.connector_stroke_label,0,6,1,1);
             this.ui_box.attach(this.connector_stroke_spinbutton,1,6,1,1);
 
-            this.bullet_stroke_label = new Gtk.Label(_("Connector stroke width"));
+            this.bullet_stroke_label = new Gtk.Label(_("Bullet stroke width"));
             this.bullet_stroke_spinbutton = new Gtk.SpinButton.with_range(1,10,0.1);
             this.bullet_stroke_spinbutton.set_value(Config.c.bullet_stroke);
             this.bullet_stroke_spinbutton.value_changed.connect(()=>{
