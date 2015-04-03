@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rainbow-lollipop 0.0.1\n"
 "Report-Msgid-Bugs-To: rainbow-lollipop-talk@lists.rainbow-lollipop.de\n"
-"POT-Creation-Date: 2015-04-02 14:50+0200\n"
-"PO-Revision-Date: 2015-03-18 23:34+0100\n"
+"POT-Creation-Date: 2015-04-02 16:02+0200\n"
+"PO-Revision-Date: 2015-04-03 13:25+0100\n"
 "Last-Translator: grindhold <grindhold@skarphed.org>\n"
 "Language-Team: English\n"
 "Language: en\n"
@@ -16,6 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 1.6.10\n"
 
 #: /home/grindhold/git/alaia/src/config.vala:148
 #: /home/grindhold/git/alaia/src/config.vala:154
@@ -56,12 +57,12 @@ msgstr "Close Track"
 
 #: /home/grindhold/git/alaia/src/application_states.vala:168
 msgid "ConfigState has not been intialized."
-msgstr ""
+msgstr "ConfigState has not been initialized."
 
 #: /home/grindhold/git/alaia/src/config_dialog.vala:147
 #: /home/grindhold/git/alaia/src/config_dialog.vala:156
 msgid "Connector stroke width"
-msgstr ""
+msgstr "Connector stroke width"
 
 #: /home/grindhold/git/alaia/src/alaia.vala:164
 msgid "Copy URL"
@@ -152,7 +153,7 @@ msgstr "Expected tracks to be array"
 
 #: /home/grindhold/git/alaia/src/config_dialog.vala:138
 msgid "Favicon size"
-msgstr ""
+msgstr "Favicon size"
 
 #: /home/grindhold/git/alaia/src/empty_track.vala:45
 msgid "Go"
@@ -176,15 +177,15 @@ msgstr "New Track from Branch"
 
 #: /home/grindhold/git/alaia/src/config_dialog.vala:120
 msgid "Node height"
-msgstr ""
+msgstr "Node size"
 
 #: /home/grindhold/git/alaia/src/config_dialog.vala:129
 msgid "Node spacing"
-msgstr ""
+msgstr "Horizontal node spacing"
 
 #: /home/grindhold/git/alaia/src/application_states.vala:69
 msgid "NormalState has not been initialized."
-msgstr ""
+msgstr "NormalState has not been initialized."
 
 #: /home/grindhold/git/alaia/src/alaia.vala:179
 msgid "Open"
@@ -210,13 +211,13 @@ msgstr "Search for %s with DuckDuckGo"
 
 #: /home/grindhold/git/alaia/src/config_dialog.vala:181
 msgid "Security"
-msgstr ""
+msgstr "Security"
 
 #: /home/grindhold/git/alaia/src/application_states.vala:135
 msgid "SessiondialogState has not been intialized."
-msgstr ""
+msgstr "SessiondialogState has not been intialized."
 
-#: /home/grindhold/git/alaia/src/ipc.vala:164
+#: /home/grindhold/git/alaia/src/ipc.vala:175
 msgid "Sink broke down\n"
 msgstr "Sink broke down\n"
 
@@ -229,29 +230,29 @@ msgstr ""
 "Surf directly to \n"
 "%s"
 
-#: /home/grindhold/git/alaia/src/nodes.vala:373
+#: /home/grindhold/git/alaia/src/nodes.vala:374
 msgid "The node is not a child of its parent. This should not happen"
 msgstr "The node is not a child of its parent. This should not happen"
 
 #: /home/grindhold/git/alaia/src/config_dialog.vala:93
 msgid "Track height"
-msgstr ""
+msgstr "Track height"
 
 #: /home/grindhold/git/alaia/src/config_dialog.vala:111
 msgid "Track opacity"
-msgstr ""
+msgstr "Track opacity"
 
 #: /home/grindhold/git/alaia/src/config_dialog.vala:102
 msgid "Track spacing"
-msgstr ""
+msgstr "Vertica node spacing"
 
 #: /home/grindhold/git/alaia/src/application_states.vala:102
 msgid "TracklistState has not been intialized."
-msgstr ""
+msgstr "TracklistState has not been intialized."
 
 #: /home/grindhold/git/alaia/src/config_dialog.vala:165
 msgid "UI"
-msgstr ""
+msgstr "UI"
 
 #: /home/grindhold/git/alaia/src/alaia.vala:527
 #, c-format
@@ -260,7 +261,7 @@ msgstr "Unknown session member %s\n"
 
 #: /home/grindhold/git/alaia/src/config_dialog.vala:172
 msgid "Use HTTPS everywhere"
-msgstr ""
+msgstr "Use HTTPS everywhere"
 
 #: /home/grindhold/git/alaia/src/config.vala:243
 msgid "Using default config\n"
@@ -273,7 +274,7 @@ msgstr "invalid field in node onject: %s\n"
 
 #: /home/grindhold/git/alaia/src/session_select.vala:102
 msgid "new session"
-msgstr ""
+msgstr "new session"
 
 #: /home/grindhold/git/alaia/src/site_node.vala:438
 msgid "node creation failed\n"
@@ -284,6 +285,8 @@ msgid ""
 "restore\n"
 "session"
 msgstr ""
+"restore\n"
+"session"
 
 #: /home/grindhold/git/alaia/src/site_node.vala:403
 msgid "sitenode must be object"
