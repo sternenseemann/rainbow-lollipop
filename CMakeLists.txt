@@ -89,6 +89,7 @@ if (GEE10)
         "src/error_node.vala"
         "src/application_states.vala"
         "src/config_dialog.vala"
+        "src/context_menu.vala"
     PACKAGES
         gtk+-3.0
         clutter-1.0
@@ -124,6 +125,7 @@ else()
         "src/error_node.vala"
         "src/application_states.vala"
         "src/config_dialog.vala"
+        "src/context_menu.vala"
     PACKAGES
         gtk+-3.0
         clutter-1.0
