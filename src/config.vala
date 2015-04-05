@@ -132,6 +132,50 @@ namespace RainbowLollipop {
         public bool https_everywhere {get; set; default = false;}
 
         /**
+         * Save the current config to the configfile
+         */
+        public void save() {
+            var b = new Json.Builder();
+            b.begin_object();
+
+            b.set_member_name("track_height");
+            b.add_int_value(this.track_height);
+            b.set_member_name("track_spacing");
+            b.add_int_value(this.track_spacing);
+            b.set_member_name("track_opacity");
+            b.add_int_value(this.track_opacity);
+            b.set_member_name("node_height");
+            b.add_int_value(this.node_height);
+            b.set_member_name("node_spacing");
+            b.add_int_value(this.node_spacing);
+            b.set_member_name("favicon_size");
+            b.add_int_value(this.favicon_size);
+            b.set_member_name("connector_stroke");
+            b.add_double_value(this.connector_stroke);
+            b.set_member_name("bullet_stroke");
+            b.add_double_value(this.bullet_stroke);
+
+            b.set_member_name("ipc_vent_port");
+            b.add_int_value(this.ipc_vent_port);
+            b.set_member_name("ipc_sink_port");
+            b.add_int_value(this.ipc_sink_port);
+
+            b.set_member_name("urlhint_limit");
+            b.add_int_value(this.urlhint_limit);
+
+            b.end_object();
+
+            var gen = new Json.Generator();
+            gen.set_root(b.get_root());
+            try {
+                string configpath = "%s%sconfig.json".printf(GLib.Environment.get_user_config_dir(),C);
+                FileUtils.set_contents(configpath, gen.to_data(null));
+            } catch (FileError e) {
+                warning(_("Could not save configuration."));
+            }
+        }
+
+        /**
          * Parses the config values from JSON and stores them into the according
          * Class members
          */
