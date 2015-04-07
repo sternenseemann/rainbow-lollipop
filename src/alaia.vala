@@ -525,6 +525,17 @@ namespace RainbowLollipop {
                                 wv.key_press_event(e);
                         }
                         break;
+                    case Gdk.Key.y:
+                        if ((bool)(e.state & Gdk.ModifierType.CONTROL_MASK) && t != null) {
+                            var wv = this.get_web_view(t);
+                            var c = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD);
+                            c.set_text(wv.get_uri(),-1);
+                        } else {
+                            var wv = this.get_web_view(t);
+                            if (wv != null)
+                                wv.key_press_event(e);
+                        }
+                        break;
                     default:
                         var wv = this.get_web_view(t);
                         if (wv != null)
