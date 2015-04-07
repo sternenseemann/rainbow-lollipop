@@ -1,0 +1,15 @@
+Source: rainbow-lollipop
+Maintainer: Daniel Brendle <grindhold@skarphed.org>
+Section: web
+Priority: optional
+Standards-Version: 3.9.2
+Build-Depends: debhelper (>= 9)
+
+Package: rainbow-lollipop
+Architecture: any 
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: visual history browser
+ Rainbow Lollipop is a webbrowser that represents your journey through the web
+ by visually building a tree, thus making your local history more accessible and
+ integrated into your workflow. See http://rainbow-lollipop.de
+
