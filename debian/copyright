@@ -1,0 +1,11 @@
+Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Name: rainbow-lollipop
+Source: https://github.com/grindhold/rainbow_lollipop
+
+Files: *
+Copyright: 2014-2015 Daniel 'grindhold' Brendle
+License: /usr/share/common-licenses/GPL-3+
+
+Files: usr/share/alaia/*
+Copyright: 2014-2015 Daniel 'grindhold' Brendle
+License: CC-BY-NC-SA
