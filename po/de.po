@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rainbow-lollipop 0.0.1\n"
 "Report-Msgid-Bugs-To: rainbow-lollipop-talk@lists.rainbow-lollipop.de\n"
-"POT-Creation-Date: 2015-04-28 13:09+0200\n"
+"POT-Creation-Date: 2015-04-28 14:24+0200\n"
 "PO-Revision-Date: 2015-04-03 13:39+0100\n"
 "Last-Translator: grindhold <grindhold@skarphed.org>\n"
 "Language-Team: German\n"
@@ -101,7 +101,7 @@ msgstr ""
 msgid "Could not find a launcher for file: %s"
 msgstr "Es konnte kein Standardprogramm fuer %s gefunden werden."
 
-#: /home/grindhold/git/alaia/src/alaia.vala:552
+#: /home/grindhold/git/alaia/src/alaia.vala:560
 msgid "Could not initialize GtkClutter"
 msgstr "GtkClutter konnte nicht initialisiert werden."
 
@@ -116,7 +116,7 @@ msgstr ""
 "Das Farbschema konnte nicht verarbeitet werden. Benutze Standard-"
 "Farbschema.\n"
 
-#: /home/grindhold/git/alaia/src/alaia.vala:490
+#: /home/grindhold/git/alaia/src/alaia.vala:498
 msgid "Could not parse session json\n"
 msgstr "Das Sitzungs-JSON konnte nicht gelesenwerden.\n"
 
@@ -145,7 +145,7 @@ msgstr "LOG_UPDATE konnte nicht vorbereitet werden: %s"
 msgid "Could not save configuration."
 msgstr "Die Sitzung konnte nicht nach %s gespeichert werden.\n"
 
-#: /home/grindhold/git/alaia/src/alaia.vala:526
+#: /home/grindhold/git/alaia/src/alaia.vala:534
 #, c-format
 msgid "Could not save session to %s\n"
 msgstr "Die Sitzung konnte nicht nach %s gespeichert werden.\n"
@@ -195,7 +195,7 @@ msgstr "Vorwärts"
 msgid "HTTPSEverywhere initialization thread failed\n"
 msgstr ""
 
-#: /home/grindhold/git/alaia/src/alaia.vala:494
+#: /home/grindhold/git/alaia/src/alaia.vala:502
 msgid "Invalid session json\n"
 msgstr "Ungültiges Sitzungs-JSON\n"
 
@@ -234,6 +234,10 @@ msgstr ""
 #: /home/grindhold/git/alaia/src/alaia.vala:411
 msgid "Reload"
 msgstr "Neu laden"
+
+#: /home/grindhold/git/alaia/src/alaia.vala:417
+msgid "Save image as..."
+msgstr ""
 
 #: /home/grindhold/git/alaia/src/searchengine.vala:48
 #: /home/grindhold/git/alaia/src/searchengine.vala:87
@@ -298,7 +302,7 @@ msgstr "Tracklist-Zustand wurde bisher nicht initialisiert."
 msgid "UI"
 msgstr "Oberflaeche"
 
-#: /home/grindhold/git/alaia/src/alaia.vala:505
+#: /home/grindhold/git/alaia/src/alaia.vala:513
 #, c-format
 msgid "Unknown session member %s\n"
 msgstr "Unbekanntes Sitzungsattribut %s\n"

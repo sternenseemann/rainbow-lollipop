@@ -413,6 +413,14 @@ namespace RainbowLollipop {
                 this.tracklist.current_track.reload();
             });
             cm.append(new WebKit.ContextMenuItem(a as Gtk.Action));
+            if (htr.image_uri != null){
+                a = new Gtk.Action("download-image", _("Save image as..."), null, null);
+                a.activate.connect(()=> {
+                    w.download_uri(htr.image_uri);
+                    stdout.printf("%s\n", htr.image_uri);
+                });
+                cm.append(new WebKit.ContextMenuItem(a as Gtk.Action));
+            }
             return false;
         }
 
