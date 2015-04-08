@@ -51,7 +51,7 @@ public class ZMQWorker {
      * calls to a handler and return the obtained results to the ZMQSink.
      */
     public static void* run() {
-        var ctx = new ZMQ.Context(1);
+        var ctx = new ZMQ.Context();
         ZMQWorker.receiver = ZMQ.Socket.create(ctx, ZMQ.SocketType.PULL);
         var r = receiver.connect(ZMQWorker.VENT);
         if (r!=0) {
@@ -67,16 +67,16 @@ public class ZMQWorker {
         uint64 page_id = ZMQWorker.aext.get_page_id();
         var msgstring = ZMQWorker.REGISTER+"-%lld".printf(page_id);
         var regmsg = ZMQ.Msg.with_data(msgstring.data);
-        ZMQWorker.sender.send(ref regmsg);
+        regmsg.send(ZMQWorker.sender);
 
         while (true) {
             var input = ZMQ.Msg();
-            receiver.recv(ref input, 0);
+            input.recv(receiver);
             string in_data = (string)input.data;
             string out_data = ZMQWorker.handle_request(in_data);
             if (out_data != null){
                 var output = ZMQ.Msg.with_data(out_data.data);
-                sender.send(ref output,0);
+                output.send(sender);
             }
         }
     }
@@ -180,7 +180,7 @@ public class AlaiaExtension : Object {
         this.page_id = page.get_id();
         try {
             new Thread<void*>.try(null, ZMQWorker.run);
-        } catch (ThreadError e) {
+        } catch (GLib.Error e) {
             stdout.printf("Thread failed\n");
         }
     }

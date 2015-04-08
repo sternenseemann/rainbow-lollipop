@@ -90,7 +90,7 @@ namespace RainbowLollipop {
          * Setup the ZMQVent
          */
         public static void init() {
-            ZMQVent.ctx = new ZMQ.Context(1);
+            ZMQVent.ctx = new ZMQ.Context();
             ZMQVent.sender = ZMQ.Socket.create(ctx, ZMQ.SocketType.PUSH);
             ZMQVent.sender.bind("tcp://127.0.0.1:"+Config.c.ipc_vent_port.to_string());
         }
@@ -112,7 +112,7 @@ namespace RainbowLollipop {
                                "%ld".printf(callid);
             for (int i = 0; i < ZMQVent.current_sites; i++) {
                 var msg = ZMQ.Msg.with_data(msgstring.data);
-                sender.send(ref msg);
+                msg.send(sender);
             }
         }
 
@@ -166,12 +166,12 @@ namespace RainbowLollipop {
          */
         public static void init() {
             ZMQSink.callbacks = new Gee.HashMap<uint32, IPCCallbackWrapper>();
-            ZMQSink.ctx = new ZMQ.Context(1);
+            ZMQSink.ctx = new ZMQ.Context();
             ZMQSink.receiver = ZMQ.Socket.create(ctx, ZMQ.SocketType.PULL);
             ZMQSink.receiver.bind("tcp://127.0.0.1:"+Config.c.ipc_sink_port.to_string());
             try {
                 new Thread<void*>.try(null,ZMQSink.run);
-            } catch (ThreadError e) {
+            } catch (GLib.Error e) {
                 stdout.printf(_("Sink broke down\n"));
             }
         }
@@ -182,7 +182,7 @@ namespace RainbowLollipop {
         public static void* run() {
             while (true) {
                 var input = ZMQ.Msg(); 
-                receiver.recv(ref input);
+                input.recv(receiver);
                 ZMQSink.handle_response((string)input.data);
             }
         }

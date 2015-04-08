@@ -19,7 +19,7 @@ SLOT="0"
 KEYWORDS="~x86 ~amd64"
 DEPEND="
 	>=dev-lang/vala-0.26
-	<net-libs/zeromq-3
+	net-libs/zeromq:0/4.0.0
 	net-libs/webkit-gtk:4
 	dev-libs/libgee:0.8
 	dev-util/pkgconfig
