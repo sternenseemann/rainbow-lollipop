@@ -62,7 +62,7 @@ add_definitions(${SQLITE3_CFLAGS} ${SQLITE3_CFLAGS_OTHER})
 link_libraries(${SQLITE3_LIBRARIES})
 link_directories(${SQLITE3_LIBRARY_DIRS})
 
-pkg_check_modules(ZMQ REQUIRED libzmq<=3)
+pkg_check_modules(ZMQ REQUIRED libzmq>=3)
 add_definitions(${ZMQ_CFLAGS} ${ZMQ_CFLAGS_OTHER})
 link_libraries(${ZMQ_LIBRARIES})
 link_directories(${ZMQ_LIBRARY_DIRS})
