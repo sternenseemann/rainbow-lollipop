@@ -600,6 +600,9 @@ namespace RainbowLollipop {
             );
             WebKit.WebContext.get_default().set_favicon_database_directory("/tmp/alaia_favicons");
             WebKit.WebContext.get_default().set_web_extensions_directory(get_lib_directory());
+            WebKit.CookieManager cm = WebKit.WebContext.get_default().get_cookie_manager();
+            string cachepath = Environment.get_user_cache_dir() + Config.C + "cookies.txt";
+            cm.set_persistent_storage(cachepath, WebKit.CookiePersistentStorage.TEXT);
             Gtk.main();
             return 0;
         }
