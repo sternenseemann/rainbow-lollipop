@@ -151,7 +151,7 @@ namespace RainbowLollipop {
         private RestoreSessionDialog sessiondialog;
 
         private ConfigDialog configdialog;
-        
+
         /**
          * The state the application is currently in.
          * Application states are enumerated by the enum AppState
@@ -212,10 +212,37 @@ namespace RainbowLollipop {
         private Application()  {
             GLib.Object(
                 application_id : "de.grindhold.alaia",
-                flags: ApplicationFlags.HANDLES_COMMAND_LINE,
+                //flags: ApplicationFlags.HANDLES_COMMAND_LINE,
                 register_session : true
             );
+            stdout.printf("lolz\n");
+        }
 
+        /**
+         * Handles commandline args
+         */
+        /*protected override int command_line(ApplicationCommandLine acl) {
+            stdout.printf("in here acl\n");
+            return 0;
+        }
+
+        protected override int handle_local_options(VariantDict options) {
+            stdout.printf("in here");
+            return 0;
+        }*/
+
+        /**
+         * Handles more calls to instances
+         */
+        protected override void activate() {
+            stdout.printf("foobar\n");
+        }
+
+        /**
+         * Creates application window and initializes resources
+         */
+        protected override void startup() {
+            stdout.printf("first instance\n");
             // Internationalization
             init_locale();
 
@@ -279,6 +306,19 @@ namespace RainbowLollipop {
             else
                 this.state = TracklistState.S();
 
+            // Initialize webkit environment
+            WebKit.WebContext.get_default().set_process_model(
+                WebKit.ProcessModel.MULTIPLE_SECONDARY_PROCESSES
+            );
+            WebKit.WebContext.get_default().set_favicon_database_directory("/tmp/alaia_favicons");
+            WebKit.WebContext.get_default().set_web_extensions_directory(get_lib_directory());
+            WebKit.CookieManager cm = WebKit.WebContext.get_default().get_cookie_manager();
+            string cachepath = Environment.get_user_cache_dir() + Config.C + "cookies.txt";
+            cm.set_persistent_storage(cachepath, WebKit.CookiePersistentStorage.TEXT);
+
+            this.add_window(this.win);
+            // Start Gtk main loop
+            Gtk.main();
         }
 
         /**
@@ -594,17 +634,10 @@ namespace RainbowLollipop {
             if (GtkClutter.init(ref args) != Clutter.InitError.SUCCESS){
                 stdout.printf(_("Could not initialize GtkClutter"));
             }
+            stdout.printf("bar\n");
             Application.app = new Application();
-            WebKit.WebContext.get_default().set_process_model(
-                WebKit.ProcessModel.MULTIPLE_SECONDARY_PROCESSES
-            );
-            WebKit.WebContext.get_default().set_favicon_database_directory("/tmp/alaia_favicons");
-            WebKit.WebContext.get_default().set_web_extensions_directory(get_lib_directory());
-            WebKit.CookieManager cm = WebKit.WebContext.get_default().get_cookie_manager();
-            string cachepath = Environment.get_user_cache_dir() + Config.C + "cookies.txt";
-            cm.set_persistent_storage(cachepath, WebKit.CookiePersistentStorage.TEXT);
-            Gtk.main();
-            return 0;
+            stdout.printf("foo\n");
+            return Application.app.run(args);
         }
 
         /**
