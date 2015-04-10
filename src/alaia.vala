@@ -212,37 +212,15 @@ namespace RainbowLollipop {
         private Application()  {
             GLib.Object(
                 application_id : "de.grindhold.alaia",
-                //flags: ApplicationFlags.HANDLES_COMMAND_LINE,
+                flags: ApplicationFlags.HANDLES_COMMAND_LINE,
                 register_session : true
             );
-            stdout.printf("lolz\n");
         }
 
         /**
-         * Handles commandline args
+         * Initializes the window and browser
          */
-        /*protected override int command_line(ApplicationCommandLine acl) {
-            stdout.printf("in here acl\n");
-            return 0;
-        }
-
-        protected override int handle_local_options(VariantDict options) {
-            stdout.printf("in here");
-            return 0;
-        }*/
-
-        /**
-         * Handles more calls to instances
-         */
-        protected override void activate() {
-            stdout.printf("foobar\n");
-        }
-
-        /**
-         * Creates application window and initializes resources
-         */
-        protected override void startup() {
-            stdout.printf("first instance\n");
+        private void initialize() {
             // Internationalization
             init_locale();
 
@@ -317,8 +295,40 @@ namespace RainbowLollipop {
             cm.set_persistent_storage(cachepath, WebKit.CookiePersistentStorage.TEXT);
 
             this.add_window(this.win);
+        }
+
+        /**
+         * Handles commandline args
+         * Strips the first element of the arguments array which is
+         * the filename and then causes the main program instance
+         * to load the supplied urls as tracks.
+         * If there is no ui initialized yet, it will cause it to initialize
+         */
+        protected override int command_line(ApplicationCommandLine acl) {
+            uint cnt = 0;
+            string[] urls = new string[acl.get_arguments().length-1];
+            foreach (string s in acl.get_arguments()){
+                if (cnt > 0)
+                    urls[cnt-1] = s;
+                cnt++;
+            }
+
+            bool init_needed = this.get_windows().length() == 0;
+            if (init_needed)
+                initialize();
+            foreach (string url in urls) {
+                this.tracklist.add_track_with_url(url);
+            }
             // Start Gtk main loop
-            Gtk.main();
+            if (init_needed)
+                Gtk.main();
+            return 0;
+        }
+
+        /**
+         * Handles more calls to instances
+         */
+        protected override void activate() {
         }
 
         /**
@@ -634,9 +644,7 @@ namespace RainbowLollipop {
             if (GtkClutter.init(ref args) != Clutter.InitError.SUCCESS){
                 stdout.printf(_("Could not initialize GtkClutter"));
             }
-            stdout.printf("bar\n");
             Application.app = new Application();
-            stdout.printf("foo\n");
             return Application.app.run(args);
         }
 
