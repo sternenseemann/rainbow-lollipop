@@ -318,6 +318,16 @@ namespace RainbowLollipop {
                         && this.web.get_uri() == (this._current_node as SiteNode).url+"/") {
                     return;
                 }
+                // If the website to be called is the url, the current_node should
+                // simply be set to the current node's previous node
+                Node? prvnode = this._current_node.get_previous();
+                if (prvnode != null && prvnode is SiteNode
+                        && (prvnode as SiteNode).url == this.web.get_uri()) {
+                    if (this._current_node is SiteNode)
+                        (this._current_node as SiteNode).toggle_highlight();
+                    this._current_node = prvnode;
+                    (this._current_node as SiteNode).toggle_highlight();
+                }
                 this.log_call(this.web.get_uri());
                 History.S().log_call(this.web.get_uri());
             }
