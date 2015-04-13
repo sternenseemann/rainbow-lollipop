@@ -60,7 +60,8 @@ Roadmap
   * [x] URL-Autocompletion.
     There is still some work to do to enhance UX
 
-  * [ ] Integration of HTTPSEverywhere-like functionality.
+  * [x] Integration of HTTPSEverywhere-like functionality. This may be buggy. report bugs
+        to [libhttpseverywhere](https://github.com/grindhold/libhttpseverywhere)
 
   * [ ] Integration of Adblocking
 
