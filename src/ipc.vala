@@ -75,8 +75,6 @@ namespace RainbowLollipop {
      * pattern with a little exception. Along with each call goes the id
      * of a specific WebExtension and only this one Webextension will answer to
      * the call.
-     *
-     * TODO: Introduce reasonable timeouts to the calls.
      */
     class ZMQVent {
         private static uint32 callcounter = 0;
@@ -151,7 +149,7 @@ namespace RainbowLollipop {
          */
         public static void register_callback(uint32 callid, IPCCallbackWrapper cbw) {
             ZMQSink.callbacks.set(callid, cbw);
-            Timeout.add(1000,()=>{
+            Timeout.add(500,()=>{
                 IPCCallbackWrapper? _cbw = ZMQSink.callbacks.get(callid);
                 if (_cbw != null) {
                     _cbw.get_callback()(_cbw.get_event());
