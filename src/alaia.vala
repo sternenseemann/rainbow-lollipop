@@ -217,6 +217,11 @@ namespace RainbowLollipop {
             );
         }
 
+        private static void* init_httpseverywhere() {
+            HTTPSEverywhere.init();
+            return null;
+        }
+
         /**
          * Initializes the window and browser
          */
@@ -230,6 +235,13 @@ namespace RainbowLollipop {
             // Initialize the IPC-Classes
             ZMQVent.init();
             ZMQSink.init();
+
+            // Initialize HTTPSEverywhere
+            try {
+                new Thread<void*>.try(null,Application.init_httpseverywhere);
+            } catch (GLib.Error e) {
+                stdout.printf(_("HTTPSEverywhere initialization thread failed\n"));
+            }
             
             // Initialize stuff to display WebViews
             this.webviews = new Gee.HashMap<HistoryTrack, TrackWebView>();

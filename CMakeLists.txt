@@ -67,6 +67,11 @@ add_definitions(${ZMQ_CFLAGS} ${ZMQ_CFLAGS_OTHER})
 link_libraries(${ZMQ_LIBRARIES})
 link_directories(${ZMQ_LIBRARY_DIRS})
 
+pkg_check_modules(HTTPSEVERYWHERE REQUIRED httpseverywhere)
+add_definitions(${HTTPSEVERYWHERE_CFLAGS} ${HTTPSEVERYWHERE_CFLAGS_OTHER})
+link_libraries(${HTTPSEVERYWHERE_LIBRARIES})
+link_directories(${HTTPSEVERYWHERE_LIBRARY_DIRS})
+
 if (GEE10)
     vala_precompile(VALA_BINARY_C
         "src/dummy.vala"
@@ -98,6 +103,7 @@ if (GEE10)
         gee-1.0
         libzmq 
         sqlite3
+        httpseverywhere
     OPTIONS
         --thread
         --vapidir=${CMAKE_SOURCE_DIR}/vapi
@@ -134,6 +140,7 @@ else()
         gee-0.8
         libzmq 
         sqlite3
+        httpseverywhere
     OPTIONS
         --thread
         --vapidir=${CMAKE_SOURCE_DIR}/vapi

@@ -172,7 +172,7 @@ namespace RainbowLollipop {
             this.https_everywhere_label = new Gtk.Label(_("Use HTTPS everywhere"));
             this.https_everywhere_switch = new Gtk.Switch();
             this.https_everywhere_switch.set_state(Config.c.https_everywhere);
-            this.https_everywhere_switch.activate.connect(()=>{
+            this.https_everywhere_switch.notify["active"].connect(()=>{
                 this.update_value(ConfigOption.HTTPS_EVERYWHERE);
             });
             this.security_box.attach(this.https_everywhere_label,0,0,1,1);
@@ -217,7 +217,7 @@ namespace RainbowLollipop {
                     Config.c.bullet_stroke = this.bullet_stroke_spinbutton.get_value();
                     break;
                 case ConfigOption.HTTPS_EVERYWHERE:
-                    Config.c.https_everywhere = this.https_everywhere_switch.get_state();
+                    Config.c.https_everywhere = this.https_everywhere_switch.get_active();
                     break;
             }
             this.get_stage().queue_redraw();
