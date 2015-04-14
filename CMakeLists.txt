@@ -96,6 +96,7 @@ if (GEE10)
         "src/config_dialog.vala"
         "src/context_menu.vala"
         "src/input_handlers.vala"
+        "src/loading_indicator.vala"
     PACKAGES
         gtk+-3.0
         clutter-1.0
@@ -134,6 +135,7 @@ else()
         "src/config_dialog.vala"
         "src/context_menu.vala"
         "src/input_handlers.vala"
+        "src/loading_indicator.vala"
     PACKAGES
         gtk+-3.0
         clutter-1.0

@@ -158,6 +158,8 @@ namespace RainbowLollipop {
 
         private ConfigDialog configdialog;
 
+        private LoadingIndicator load_indicator;
+
         /**
          * The state the application is currently in.
          * Application states are enumerated by the enum AppState
@@ -311,7 +313,9 @@ namespace RainbowLollipop {
             stage.add_child(this.configdialog);
             ConfigState.init(this.configdialog);
 
-            // Initialize Tracklist
+            // Initialize Load Indicator
+            this.load_indicator = new LoadingIndicator(stage);
+            stage.add_child(this.load_indicator);
 
 
             // Show everything that is needed on screen.
