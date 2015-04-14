@@ -18,5 +18,7 @@
 
     "urlhint_limit":    10,
 
-    "https_everywhere": true
+    "https_everywhere": true,
+
+    "input_handler":    0 
 }

@@ -143,12 +143,18 @@ namespace RainbowLollipop {
         private GtkClutter.Actor webact;
 
         /**
+         * Holds a reference to the input handler
+         */
+        private IInputHandler input_handler;
+
+        /**
          * Holds a reference to the tracklist
          */
         public TrackList tracklist {get;set;}
         private TrackListBackground tracklist_background;
 
-        private RestoreSessionDialog sessiondialog;
+        public RestoreSessionDialog sessiondialog {get {return this._sessiondialog;}}
+        private RestoreSessionDialog _sessiondialog;
 
         private ConfigDialog configdialog;
 
@@ -222,6 +228,28 @@ namespace RainbowLollipop {
             return null;
         }
 
+        private void set_input_handler(InputHandlerType t) {
+            if (this.input_handler != null) {
+                this.win.key_press_event.disconnect(
+                    this.input_handler.preprocess_key_press_event
+                );
+            }
+            switch(t) {
+                case InputHandlerType.DEFAULT:
+                    this.input_handler = new DefaultInputHandler();
+                    break;
+                case InputHandlerType.VIM:
+                    this.input_handler = new VimInputHandler();
+                    break;
+                case InputHandlerType.TABLET:
+                    this.input_handler = new TabletInputHandler();
+                    break;
+            }
+            this.win.key_press_event.connect(
+                this.input_handler.preprocess_key_press_event
+            );
+        }
+
         /**
          * Initializes the window and browser
          */
@@ -256,8 +284,8 @@ namespace RainbowLollipop {
             this.win.set_title("Rainbow Lollipop");
             this.win.maximize();
             this.win.icon_name="rainbow-lollipop";
-            this.win.key_press_event.connect(preprocess_key_press_event);
             this.win.destroy.connect(do_delete);
+            this.set_input_handler(Config.c.input_handler);
 
             this._context = new ContextMenu();
 
@@ -275,7 +303,7 @@ namespace RainbowLollipop {
             this.tracklist = (TrackList)this.tracklist_background.get_first_child();
             TracklistState.init(this.tracklist_background);
 
-            this.sessiondialog = new RestoreSessionDialog(stage);
+            this._sessiondialog = new RestoreSessionDialog(stage);
             stage.add_child(this.sessiondialog);
             SessiondialogState.init(this.sessiondialog);
 
@@ -492,154 +520,6 @@ namespace RainbowLollipop {
             Gtk.main_quit();
         }
 
-        /**
-         * First Callback an occurring key-event will pass through
-         * This method will determine, wheter it is necessary to obtain any further
-         * information from web-extension-procecsses.
-         * Further it will determine wheter the occurred event is relevant for the
-         * current application state and drop it, if not so.
-         *
-         * If there is no necessity to obtain further information from the
-         * web-extensions, the event will be plainly forwarded to
-         * do_key_press_event(Gdk.EventKey e)
-         *
-         * If it is necessary, it will forward the need for information by calling
-         * an appropriate method of TrackWebView and passing do_key_press_event(Gdk.EventKey e)
-         * as callback and the incoming Gdk.EventKey e.
-         * the method of TrackWebView will call do_key_press_event eventually in an asnychronous
-         * manner
-         */
-        public bool preprocess_key_press_event(Gdk.EventKey e) {
-            if (this.state is NormalState) {
-                var t = this.tracklist.current_track;
-                var twv = this.get_web_view(t) as TrackWebView;
-                switch(e.keyval) {
-                    case Gdk.Key.F2:
-                        this.do_key_press_event(e);
-                        break;
-                    case Gdk.Key.Tab:
-                        if (t != null)
-                            twv.needs_direct_input(do_key_press_event,e);
-                        else
-                            this.do_key_press_event(e);
-                        break;
-                    default:
-                        if (twv.is_search_active()) {
-                            return false;
-                        }
-                        this.do_key_press_event(e);
-                        break;
-                }
-            }
-            else if (this.state is TracklistState) {
-                if (e.keyval !=    Gdk.Key.Tab
-                    && e.keyval != Gdk.Key.F2 )
-                    return false;
-                this.do_key_press_event(e);
-            }
-            else if (this.state is SessiondialogState) {
-                if (e.keyval !=    Gdk.Key.Left
-                    && e.keyval != Gdk.Key.Right
-                    && e.keyval != Gdk.Key.Return)
-                    return false;
-                this.do_key_press_event(e);
-            }
-            else if (this.state is ConfigState) {
-                if (e.keyval !=    Gdk.Key.Escape
-                    && e.keyval != Gdk.Key.Tab)
-                    return false;
-                this.do_key_press_event(e);
-            }
-            return true;
-        }
-
-        /**
-         * This method executes actions according to an incoming preprocessed
-         * Gdk.EventKey e (See preprocess_key_press_event(Gdk.EventKey e) for furhter info)
-         * The action that will be taken is depending on which state the application
-         * is currently in.
-         */
-        public void do_key_press_event(Gdk.EventKey e) {
-            if (this.state is NormalState) {
-                var t = this.tracklist.current_track;
-                switch (e.keyval) {
-                    case Gdk.Key.Tab:
-                        this.state = TracklistState.S();
-                        return;
-                    case Gdk.Key.F2:
-                        this.state = ConfigState.S();
-                        return;
-                    case Gdk.Key.r:
-                        if ((bool)(e.state & Gdk.ModifierType.CONTROL_MASK) && t != null) {
-                            t.reload();
-                        } else {
-                            var wv = this.get_web_view(t);
-                            if (wv != null)
-                                wv.key_press_event(e);
-                        }
-                        break;
-                    case Gdk.Key.f:
-                        if ((bool)(e.state & Gdk.ModifierType.CONTROL_MASK) && t != null) {
-                            t.search();
-                        } else {
-                            var wv = this.get_web_view(t);
-                            if (wv != null)
-                                wv.key_press_event(e);
-                        }
-                        break;
-                    case Gdk.Key.y:
-                        if ((bool)(e.state & Gdk.ModifierType.CONTROL_MASK) && t != null) {
-                            var wv = this.get_web_view(t);
-                            var c = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD);
-                            c.set_text(wv.get_uri(),-1);
-                        } else {
-                            var wv = this.get_web_view(t);
-                            if (wv != null)
-                                wv.key_press_event(e);
-                        }
-                        break;
-                    default:
-                        var wv = this.get_web_view(t);
-                        if (wv != null)
-                            wv.key_press_event(e);
-                        break;
-                }
-            }
-            else if (this.state is TracklistState) {
-                switch (e.keyval) {
-                    case Gdk.Key.Tab:
-                        this.state = NormalState.S();
-                        return;
-                    case Gdk.Key.F2:
-                        this.state = ConfigState.S();
-                        return;
-                }
-            }
-            else if (this.state is SessiondialogState) {
-                switch (e.keyval) {
-                    case Gdk.Key.Left:
-                        this.sessiondialog.select_restore();
-                        return;
-                    case Gdk.Key.Right:
-                        this.sessiondialog.select_newsession();
-                        return;
-                    case Gdk.Key.Return:
-                        this.sessiondialog.execute_selected();
-                        return;
-                }
-            }
-            else if (this.state is ConfigState) {
-                switch (e.keyval) {
-                    case Gdk.Key.Escape:
-                        this.state = NormalState.S();
-                        break;
-                    case Gdk.Key.Tab:
-                        this.state = TracklistState.S();
-                        break;
-                        
-                }
-            }
-        }
 
         /**
          * Obtains the singleton instance of Application

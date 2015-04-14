@@ -132,6 +132,11 @@ namespace RainbowLollipop {
         public bool https_everywhere {get; set; default = true;}
 
         /**
+         * Determines the input handler that should be used to process user input
+         */
+        public InputHandlerType input_handler {get; set; default=InputHandlerType.DEFAULT;}
+
+        /**
          * Save the current config to the configfile
          */
         public void save() {
@@ -162,6 +167,12 @@ namespace RainbowLollipop {
 
             b.set_member_name("urlhint_limit");
             b.add_int_value(this.urlhint_limit);
+
+            b.set_member_name("https_everywhere");
+            b.add_boolean_value(this.https_everywhere);
+
+            b.set_member_name("input_handler");
+            b.add_int_value(this.input_handler);
 
             b.end_object();
 
@@ -272,6 +283,25 @@ namespace RainbowLollipop {
                             throw new ConfigError.INVALID_FORMAT(_("%s must be Value"), name);
                         }
                         this.https_everywhere = item.get_boolean();
+                        break;
+                    case "input_handler":
+                        if(item.get_node_type() != Json.NodeType.VALUE) {
+                            throw new ConfigError.INVALID_FORMAT(_("%s must be Value"), name);
+                        }
+                        switch (item.get_int()) {
+                            case InputHandlerType.DEFAULT:
+                                this.input_handler = InputHandlerType.DEFAULT;
+                                break;
+                            case InputHandlerType.VIM:
+                                this.input_handler = InputHandlerType.VIM;
+                                break;
+                            case InputHandlerType.TABLET:
+                                this.input_handler = InputHandlerType.TABLET;
+                                break;
+                            default:
+                                this.input_handler = InputHandlerType.DEFAULT;
+                                break;
+                        }
                         break;
                     default:
                         break;
