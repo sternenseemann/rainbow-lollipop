@@ -26,22 +26,53 @@ namespace RainbowLollipop {
      * Represents a loading bar on top of the screen 
      */
     class LoadingIndicator : Clutter.Actor {
+        private LoadingIndicatorSlider slider;
+        private bool loading;
+
         public LoadingIndicator(Clutter.Actor stage) {
             this.x = 0;
             this.y = 0;
             this.height = 3;
+            this.width = stage.width;
             this.background_color = Clutter.Color.from_string(Config.c.colorscheme.tracklist);
             this.add_constraint(
                 new Clutter.BindConstraint(stage, Clutter.BindCoordinate.WIDTH, 0)
             );
-            this.add_child(new LoadingIndicatorSlider(this));
+            this.slider = new LoadingIndicatorSlider(this);
+            this.slider.reactive = true;
+            this.slider.transitions_completed.connect(this.do_transitions_completed);
+            this.add_child(this.slider);
         }
+
+        public void start_loading() {
+            this.loading = true;
+            this.slider.do_animation_step();
+        }
+
+        public void do_transitions_completed() {
+            if (!loading)
+                return;
+            this.slider.do_animation_step();
+        }
+
     }
 
     /**
      * Represents the moving portion of the loading bar
      */
     class LoadingIndicatorSlider : Clutter.Actor {
+        /**
+         * Enumerates the states the animation of the
+         * slider can be in
+         */
+        private enum AnimState {
+            EXPANDING_RIGHT,
+            CONTRACTING_RIGHT,
+            EXPANDING_LEFT,
+            CONTRACTING_LEFT
+        }
+        private AnimState anim_state = AnimState.EXPANDING_RIGHT;
+
         private const int SLIDER_WIDTH = 200;
         private Clutter.Canvas c;
 
@@ -49,10 +80,10 @@ namespace RainbowLollipop {
          * Constructs a new loading indicator slider
          */
         public LoadingIndicatorSlider(LoadingIndicator parent) {
+            this.c = new Clutter.Canvas();
             this.x = 0;
             this.y = 0;
             this.set_size(SLIDER_WIDTH,(int)roundf(parent.height));
-            this.c = new Clutter.Canvas();
             this.c.set_size(SLIDER_WIDTH,(int)roundf(parent.height));
             this.content = c;
             this.c.draw.connect(do_draw);
@@ -63,13 +94,14 @@ namespace RainbowLollipop {
          * The currently selected colorscheme
          */
         public bool do_draw(Cairo.Context cr, int w, int h) {
+            stdout.printf("painting\n");
             double stops = (double)Config.c.colorscheme.tracks.size;
             cr.set_source_rgba(0,0,0,0);
             cr.set_operator(Cairo.Operator.SOURCE);
             cr.paint();
             
             cr.set_operator(Cairo.Operator.OVER);
-            var grad = new Cairo.Pattern.linear(0,0,SLIDER_WIDTH,0);
+            var grad = new Cairo.Pattern.linear(0,0,w,0);
             grad.add_color_stop_rgba(0.0, 0, 0, 0, 0);
             int count = 1;
             double step = 1.0d/(stops+2);
@@ -88,6 +120,36 @@ namespace RainbowLollipop {
             cr.fill();
             return true;
         }
-    }
 
+        /**
+         * Cycles through the animation steps and causes
+         * clutter do do the according animation for the next step
+         */
+        public void do_animation_step() {
+            this.save_easing_state();
+            this.set_easing_duration(800);
+            this.set_easing_mode(Clutter.AnimationMode.EASE_IN_OUT_QUART);
+            switch(this.anim_state) {
+                case AnimState.EXPANDING_RIGHT:
+                    this.width = this.get_parent().width;
+                    this.anim_state = AnimState.CONTRACTING_RIGHT;
+                    break;
+                case AnimState.CONTRACTING_RIGHT:
+                    this.width = LoadingIndicatorSlider.SLIDER_WIDTH;
+                    this.x = this.get_parent().width - LoadingIndicatorSlider.SLIDER_WIDTH;
+                    this.anim_state = AnimState.EXPANDING_LEFT;
+                    break;
+                case AnimState.EXPANDING_LEFT:
+                    this.width = this.get_parent().width;
+                    this.x = 0;
+                    this.anim_state = AnimState.CONTRACTING_LEFT;
+                    break;
+                case AnimState.CONTRACTING_LEFT:
+                    this.width = LoadingIndicatorSlider.SLIDER_WIDTH;
+                    this.anim_state = AnimState.EXPANDING_RIGHT;
+                    break;
+            }
+            this.restore_easing_state();
+        }
+    }
 }
