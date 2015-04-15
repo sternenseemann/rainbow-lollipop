@@ -108,7 +108,7 @@ if (GEE10)
         httpseverywhere
     OPTIONS
         --thread
-        --vapidir=${CMAKE_SOURCE_DIR}/vapi
+        --vapidir=${CMAKE_SOURCE_DIR}/vapi_old
         --target-glib 2.32
     )
 else()
