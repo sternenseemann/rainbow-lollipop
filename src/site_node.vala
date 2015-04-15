@@ -122,7 +122,6 @@ namespace RainbowLollipop {
             if (!this.running) {
                 return;
             }
-            this.set_easing_mode(Clutter.AnimationMode.EASE_IN_OUT_BOUNCE);
             this.save_easing_state();
             this.rotation_angle_z += 60;
             this.restore_easing_state();
@@ -143,7 +142,6 @@ namespace RainbowLollipop {
          */
         public void start(){
             this.running = true;
-            this.set_easing_mode(Clutter.AnimationMode.EASE_IN_OUT_BOUNCE);
             this.set_easing_duration(10);
             this.save_easing_state();
             this.rotation_angle_z += 45;
@@ -461,14 +459,6 @@ namespace RainbowLollipop {
         }
 
         private bool is_current_node = false;
-
-        /**
-         * Whatever. Empty method...
-         * TODO: Check if really necessary
-         */
-        public void finish_loading() {
-
-        }
 
         /**
          * Adapts this nodes appearance to the HistoryTrack that it currently resides
