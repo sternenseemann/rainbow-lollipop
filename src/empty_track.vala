@@ -78,6 +78,7 @@ namespace RainbowLollipop {
          */
         private string complete_url(string p_url) {
             string url = p_url;
+            url = url.strip();
             if (url.has_prefix("s ") || url.has_prefix("g "))
                 return "https://duckduckgo.com/?q="+url.substring(2);
             if (url.has_prefix("wie "))
