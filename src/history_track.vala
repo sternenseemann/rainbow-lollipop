@@ -209,6 +209,7 @@ namespace RainbowLollipop {
             this.add_child(nodecontainer);
 
             this.first_node = new SiteNode(this, url, null);
+            Application.S().load_indicator.start();
             this.notify["current-node"].connect(do_node_changed);
             this.current_node = this.first_node;
             this.url = url;
@@ -419,6 +420,7 @@ namespace RainbowLollipop {
             if (this._current_node is SiteNode &&
                 uri != (this._current_node as SiteNode).url) {
                 var nn = new SiteNode(this, uri, this._current_node);
+                Application.S().load_indicator.start();
                 (this._current_node as SiteNode).toggle_highlight();
                 (this._current_node as SiteNode).recalculate_y(null);
                 this._current_node = nn;
@@ -479,6 +481,7 @@ namespace RainbowLollipop {
                     (this._current_node as SiteNode).set_favicon(favicon);
                 }
                 (this._current_node as SiteNode).stop_spinner();
+                Application.S().load_indicator.stop();
             }
         }
 

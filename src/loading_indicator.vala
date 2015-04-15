@@ -33,6 +33,7 @@ namespace RainbowLollipop {
             this.x = 0;
             this.y = 0;
             this.height = 3;
+            this.opacity = 0x00;
             this.width = stage.width;
             this.background_color = Clutter.Color.from_string(Config.c.colorscheme.tracklist);
             this.add_constraint(
@@ -44,15 +45,27 @@ namespace RainbowLollipop {
             this.add_child(this.slider);
         }
 
-        public void start_loading() {
+        public void start() {
+            stdout.printf("lel\n");
             this.loading = true;
+            this.opacity = 0xFF;
             this.slider.do_animation_step();
         }
 
+        public void stop() {
+            this.loading = false;
+        }
+
         public void do_transitions_completed() {
-            if (!loading)
-                return;
-            this.slider.do_animation_step();
+            if (!loading) {
+                if (this.opacity != 0x00) {
+                    this.save_easing_state();
+                    this.opacity = 0x00;
+                    this.restore_easing_state();
+                }
+            } else {
+                this.slider.do_animation_step();
+            }
         }
 
     }

@@ -158,7 +158,8 @@ namespace RainbowLollipop {
 
         private ConfigDialog configdialog;
 
-        private LoadingIndicator load_indicator;
+        public LoadingIndicator load_indicator {get {return this._load_indicator;}}
+        private LoadingIndicator _load_indicator;
 
         /**
          * The state the application is currently in.
@@ -314,12 +315,14 @@ namespace RainbowLollipop {
             ConfigState.init(this.configdialog);
 
             // Initialize Load Indicator
-            this.load_indicator = new LoadingIndicator(stage);
-            stage.add_child(this.load_indicator);
+            this._load_indicator = new LoadingIndicator(stage);
+            stage.add_child(this._load_indicator);
 
 
             // Show everything that is needed on screen.
             this.win.show_all();
+            // Be aware: you can only use animations from this point on:
+            //this.load_indicator.start();
             this.sessiondialog.disappear();
             this.tracklist_background.disappear();
 
