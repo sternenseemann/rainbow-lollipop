@@ -170,6 +170,7 @@ namespace RainbowLollipop {
             string fragment = this.url_entry.get_text();
             if (fragment.length > 0){
                 provided_search_hints.add_all(DuckDuckGo.S().get_hints(fragment));
+                provided_search_hints.add_all(Wikipedia.S().get_hints(fragment));
                 provided_history_hints.add_all(History.S().get_hints(fragment));
             }
 

@@ -26,7 +26,7 @@ namespace RainbowLollipop {
      */
     class DuckDuckGo : IHintProvider {
         private static DuckDuckGo instance;
-        
+
         private DuckDuckGo(){}
 
         /**
@@ -53,6 +53,47 @@ namespace RainbowLollipop {
             hint.set_icon(surface);
             hint.execute.connect((tl) => {
                 tl.add_track_with_url("https://duckduckgo.com/?q=%s".printf(fragment));
+            });
+            ret.add(hint);
+            return ret;
+        }
+    }
+    /**
+     * Represents the Wikipedia Searchengine as a hintprovider
+     * See wikipedia at https://en.wikipedia.org 
+     * TODO: let the thing automatically search in the users language
+     */
+    class Wikipedia : IHintProvider {
+        private static Wikipedia instance;
+
+        private Wikipedia(){}
+
+        /**
+         * Obtain the singleton instance of Wikipedia
+         */
+        public static Wikipedia S() {
+            if (Wikipedia.instance == null)
+                Wikipedia.instance = new Wikipedia();
+            return Wikipedia.instance;
+        }
+
+        /**
+         * Returns a hint that lets the user search the given fragment
+         * via https://duckduckgo.com
+         */
+        public Gee.ArrayList<AutoCompletionHint> get_hints(string fragment){
+            var ret = new Gee.ArrayList<AutoCompletionHint>();
+            var hint = new AutoCompletionHint(
+                        _("Search %s").printf(fragment),
+                        _("Search for %s with wikipedia").printf(fragment)
+            );
+            var icon_path = Application.get_data_filename("wiki.png");
+            var surface = new Cairo.ImageSurface.from_png(icon_path);
+            hint.set_icon(surface);
+            hint.execute.connect((tl) => {
+                tl.add_track_with_url(
+                   "https://en.wikipedia.org/wiki/Special:Search?search=%s".printf(fragment)
+                );
             });
             ret.add(hint);
             return ret;
