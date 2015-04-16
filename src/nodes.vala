@@ -488,9 +488,9 @@ namespace RainbowLollipop {
                 Track? t = (this.track.get_next_sibling() as Track);
                 if (t != null && t is HistoryTrack) {
                     return (t as HistoryTrack).current_node;
-                } else
-                //TODO: implement behaviour that delivers first entry of new autocompletion mode
-                    return null;
+                } else {
+                    return Application.S().tracklist.get_empty_track().get_go_button();
+                }
             }
         }
 
