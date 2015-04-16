@@ -51,7 +51,6 @@ namespace RainbowLollipop {
             this.tracklist = tl;
             this.url_entry = new Gtk.Entry();
             this.url_entry.expand=true;
-            this.url_entry.activate.connect(do_activate);
             this.url_entry.changed.connect(do_changed);
             this.actor = new GtkClutter.Actor.with_contents(this.url_entry);
             //this.actor.background_color = Clutter.Color.from_string(Config.c.colorscheme.empty_track);
