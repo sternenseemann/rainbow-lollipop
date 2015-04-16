@@ -28,12 +28,20 @@ namespace RainbowLollipop {
      *     location.
      *  2. Display hints based on the input given in the url-entry mentioned in 1.
      */
-    class EmptyTrack : Track {
+    public class EmptyTrack : Track {
         private Gtk.Entry url_entry;
-        private Gtk.Button enter_button;
-        private Gtk.Grid hbox;
         private GtkClutter.Actor actor; 
         private TrackList tracklist;
+
+        private Clutter.Actor listcontainer;
+        private Clutter.BoxLayout lc_boxlayout;
+        private Focusable surf_directly_to;
+        private Clutter.Actor search_hints;
+        private Clutter.BoxLayout sh_boxlayout;
+        private Clutter.Actor history_hints;
+        private Clutter.BoxLayout hh_boxlayout;
+
+        public const int HINT_HEIGHT = 40;
 
         /**
          * Returns a new Emtpy Track
@@ -42,16 +50,11 @@ namespace RainbowLollipop {
             base(tl);
             this.tracklist = tl;
             this.url_entry = new Gtk.Entry();
-            this.enter_button = new Gtk.Button.with_label(_("Go"));
-            this.enter_button.clicked.connect(do_activate);
-            this.hbox = new Gtk.Grid();
-            this.hbox.add(this.url_entry);
-            this.hbox.add(this.enter_button);
             this.url_entry.expand=true;
             this.url_entry.activate.connect(do_activate);
             this.url_entry.changed.connect(do_changed);
-            this.actor = new GtkClutter.Actor.with_contents(this.hbox);
-            this.actor.background_color = Clutter.Color.from_string(Config.c.colorscheme.empty_track);
+            this.actor = new GtkClutter.Actor.with_contents(this.url_entry);
+            //this.actor.background_color = Clutter.Color.from_string(Config.c.colorscheme.empty_track);
             this.actor.height=26;
             this.actor.y = Config.c.track_height/2-this.actor.height/2;
             this.actor.x_expand=true;
@@ -59,21 +62,66 @@ namespace RainbowLollipop {
                 new Clutter.BindConstraint(tl, Clutter.BindCoordinate.WIDTH, 0)
             );
             this.actor.transitions_completed.connect(do_transitions_completed);
-            this.hbox.show_all();
             this.actor.visible = false;
             var boxlayout = new Clutter.BoxLayout();
             boxlayout.orientation = Clutter.Orientation.VERTICAL;
+            boxlayout.spacing = 5;
             this.set_layout_manager(boxlayout);
             this.add_child(this.actor);
             this.url_entry.realize.connect(() => {
                 this.url_entry.grab_focus();
             });
+
+            // Initialize listcontainer the listcontainer contains the lists
+            this.listcontainer = new Clutter.Actor();
+            this.lc_boxlayout = new Clutter.BoxLayout();
+            this.lc_boxlayout.orientation = Clutter.Orientation.HORIZONTAL;
+            this.lc_boxlayout.spacing = 5;
+            this.lc_boxlayout.homogeneous = true;
+            this.listcontainer.x_expand = true;
+            this.listcontainer.set_layout_manager(this.lc_boxlayout);
+            this.listcontainer.add_constraint(
+                new Clutter.BindConstraint(this, Clutter.BindCoordinate.WIDTH,0)
+            );
+
+            // Add surf directly to - button
+            this.surf_directly_to = new SurfDirectlyToButton();
+            this.listcontainer.add_child(this.surf_directly_to);
+            
+            // Add search hint list
+            this.search_hints = new Clutter.Actor();
+            this.sh_boxlayout = new Clutter.BoxLayout();
+            this.sh_boxlayout.orientation = Clutter.Orientation.VERTICAL;
+            this.sh_boxlayout.spacing = 5;
+            this.search_hints.set_layout_manager(this.sh_boxlayout);
+            /*this.search_hints.background_color = Clutter.Color.from_string(
+                "#00ff00" 
+            );*/
+            this.search_hints.height = HINT_HEIGHT;
+            this.search_hints.x_expand = true;
+            this.listcontainer.add(this.search_hints);
+            
+
+            // Add history hint list
+            this.history_hints = new Clutter.Actor();
+            this.hh_boxlayout = new Clutter.BoxLayout();
+            this.hh_boxlayout.orientation = Clutter.Orientation.VERTICAL;
+            this.hh_boxlayout.spacing = 5;
+            /*this.history_hints.background_color = Clutter.Color.from_string(
+                "#ff0000"
+            );*/
+            this.history_hints.height = HINT_HEIGHT;
+            this.history_hints.x_expand = true;
+            this.history_hints.set_layout_manager(this.hh_boxlayout);
+            this.listcontainer.add(this.history_hints);
+
+
+    
+            this.add_child(this.listcontainer);
         }
 
         /**
          * Add "http://" to a url, if it is not present
-         * TODO: Use HTTPS-Everywhere API (eff.org somewhat) to add "https://" instead
-         *       of "http://" wherever it is available
          * TODO: Add context menu for search fields, and retrieve shortcuts from database
          */
         private string complete_url(string p_url) {
@@ -95,10 +143,17 @@ namespace RainbowLollipop {
         }
 
         /**
+         * Returns the surf_directly_to button for focussing
+         */
+        public Focusable get_go_button() {
+            return this.surf_directly_to;
+        }
+
+        /**
          * Callback that causes the browser to load the entered url in a new track
          * when enter is pressed in the URL entry
          */
-        private void do_activate() {
+        public void do_activate() {
             var url = this.complete_url(this.url_entry.get_text());
             this.tracklist.add_track_with_url(url);
             Application.S().state = NormalState.S();
@@ -109,33 +164,46 @@ namespace RainbowLollipop {
          * The content of the URL-Entry changes.
          */
         private void do_changed() {
+            Focus.S().focused_object = this.surf_directly_to;
             //Order new hints from hintproviders based on entry-text
-            var new_hints = new Gee.ArrayList<AutoCompletionHint>();
+            var provided_search_hints = new Gee.ArrayList<AutoCompletionHint>();
+            var provided_history_hints = new Gee.ArrayList<AutoCompletionHint>();
             string fragment = this.url_entry.get_text();
             if (fragment.length > 0){
-                new_hints.add_all(DuckDuckGo.S().get_hints(fragment));
-                new_hints.add_all(History.S().get_hints(fragment));
+                provided_search_hints.add_all(DuckDuckGo.S().get_hints(fragment));
+                provided_history_hints.add_all(History.S().get_hints(fragment));
             }
 
             //Check which hints have to be dropped
-            var to_delete = new Gee.ArrayList<AutoCompletionHint>();
-            foreach (Clutter.Actor existing_hint in this.get_children()) {
-                if (existing_hint != this.actor
-                        && existing_hint is AutoCompletionHint
-                        && !new_hints.contains((AutoCompletionHint)existing_hint)){
-                    to_delete.add((AutoCompletionHint)existing_hint);
+            var search_hints_to_delete = new Gee.ArrayList<AutoCompletionHint>();
+            var history_hints_to_delete = new Gee.ArrayList<AutoCompletionHint>();
+            foreach (Clutter.Actor existing_hint in this.search_hints.get_children()) {
+                if (!provided_search_hints.contains((AutoCompletionHint)existing_hint)){
+                    search_hints_to_delete.add((AutoCompletionHint)existing_hint);
+                }
+            }
+            foreach (Clutter.Actor existing_hint in this.history_hints.get_children()) {
+                if (!provided_history_hints.contains((AutoCompletionHint)existing_hint)){
+                    history_hints_to_delete.add((AutoCompletionHint)existing_hint);
                 }
             }
 
             // Add the new hints
-            foreach (AutoCompletionHint new_hint in new_hints) {
-                if (!this.contains(new_hint))
-                    this.add_child(new_hint);
+            foreach (AutoCompletionHint new_hint in provided_search_hints) {
+                if (!this.search_hints.contains(new_hint))
+                    this.search_hints.add_child(new_hint);
+            }
+            foreach (AutoCompletionHint new_hint in provided_history_hints) {
+                if (!this.history_hints.contains(new_hint))
+                    this.history_hints.add_child(new_hint);
             }
 
             //Drop unnecessary hints
-            foreach (AutoCompletionHint del_hint in to_delete) {
-                this.remove_child(del_hint);
+            foreach (AutoCompletionHint del_hint in search_hints_to_delete) {
+                this.search_hints.remove_child(del_hint);
+            }
+            foreach (AutoCompletionHint del_hint in history_hints_to_delete) {
+                this.history_hints.remove_child(del_hint);
             }
         }
 
@@ -198,7 +266,7 @@ namespace RainbowLollipop {
     /**
      * Represents an autocompletion hint for EmptyTrack
      */
-    class AutoCompletionHint : Clutter.Actor {
+    class AutoCompletionHint : Focusable {
         protected string heading = "";
         protected string text = "";
         protected Cairo.Surface icon = null;
@@ -224,29 +292,29 @@ namespace RainbowLollipop {
             this.text = text;
 
             this.background_color = Clutter.Color.from_string(Config.c.colorscheme.tracklist);
-            this.height = 115;
+            this.height = EmptyTrack.HINT_HEIGHT;
             this.x_expand = true;
 
-            this.a_heading = new Clutter.Text.with_text("Sans 12", this.heading);
+            this.a_heading = new Clutter.Text.with_text("Sans 10", this.heading);
             this.a_heading.color=  Clutter.Color.from_string("#eeeeee");
-            this.a_heading.x = 120;
+            this.a_heading.x = 40;
             this.a_heading.y = 10;
             this.a_heading.height = 30;
             this.a_heading.x_expand = true;
-            this.add_child(this.a_heading);
+            //this.add_child(this.a_heading);
 
-            this.a_text = new Clutter.Text.with_text("Sans 10", this.text);
+            this.a_text = new Clutter.Text.with_text("Sans 8", this.text);
             this.a_text.color=  Clutter.Color.from_string("#eeeeee");
-            this.a_text.x = 120;
-            this.a_text.y = 30;
+            this.a_text.x = 40;
+            this.a_text.y = 10;
             this.a_text.height = 30;
             this.a_text.x_expand = true;
             this.add_child(this.a_text);
 
             this.a_icon = new Clutter.Actor();
-            this.a_icon.height=this.a_icon.width = 80;
-            this.a_icon.x = 15;
-            this.a_icon.y = 15;
+            this.a_icon.height=this.a_icon.width = 30;
+            this.a_icon.x = 5;
+            this.a_icon.y = 5;
             this.a_icon_canvas = new Clutter.Canvas();
             this.a_icon_canvas.set_size(80,80);
             this.a_icon_canvas.draw.connect(do_draw_icon);
@@ -272,7 +340,7 @@ namespace RainbowLollipop {
          * Common logic that occurs every time when a user decides to use a
          * Completion hint. e.g. set the application state to normal browsing mode
          */
-        public void trigger_execute(Clutter.Actor a){
+        public void trigger_execute(){
             var tracklist = Application.S().tracklist;
             Application.S().state = NormalState.S();
             (this.get_parent() as EmptyTrack).clear_urlbar();
@@ -297,6 +365,107 @@ namespace RainbowLollipop {
             cr.set_operator(Cairo.Operator.SOURCE);
             cr.paint();
             return true;
+        }
+
+        public override Focusable? get_left_focusable() {
+            Clutter.Actor next_list = this.get_parent().get_previous_sibling();
+            if (next_list == null || next_list.get_n_children() == 0)
+                return null;
+            if (next_list.first_child is Focusable)
+                return next_list.first_child as Focusable;
+            else
+                // Return the surf directly to button
+                return Application.S().tracklist.get_empty_track().get_go_button();
+        }
+
+        public override Focusable? get_right_focusable() {
+            Clutter.Actor next_list = this.get_parent().get_next_sibling();
+            if (next_list == null || next_list.get_n_children() == 0)
+                return null;
+            if (next_list.first_child is Focusable)
+                return next_list.first_child as Focusable;
+            else
+                return null;
+        }
+
+        public override Focusable? get_up_focusable() {
+            Clutter.Actor? a = this.get_previous_sibling();
+            if (a != null && a is AutoCompletionHint) {
+                return (a as AutoCompletionHint);
+            } else {
+                HistoryTrack? t = Application.S().tracklist.get_last_track();
+                if (t != null)
+                    return t.current_node;
+                else
+                    return null;
+            }
+        }
+
+        public override Focusable? get_down_focusable() {
+            Clutter.Actor? a = this.get_next_sibling();
+            if (a != null && a is AutoCompletionHint) {
+                return (a as AutoCompletionHint);
+            } else
+                return null;
+        }
+
+        public override void focus_activate() {
+            this.trigger_execute();
+        }
+    }
+    
+    class SurfDirectlyToButton : Focusable {
+        private Clutter.Text a_text;
+        public SurfDirectlyToButton() {
+            this.background_color = Clutter.Color.from_string(
+                Config.c.colorscheme.tracklist
+            );
+            this.height = EmptyTrack.HINT_HEIGHT;
+            this.width = 100;
+            this.x_expand = true;
+            this.reactive=true;
+            var surf_action = new Clutter.ClickAction();
+            this.add_action(surf_action);
+            surf_action.clicked.connect(()=>{
+                (this.get_parent().get_parent() as EmptyTrack).do_activate();
+            });
+            this.a_text = new Clutter.Text.with_text("Sans 15", _("Go"));
+            this.a_text.color=  Clutter.Color.from_string("#eeeeee");
+            this.a_text.x = 10;
+            this.a_text.y = 10;
+            this.a_text.height = 30;
+            this.a_text.x_expand = true;
+            this.add_child(this.a_text);
+        }
+
+        public override Focusable? get_left_focusable() {
+            return null;
+        }
+
+        public override Focusable? get_right_focusable() {
+            Clutter.Actor next_list = this.get_next_sibling();
+            if (next_list == null || next_list.get_n_children() == 0)
+                return null;
+            if (next_list.first_child is Focusable)
+                return next_list.first_child as Focusable;
+            else
+                return null;
+        }
+
+        public override Focusable? get_up_focusable() {
+            HistoryTrack? t = Application.S().tracklist.get_last_track();
+            if (t != null)
+                return t.current_node;
+            else
+                return null;
+        }
+
+        public override Focusable? get_down_focusable() {
+            return null;
+        }
+
+        public override void focus_activate() {
+            (this.get_parent().get_parent() as EmptyTrack).do_activate();
         }
     }
 }

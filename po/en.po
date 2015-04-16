@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rainbow-lollipop 0.0.1\n"
 "Report-Msgid-Bugs-To: rainbow-lollipop-talk@lists.rainbow-lollipop.de\n"
-"POT-Creation-Date: 2015-04-14 15:48+0200\n"
+"POT-Creation-Date: 2015-04-16 19:42+0200\n"
 "PO-Revision-Date: 2015-04-03 13:36+0100\n"
 "Last-Translator: grindhold <grindhold@skarphed.org>\n"
 "Language-Team: English\n"
@@ -37,13 +37,13 @@ msgstr ""
 msgid "%s must be Value"
 msgstr "%s must be Value"
 
-#: /home/grindhold/git/alaia/src/site_node.vala:423
+#: /home/grindhold/git/alaia/src/site_node.vala:421
 #, c-format
 msgid "%s must be array"
 msgstr "%s must be array"
 
-#: /home/grindhold/git/alaia/src/site_node.vala:413
-#: /home/grindhold/git/alaia/src/site_node.vala:418
+#: /home/grindhold/git/alaia/src/site_node.vala:411
+#: /home/grindhold/git/alaia/src/site_node.vala:416
 #, c-format
 msgid "%s must be value"
 msgstr "%s must be value"
@@ -91,7 +91,7 @@ msgstr "Could not feed schemeparser. Using default colorscheme\n"
 msgid "Could not find a launcher for file: %s"
 msgstr "Could not find a launcher for file: %s"
 
-#: /home/grindhold/git/alaia/src/alaia.vala:537
+#: /home/grindhold/git/alaia/src/alaia.vala:543
 msgid "Could not initialize GtkClutter"
 msgstr "Could not initialize GtkClutter"
 
@@ -103,7 +103,7 @@ msgstr "Could not load colorscheme. Using default colorscheme\n"
 msgid "Could not parse scheme. Using default colorscheme\n"
 msgstr "Could not parse scheme. Using default colorscheme\n"
 
-#: /home/grindhold/git/alaia/src/alaia.vala:475
+#: /home/grindhold/git/alaia/src/alaia.vala:481
 msgid "Could not parse session json\n"
 msgstr "Could not parse session json\n"
 
@@ -132,7 +132,7 @@ msgstr "Could not prepare LOG_UPDATE: %s"
 msgid "Could not save configuration."
 msgstr "Could not save session to %s\n"
 
-#: /home/grindhold/git/alaia/src/alaia.vala:511
+#: /home/grindhold/git/alaia/src/alaia.vala:517
 #, c-format
 msgid "Could not save session to %s\n"
 msgstr "Could not save session to %s\n"
@@ -164,23 +164,23 @@ msgstr "Expected tracks to be array"
 msgid "Favicon size"
 msgstr "Favicon size"
 
-#: /home/grindhold/git/alaia/src/empty_track.vala:45
+#: /home/grindhold/git/alaia/src/empty_track.vala:432
 msgid "Go"
 msgstr "Go"
 
-#: /home/grindhold/git/alaia/src/alaia.vala:385
+#: /home/grindhold/git/alaia/src/alaia.vala:391
 msgid "Go Back"
 msgstr "Go Back"
 
-#: /home/grindhold/git/alaia/src/alaia.vala:393
+#: /home/grindhold/git/alaia/src/alaia.vala:399
 msgid "Go Forward"
 msgstr "Go Forward"
 
-#: /home/grindhold/git/alaia/src/alaia.vala:271
+#: /home/grindhold/git/alaia/src/alaia.vala:274
 msgid "HTTPSEverywhere initialization thread failed\n"
 msgstr ""
 
-#: /home/grindhold/git/alaia/src/alaia.vala:479
+#: /home/grindhold/git/alaia/src/alaia.vala:485
 msgid "Invalid session json\n"
 msgstr "Invalid session json\n"
 
@@ -208,7 +208,7 @@ msgstr "Open"
 msgid "Open folder"
 msgstr "Open folder"
 
-#: /home/grindhold/git/alaia/src/alaia.vala:399
+#: /home/grindhold/git/alaia/src/alaia.vala:405
 msgid "Reload"
 msgstr "Reload"
 
@@ -243,7 +243,7 @@ msgstr ""
 "Surf directly to \n"
 "%s"
 
-#: /home/grindhold/git/alaia/src/nodes.vala:374
+#: /home/grindhold/git/alaia/src/nodes.vala:376
 msgid "The node is not a child of its parent. This should not happen"
 msgstr "The node is not a child of its parent. This should not happen"
 
@@ -267,7 +267,7 @@ msgstr "TracklistState has not been intialized."
 msgid "UI"
 msgstr "UI"
 
-#: /home/grindhold/git/alaia/src/alaia.vala:490
+#: /home/grindhold/git/alaia/src/alaia.vala:496
 #, c-format
 msgid "Unknown session member %s\n"
 msgstr "Unknown session member %s\n"
@@ -280,7 +280,7 @@ msgstr "Use HTTPS everywhere"
 msgid "Using default config\n"
 msgstr "Using default config\n"
 
-#: /home/grindhold/git/alaia/src/site_node.vala:427
+#: /home/grindhold/git/alaia/src/site_node.vala:425
 #, c-format
 msgid "invalid field in node onject: %s\n"
 msgstr "invalid field in node onject: %s\n"
@@ -289,7 +289,7 @@ msgstr "invalid field in node onject: %s\n"
 msgid "new session"
 msgstr "new session"
 
-#: /home/grindhold/git/alaia/src/site_node.vala:438
+#: /home/grindhold/git/alaia/src/site_node.vala:436
 msgid "node creation failed\n"
 msgstr "node creation failed\n"
 
@@ -301,7 +301,7 @@ msgstr ""
 "restore\n"
 "session"
 
-#: /home/grindhold/git/alaia/src/site_node.vala:403
+#: /home/grindhold/git/alaia/src/site_node.vala:401
 msgid "sitenode must be object"
 msgstr "sitenode must be object"
 

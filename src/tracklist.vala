@@ -149,6 +149,13 @@ namespace RainbowLollipop {
         }
 
         /**
+         * Returns empty track
+         */
+        public EmptyTrack get_empty_track() {
+            return this.empty_track;
+        }
+
+        /**
          * Serialize this TrackList to JSON
          */
         public bool to_json(Json.Builder b) {
@@ -173,6 +180,17 @@ namespace RainbowLollipop {
         private void add_track(HistoryTrack t) {
             this.insert_child_below(t, this.empty_track);
             this.boxlayout.child_set_property(this, t, "x-fill",true);
+        }
+
+        /**
+         * Get last HistoryTrack
+         */
+        public HistoryTrack? get_last_track() {
+            if (this.last_child == this.first_child) {
+                return null;
+            } else {
+                return this.last_child.get_previous_sibling() as HistoryTrack;
+            }
         }
 
         /**
