@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rainbow-lollipop 0.0.1\n"
 "Report-Msgid-Bugs-To: rainbow-lollipop-talk@lists.rainbow-lollipop.de\n"
-"POT-Creation-Date: 2015-04-16 19:42+0200\n"
+"POT-Creation-Date: 2015-04-16 21:15+0200\n"
 "PO-Revision-Date: 2015-04-03 13:39+0100\n"
 "Last-Translator: grindhold <grindhold@skarphed.org>\n"
 "Language-Team: German\n"
@@ -219,6 +219,7 @@ msgid "Reload"
 msgstr "Neu laden"
 
 #: /home/grindhold/git/alaia/src/searchengine.vala:48
+#: /home/grindhold/git/alaia/src/searchengine.vala:87
 #, c-format
 msgid "Search %s"
 msgstr "%s suchen"
@@ -226,6 +227,11 @@ msgstr "%s suchen"
 #: /home/grindhold/git/alaia/src/searchengine.vala:49
 #, c-format
 msgid "Search for %s with DuckDuckGo"
+msgstr "%s mit DuckDuckGo suchen"
+
+#: /home/grindhold/git/alaia/src/searchengine.vala:88
+#, fuzzy, c-format
+msgid "Search for %s with wikipedia"
 msgstr "%s mit DuckDuckGo suchen"
 
 #: /home/grindhold/git/alaia/src/config_dialog.vala:181
