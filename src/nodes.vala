@@ -439,8 +439,12 @@ namespace RainbowLollipop {
                         return null;
                 }
                 return n;
-            } else
-                return this.previous.get_next_on_same_level(this, ++level);
+            } else {
+                if (this.previous != null)
+                    return this.previous.get_next_on_same_level(this, ++level);
+                else
+                    return null;
+            }
         }
 
         /**
@@ -457,8 +461,12 @@ namespace RainbowLollipop {
                         return null;
                 }
                 return n;
-            } else
-                return this.previous.get_previous_on_same_level(this, ++level);
+            } else {
+                if (this.previous != null)
+                    return this.previous.get_previous_on_same_level(this, ++level);
+                else
+                    return null;
+            }
         }
 
         public override Focusable? get_left_focusable() {
@@ -473,20 +481,30 @@ namespace RainbowLollipop {
         }
 
         public override Focusable? get_down_focusable() {
-            if (this.previous != null)
-                return this.previous.get_next_on_same_level(this);
-            else
-                //TODO: implement behaviour that delivers current_node of next track
-                //      or first entry of new autocompletion mode
-                return null;
+            Node? n = this.previous.get_next_on_same_level(this);
+            if (n != null)
+                return n;
+            else {
+                Track? t = (this.track.get_next_sibling() as Track);
+                if (t != null && t is HistoryTrack) {
+                    return (t as HistoryTrack).current_node;
+                } else
+                //TODO: implement behaviour that delivers first entry of new autocompletion mode
+                    return null;
+            }
         }
 
         public override Focusable? get_up_focusable() {
-            if (this.previous != null)
-                return this.previous.get_previous_on_same_level(this);
-            else
-                //TODO: implement behaviour that delivers current_node of previous track
-                return null;
+            Node? n = this.previous.get_previous_on_same_level(this);
+            if (n != null)
+                return n;
+            else {
+                Track? t = (this.track.get_previous_sibling() as Track);
+                if (t != null && t is HistoryTrack) {
+                    return (t as HistoryTrack).current_node;
+                } else
+                    return null;
+            }
         }
 
         public override void focus_activate() {
