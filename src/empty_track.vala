@@ -349,7 +349,6 @@ namespace RainbowLollipop {
 
         /**
          * Renders this AutoCompletionHint's icon
-         * FIXME: only last entry has icon displayed, all entries are supposed to have one.
          */
         private bool do_draw_icon(Cairo.Context cr, int w, int h) {
             var fvcx = new Cairo.Context(this.icon);

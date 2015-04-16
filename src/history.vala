@@ -150,10 +150,9 @@ namespace RainbowLollipop {
             assert (lim_param_pos > 0);
             stmnt.bind_text(url_param_pos, "%%%s%%".printf(url_fragment));
             stmnt.bind_int(lim_param_pos, Config.c.urlhint_limit);
-            AutoCompletionHint hint;
             while(stmnt.step() == Sqlite.ROW) {
                 string url = stmnt.column_text(0);
-                hint = new AutoCompletionHint(
+                AutoCompletionHint hint = new AutoCompletionHint(
                                 url,
                                 _("Surf directly to \n%s").printf(url)
                 );
