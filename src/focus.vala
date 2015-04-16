@@ -35,11 +35,14 @@ namespace RainbowLollipop {
             LEFT,
             RIGHT
         }
+
         public Focusable? focused_object {
             get {
                 return this._focused_object;
             }
             set {
+                if (value == null)
+                    return;
                 if (this._focused_object != null)
                     this._focused_object.remove_child(this);
                 this._focused_object = value;

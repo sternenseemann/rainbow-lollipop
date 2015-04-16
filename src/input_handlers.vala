@@ -127,8 +127,12 @@ namespace RainbowLollipop {
             }
             else if (Application.S().state is TracklistState) {
                 if (e.keyval !=    Gdk.Key.Tab
-                    && e.keyval != Gdk.Key.F2 )
-                    return false;
+                    && e.keyval != Gdk.Key.F2
+                    && e.keyval != Gdk.Key.Down
+                    && e.keyval != Gdk.Key.Up
+                    && e.keyval != Gdk.Key.Left
+                    && e.keyval != Gdk.Key.Right)
+                        return false;
                 do_key_press_event(e);
             }
             else if (Application.S().state is SessiondialogState) {
@@ -200,6 +204,18 @@ namespace RainbowLollipop {
                         return;
                     case Gdk.Key.F2:
                         Application.S().state = ConfigState.S();
+                        return;
+                    case Gdk.Key.Up:
+                        Focus.S().move(Focus.Direction.UP);
+                        return;
+                    case Gdk.Key.Down:
+                        Focus.S().move(Focus.Direction.DOWN);
+                        return;
+                    case Gdk.Key.Left:
+                        Focus.S().move(Focus.Direction.LEFT);
+                        return;
+                    case Gdk.Key.Right:
+                        Focus.S().move(Focus.Direction.RIGHT);
                         return;
                 }
             }
