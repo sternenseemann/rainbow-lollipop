@@ -107,7 +107,6 @@ namespace RainbowLollipop {
          * The currently selected colorscheme
          */
         public bool do_draw(Cairo.Context cr, int w, int h) {
-            stdout.printf("painting\n");
             double stops = (double)Config.c.colorscheme.tracks.size;
             cr.set_source_rgba(0,0,0,0);
             cr.set_operator(Cairo.Operator.SOURCE);
