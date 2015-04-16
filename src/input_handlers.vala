@@ -131,7 +131,8 @@ namespace RainbowLollipop {
                     && e.keyval != Gdk.Key.Down
                     && e.keyval != Gdk.Key.Up
                     && e.keyval != Gdk.Key.Left
-                    && e.keyval != Gdk.Key.Right)
+                    && e.keyval != Gdk.Key.Right
+                    && e.keyval != Gdk.Key.Return)
                         return false;
                 do_key_press_event(e);
             }
@@ -217,7 +218,6 @@ namespace RainbowLollipop {
                     case Gdk.Key.Right:
                         Focus.S().move(Focus.Direction.RIGHT);
                         return;
-                    // TODO: check if cool
                     case Gdk.Key.Return:
                         Focus.S().activate();
                         return;

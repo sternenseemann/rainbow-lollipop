@@ -508,8 +508,10 @@ namespace RainbowLollipop {
         }
 
         public override void focus_activate() {
-            if (this is SiteNode)
+            if (this is SiteNode) {
                 this.track.current_node = this;
+                Application.S().state = NormalState.S();
+            }
         }
     }
 }
