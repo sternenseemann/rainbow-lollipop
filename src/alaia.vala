@@ -322,7 +322,6 @@ namespace RainbowLollipop {
             // Show everything that is needed on screen.
             this.win.show_all();
             // Be aware: you can only use animations from this point on:
-            //this.load_indicator.start();
             this.sessiondialog.disappear();
             this.tracklist_background.disappear();
 

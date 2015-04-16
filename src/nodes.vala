@@ -152,7 +152,7 @@ namespace RainbowLollipop {
      * of a track. A node represents a call to a website and the result of
      * those calls.
      */
-    public class Node : Clutter.Actor {
+    public class Node : Focusable {
         /**
          * Reference to the node that spawned this node
          */
@@ -205,6 +205,8 @@ namespace RainbowLollipop {
             this.reactive = true;
             this.clickaction = new Clutter.ClickAction();
             this.add_action(this.clickaction);
+
+            Focus.S().focused_object = this;
         }
 
         protected virtual void config_update() {
@@ -421,6 +423,38 @@ namespace RainbowLollipop {
                     (n as SiteNode).to_json(b);
             }
             b.end_array();
+        }
+
+        public override Focusable? get_left_focusable() {
+            return this.previous;
+        }
+
+        public override Focusable? get_right_focusable() {
+            if (this.childnodes.size > 0)
+                return this.childnodes[0];
+            else
+                return null;
+        }
+
+        public override Focusable? get_down_focusable() {
+            if (this.previous != null && this.previous.get_next_sibling() != null)
+                return (this.previous.get_next_sibling() as Node);
+            else
+                //TODO: implement behaviour that delivers current_node of next track
+                //      or first entry of new autocompletion mode
+                return null;
+        }
+
+        public override Focusable? get_up_focusable() {
+            if (this.previous != null && this.previous.get_previous_sibling() != null)
+                return (this.previous.get_previous_sibling() as Node);
+            else
+                //TODO: implement behaviour that delivers current_node of previous track
+                return null;
+        }
+
+        public override void focus_activate() {
+            this.track.current_node = this;
         }
     }
 }
