@@ -46,7 +46,6 @@ namespace RainbowLollipop {
         }
 
         public void start() {
-            stdout.printf("lel\n");
             this.loading = true;
             this.opacity = 0xFF;
             this.slider.do_animation_step();
