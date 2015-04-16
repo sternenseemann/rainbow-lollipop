@@ -425,6 +425,42 @@ namespace RainbowLollipop {
             b.end_array();
         }
 
+        /**
+         * Tries to return the next sibling that resides on the
+         * same tree-depth as this node.
+         */
+        public Node? get_next_on_same_level(Node node, uint level=0) {
+            if (this.childnodes.size > this.index_of_child(node)+1) {
+                Node n = this.childnodes[this.index_of_child(node)+1];
+                for (int i = 0; i < level; i++) {
+                    if (n.childnodes.size > 0)
+                        n = n.childnodes[0];
+                    else
+                        return null;
+                }
+                return n;
+            } else
+                return this.previous.get_next_on_same_level(this, ++level);
+        }
+
+        /**
+         * Tries to return the previous sibling that resides on the
+         * same tree-depth as this node.
+         */
+        public Node? get_previous_on_same_level(Node node, uint level=0) {
+            if (this.index_of_child(node) > 0) {
+                Node n = this.childnodes[this.index_of_child(node)-1];
+                for (int i = 0; i < level; i++) {
+                    if (n.childnodes.size > 0)
+                        n = n.childnodes[n.childnodes.size-1];
+                    else
+                        return null;
+                }
+                return n;
+            } else
+                return this.previous.get_previous_on_same_level(this, ++level);
+        }
+
         public override Focusable? get_left_focusable() {
             return this.previous;
         }
@@ -437,8 +473,8 @@ namespace RainbowLollipop {
         }
 
         public override Focusable? get_down_focusable() {
-            if (this.previous != null && this.previous.get_next_sibling() != null)
-                return (this.previous.get_next_sibling() as Node);
+            if (this.previous != null)
+                return this.previous.get_next_on_same_level(this);
             else
                 //TODO: implement behaviour that delivers current_node of next track
                 //      or first entry of new autocompletion mode
@@ -446,8 +482,8 @@ namespace RainbowLollipop {
         }
 
         public override Focusable? get_up_focusable() {
-            if (this.previous != null && this.previous.get_previous_sibling() != null)
-                return (this.previous.get_previous_sibling() as Node);
+            if (this.previous != null)
+                return this.previous.get_previous_on_same_level(this);
             else
                 //TODO: implement behaviour that delivers current_node of previous track
                 return null;
