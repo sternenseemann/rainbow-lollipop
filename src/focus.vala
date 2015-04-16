@@ -70,6 +70,11 @@ namespace RainbowLollipop {
             this.c.draw.connect(this.do_draw);
         }
 
+        public void activate() {
+            if (this._focused_object != null)
+                this._focused_object.focus_activate();
+        }
+
         public bool do_draw(Cairo.Context cr, int w, int h) {
             cr.set_source_rgba(0,0,0,0);
             cr.set_operator(Cairo.Operator.SOURCE);

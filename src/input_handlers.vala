@@ -217,6 +217,10 @@ namespace RainbowLollipop {
                     case Gdk.Key.Right:
                         Focus.S().move(Focus.Direction.RIGHT);
                         return;
+                    // TODO: check if cool
+                    case Gdk.Key.Return:
+                        Focus.S().activate();
+                        return;
                 }
             }
             else if (Application.S().state is SessiondialogState) {
