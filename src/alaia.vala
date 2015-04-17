@@ -440,8 +440,10 @@ namespace RainbowLollipop {
          * does nothing if there is no associated WebView
          */
         public void destroy_web_view(HistoryTrack t) {
-            if (this.webviews.has_key(t))
+            if (this.webviews.has_key(t)) {
                 this.webviews[t].destroy();
+                ZMQVent.unregister_site();
+            }
         }
     
         /**
