@@ -149,6 +149,9 @@ namespace RainbowLollipop {
                     return false;
                 do_key_press_event(e);
             }
+            else if (Application.S().state is AuthState) {
+                return false;
+            }
             return true;
         }
 

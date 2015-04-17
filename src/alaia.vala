@@ -156,6 +156,8 @@ namespace RainbowLollipop {
         public RestoreSessionDialog sessiondialog {get {return this._sessiondialog;}}
         private RestoreSessionDialog _sessiondialog;
 
+        private AuthenticationDialog authdialog;
+
         private ConfigDialog configdialog;
 
         public LoadingIndicator load_indicator {get {return this._load_indicator;}}
@@ -314,6 +316,10 @@ namespace RainbowLollipop {
             stage.add_child(this.configdialog);
             ConfigState.init(this.configdialog);
 
+            this.authdialog = new AuthenticationDialog(stage);
+            stage.add_child(this.authdialog);
+            AuthState.init(this.authdialog);
+
             // Initialize Load Indicator
             this._load_indicator = new LoadingIndicator(stage);
             stage.add_child(this._load_indicator);
@@ -422,7 +428,8 @@ namespace RainbowLollipop {
                 w.context_menu.connect(do_web_context_menu);
                 w.get_context().download_started.connect(t.log_download);
                 w.authenticate.connect((request) => {
-                    new AuthenticationDialog(this.win.get_stage(), request);
+                    this.authdialog.set_request(request);
+                    this.state = AuthState.S();
                     return true;
                 });
                 w.web_process_crashed.connect(() => {
