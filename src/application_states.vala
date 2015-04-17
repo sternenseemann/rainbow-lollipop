@@ -169,4 +169,37 @@ namespace RainbowLollipop {
             return ConfigState.instance;
         }
     }
+
+    /**
+     * AUTHDIALOG - there is a modal http-auth dialog
+     */
+    class AuthState : GLib.Object, IApplicationState {
+        private static AuthState instance = null;
+        private static bool initialized = false;
+
+        private AuthenticationDialog auth_dialog = null;
+
+        public static void init (AuthenticationDialog ad) {
+            AuthState.instance = new AuthState(ad);
+            AuthState.initialized = true;
+        }
+
+        private AuthState(AuthenticationDialog cd) {
+            this.auth_dialog = cd;
+        }
+
+        public void enter() {
+            this.auth_dialog.emerge();
+        }
+
+        public void leave() {
+            this.auth_dialog.disappear();
+        }
+
+        public static IApplicationState S() {
+            if (!AuthState.initialized)
+                critical(_("AuthState has not been intialized."));
+            return AuthState.instance;
+        }
+    }
 }

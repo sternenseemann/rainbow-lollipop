@@ -35,12 +35,12 @@ namespace RainbowLollipop {
 
         private WebKit.AuthenticationRequest request;
 
-        private GtkClutter.Actor a_username_entry;
-        private GtkClutter.Actor a_password_entry;
+        private GtkClutter.Actor a_vbox;
         private GtkClutter.Actor a_ok;
         private GtkClutter.Actor a_cancel;
         private Clutter.Actor frame;
 
+        private Gtk.Box vbox;
         private Gtk.Entry username_entry;
         private Gtk.Entry password_entry;
         private Gtk.Button ok;
@@ -50,17 +50,19 @@ namespace RainbowLollipop {
          * Construct a new AuthenticationDialog
          * TODO: Make stock-buttons
          */
-        public AuthenticationDialog(Clutter.Actor stage, WebKit.AuthenticationRequest r) {
-            this.request = r;
+        public AuthenticationDialog(Clutter.Actor stage) {
             this.background_color = Clutter.Color.from_string(Config.c.colorscheme.empty_track);
             this.add_constraint(
                 new Clutter.BindConstraint(stage, Clutter.BindCoordinate.SIZE,0)
             );
 
+            this.vbox = new Gtk.Box(Gtk.Orientation.VERTICAL,0);
             this.username_entry = new Gtk.Entry();
+            this.username_entry.placeholder_text = _("Username");
             this.password_entry = new Gtk.Entry();
-            this.ok = new Gtk.Button.from_icon_name("action-ok", Gtk.IconSize.MENU);
-            this.cancel = new Gtk.Button.from_icon_name("action-cancel", Gtk.IconSize.MENU);
+            this.password_entry.placeholder_text = _("Password");
+            this.ok = new Gtk.Button.with_label(_("OK"));
+            this.cancel = new Gtk.Button.with_label(_("Cancel"));
             this.ok.clicked.connect(this.do_ok);
             this.cancel.clicked.connect(this.do_cancel);
 
@@ -71,35 +73,50 @@ namespace RainbowLollipop {
             this.frame.add_constraint(
                 new Clutter.AlignConstraint(this, Clutter.AlignAxis.BOTH, 0.5f)
             );
-            
-            this.a_username_entry = new GtkClutter.Actor.with_contents(this.username_entry);
-            this.a_username_entry.height = 26;
-            this.a_username_entry.width = FRAME_WIDTH-2*FRAME_PADDING;
-            this.a_username_entry.x = FRAME_PADDING;
-            this.a_username_entry.y = 50;
 
-            this.a_password_entry = new GtkClutter.Actor.with_contents(this.password_entry);
-            this.a_password_entry.height = 26;
-            this.a_password_entry.width = FRAME_WIDTH-2*FRAME_PADDING;
-            this.a_password_entry.x = FRAME_PADDING;
-            this.a_password_entry.y = 80;
+            this.vbox.add(this.username_entry);
+            this.vbox.add(this.password_entry);
+            this.a_vbox = new GtkClutter.Actor.with_contents(this.vbox);
+            this.a_vbox.height = 26*2;
+            this.a_vbox.width = FRAME_WIDTH-2*FRAME_PADDING;
+            this.a_vbox.x = FRAME_PADDING;
+            this.a_vbox.y = 50;
 
             this.a_ok = new GtkClutter.Actor.with_contents(this.ok);
             this.a_ok.width = BUTTON_WIDTH;
             this.a_ok.height = 26;
             this.a_ok.x = FRAME_WIDTH-FRAME_PADDING-BUTTON_WIDTH;
-            this.a_ok.y = 100;
+            this.a_ok.y = 120;
 
             this.a_cancel = new GtkClutter.Actor.with_contents(this.cancel);
             this.a_cancel.width = BUTTON_WIDTH;
             this.a_cancel.height = 26;
             this.a_cancel.x = FRAME_WIDTH-2*FRAME_PADDING-2*BUTTON_WIDTH;
-            this.a_cancel.y = 100;
+            this.a_cancel.y = 120;
 
-            this.frame.add_child(this.a_username_entry);
-            this.frame.add_child(this.a_password_entry);
+            this.frame.add_child(this.a_vbox);
             this.frame.add_child(this.a_ok);
             this.frame.add_child(this.a_cancel);
+
+            this.username_entry.realize.connect(()=> {
+                this.username_entry.grab_focus();
+            });
+            this.username_entry.show();
+            this.password_entry.show();
+            this.ok.show();
+            this.cancel.show();
+            this.add_child(this.frame);
+            this.visible=false;
+            stage.add_child(this);
+        }
+
+        /**
+         * Sets the request the dialog should handle
+         */
+        public void set_request(WebKit.AuthenticationRequest r) {
+            this.request = r;
+            this.username_entry.text = "";
+            this.password_entry.text = "";
         }
 
         /**
@@ -114,7 +131,7 @@ namespace RainbowLollipop {
             );
             this.request.authenticate(c);
             this.disappear();
-            this.destroy();
+            Application.S().state = NormalState.S();
         }
 
         /**
@@ -123,21 +140,21 @@ namespace RainbowLollipop {
         public void do_cancel(Gtk.Widget b) {
             this.request.cancel();
             this.disappear();
-            this.destroy();
+            Application.S().state = NormalState.S();
         }
 
         /**
          * Fade in
-         * TODO: implement if needed or remove this todo
          */
         public void emerge() {
+            this.visible = true;
         }
 
         /**
          * Fade out
-         * TODO: implement if needed or remove this todo
          */
         public void disappear() {
+            this.visible = false;
         }
     }
 }

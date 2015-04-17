@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rainbow-lollipop 0.0.1\n"
 "Report-Msgid-Bugs-To: rainbow-lollipop-talk@lists.rainbow-lollipop.de\n"
-"POT-Creation-Date: 2015-04-16 21:15+0200\n"
+"POT-Creation-Date: 2015-04-17 21:19+0200\n"
 "PO-Revision-Date: 2015-04-03 13:39+0100\n"
 "Last-Translator: grindhold <grindhold@skarphed.org>\n"
 "Language-Team: German\n"
@@ -48,9 +48,18 @@ msgstr "%s muss ein Array sein"
 msgid "%s must be value"
 msgstr "%s muss ein Wert sein"
 
+#: /home/grindhold/git/alaia/src/application_states.vala:201
+#, fuzzy
+msgid "AuthState has not been intialized."
+msgstr "Konfigurations-Zustand wurde bisher nicht initialisiert."
+
 #: /home/grindhold/git/alaia/src/config_dialog.vala:156
 msgid "Bullet stroke width"
 msgstr "Dicke des Node-Rahmens"
+
+#: /home/grindhold/git/alaia/src/authentication_dialog.vala:65
+msgid "Cancel"
+msgstr ""
 
 #: /home/grindhold/git/alaia/src/context_menu.vala:59
 msgid "Close Branch"
@@ -92,7 +101,7 @@ msgstr ""
 msgid "Could not find a launcher for file: %s"
 msgstr "Es konnte kein Standardprogramm fuer %s gefunden werden."
 
-#: /home/grindhold/git/alaia/src/alaia.vala:543
+#: /home/grindhold/git/alaia/src/alaia.vala:553
 msgid "Could not initialize GtkClutter"
 msgstr "GtkClutter konnte nicht initialisiert werden."
 
@@ -107,7 +116,7 @@ msgstr ""
 "Das Farbschema konnte nicht verarbeitet werden. Benutze Standard-"
 "Farbschema.\n"
 
-#: /home/grindhold/git/alaia/src/alaia.vala:481
+#: /home/grindhold/git/alaia/src/alaia.vala:491
 msgid "Could not parse session json\n"
 msgstr "Das Sitzungs-JSON konnte nicht gelesenwerden.\n"
 
@@ -136,7 +145,7 @@ msgstr "LOG_UPDATE konnte nicht vorbereitet werden: %s"
 msgid "Could not save configuration."
 msgstr "Die Sitzung konnte nicht nach %s gespeichert werden.\n"
 
-#: /home/grindhold/git/alaia/src/alaia.vala:517
+#: /home/grindhold/git/alaia/src/alaia.vala:527
 #, c-format
 msgid "Could not save session to %s\n"
 msgstr "Die Sitzung konnte nicht nach %s gespeichert werden.\n"
@@ -170,23 +179,23 @@ msgstr "Die Tracks werden als Array erwartet."
 msgid "Favicon size"
 msgstr "Icon-Größe"
 
-#: /home/grindhold/git/alaia/src/empty_track.vala:432
+#: /home/grindhold/git/alaia/src/empty_track.vala:435
 msgid "Go"
 msgstr "Los!"
 
-#: /home/grindhold/git/alaia/src/alaia.vala:391
+#: /home/grindhold/git/alaia/src/alaia.vala:397
 msgid "Go Back"
 msgstr "Zurück"
 
-#: /home/grindhold/git/alaia/src/alaia.vala:399
+#: /home/grindhold/git/alaia/src/alaia.vala:405
 msgid "Go Forward"
 msgstr "Vorwärts"
 
-#: /home/grindhold/git/alaia/src/alaia.vala:274
+#: /home/grindhold/git/alaia/src/alaia.vala:276
 msgid "HTTPSEverywhere initialization thread failed\n"
 msgstr ""
 
-#: /home/grindhold/git/alaia/src/alaia.vala:485
+#: /home/grindhold/git/alaia/src/alaia.vala:495
 msgid "Invalid session json\n"
 msgstr "Ungültiges Sitzungs-JSON\n"
 
@@ -206,6 +215,10 @@ msgstr "Horizontaler Node-Abstand"
 msgid "NormalState has not been initialized."
 msgstr "Normal-Zustand wurde bisher nicht intialisiert."
 
+#: /home/grindhold/git/alaia/src/authentication_dialog.vala:64
+msgid "OK"
+msgstr ""
+
 #: /home/grindhold/git/alaia/src/context_menu.vala:82
 msgid "Open"
 msgstr "Öffnen"
@@ -214,7 +227,11 @@ msgstr "Öffnen"
 msgid "Open folder"
 msgstr "Ordner Öffnen"
 
-#: /home/grindhold/git/alaia/src/alaia.vala:405
+#: /home/grindhold/git/alaia/src/authentication_dialog.vala:63
+msgid "Password"
+msgstr ""
+
+#: /home/grindhold/git/alaia/src/alaia.vala:411
 msgid "Reload"
 msgstr "Neu laden"
 
@@ -246,7 +263,7 @@ msgstr "Sitzungswiederherstellungsdialog wurde bisher nicht initialisiert."
 msgid "Sink broke down\n"
 msgstr "Das Waschbecken ist heruntergebrochen.\n"
 
-#: /home/grindhold/git/alaia/src/history.vala:158
+#: /home/grindhold/git/alaia/src/history.vala:157
 #, c-format
 msgid ""
 "Surf directly to \n"
@@ -281,7 +298,7 @@ msgstr "Tracklist-Zustand wurde bisher nicht initialisiert."
 msgid "UI"
 msgstr "Oberflaeche"
 
-#: /home/grindhold/git/alaia/src/alaia.vala:496
+#: /home/grindhold/git/alaia/src/alaia.vala:506
 #, c-format
 msgid "Unknown session member %s\n"
 msgstr "Unbekanntes Sitzungsattribut %s\n"
@@ -289,6 +306,10 @@ msgstr "Unbekanntes Sitzungsattribut %s\n"
 #: /home/grindhold/git/alaia/src/config_dialog.vala:172
 msgid "Use HTTPS everywhere"
 msgstr "Immer HTTPS benutzen"
+
+#: /home/grindhold/git/alaia/src/authentication_dialog.vala:61
+msgid "Username"
+msgstr ""
 
 #: /home/grindhold/git/alaia/src/config.vala:317
 msgid "Using default config\n"
