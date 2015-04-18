@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rainbow-lollipop 0.0.1\n"
 "Report-Msgid-Bugs-To: rainbow-lollipop-talk@lists.rainbow-lollipop.de\n"
-"POT-Creation-Date: 2015-04-17 21:19+0200\n"
+"POT-Creation-Date: 2015-04-18 09:58+0200\n"
 "PO-Revision-Date: 2015-04-03 13:39+0100\n"
 "Last-Translator: grindhold <grindhold@skarphed.org>\n"
 "Language-Team: German\n"
@@ -101,7 +101,7 @@ msgstr ""
 msgid "Could not find a launcher for file: %s"
 msgstr "Es konnte kein Standardprogramm fuer %s gefunden werden."
 
-#: /home/grindhold/git/alaia/src/alaia.vala:553
+#: /home/grindhold/git/alaia/src/alaia.vala:552
 msgid "Could not initialize GtkClutter"
 msgstr "GtkClutter konnte nicht initialisiert werden."
 
@@ -116,7 +116,7 @@ msgstr ""
 "Das Farbschema konnte nicht verarbeitet werden. Benutze Standard-"
 "Farbschema.\n"
 
-#: /home/grindhold/git/alaia/src/alaia.vala:491
+#: /home/grindhold/git/alaia/src/alaia.vala:490
 msgid "Could not parse session json\n"
 msgstr "Das Sitzungs-JSON konnte nicht gelesenwerden.\n"
 
@@ -145,7 +145,7 @@ msgstr "LOG_UPDATE konnte nicht vorbereitet werden: %s"
 msgid "Could not save configuration."
 msgstr "Die Sitzung konnte nicht nach %s gespeichert werden.\n"
 
-#: /home/grindhold/git/alaia/src/alaia.vala:527
+#: /home/grindhold/git/alaia/src/alaia.vala:526
 #, c-format
 msgid "Could not save session to %s\n"
 msgstr "Die Sitzung konnte nicht nach %s gespeichert werden.\n"
@@ -179,7 +179,7 @@ msgstr "Die Tracks werden als Array erwartet."
 msgid "Favicon size"
 msgstr "Icon-Größe"
 
-#: /home/grindhold/git/alaia/src/empty_track.vala:435
+#: /home/grindhold/git/alaia/src/empty_track.vala:431
 msgid "Go"
 msgstr "Los!"
 
@@ -195,7 +195,7 @@ msgstr "Vorwärts"
 msgid "HTTPSEverywhere initialization thread failed\n"
 msgstr ""
 
-#: /home/grindhold/git/alaia/src/alaia.vala:495
+#: /home/grindhold/git/alaia/src/alaia.vala:494
 msgid "Invalid session json\n"
 msgstr "Ungültiges Sitzungs-JSON\n"
 
@@ -298,7 +298,7 @@ msgstr "Tracklist-Zustand wurde bisher nicht initialisiert."
 msgid "UI"
 msgstr "Oberflaeche"
 
-#: /home/grindhold/git/alaia/src/alaia.vala:506
+#: /home/grindhold/git/alaia/src/alaia.vala:505
 #, c-format
 msgid "Unknown session member %s\n"
 msgstr "Unbekanntes Sitzungsattribut %s\n"

@@ -221,7 +221,7 @@ namespace RainbowLollipop {
                     break;
             }
             this.get_stage().queue_redraw();
-            //TODO: find out why the redraw call does not reach the nodes
+            Config.c.save();
         }
 
         /**
