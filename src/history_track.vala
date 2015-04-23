@@ -164,6 +164,7 @@ namespace RainbowLollipop {
             this.first_node.track = this;
             n.adapt_to_track();
             this.first_node.recalculate_y(null);
+            this.calculate_height();
             
             this.add_childnodes(n);
             if (search != "")
