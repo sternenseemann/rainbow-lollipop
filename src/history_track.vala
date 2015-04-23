@@ -391,6 +391,7 @@ namespace RainbowLollipop {
         public void log_call(string uri) {
             if (this._current_node is SiteNode &&
                 uri != (this._current_node as SiteNode).url) {
+                History.S().log_call(uri);
                 var nn = new SiteNode(this, uri, this._current_node);
                 Application.S().load_indicator.start();
                 (this._current_node as SiteNode).toggle_highlight();
