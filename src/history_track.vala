@@ -190,7 +190,11 @@ namespace RainbowLollipop {
         public HistoryTrack(TrackList tl, string url) {
             base(tl);
             this.web = Application.S().get_web_view(this);
-            this.web.load_changed.connect(do_load_committed);
+            WebKit.BackForwardList bfl = this.web.get_back_forward_list();
+            bfl.changed.connect((newnode,_) => {
+                if (newnode != null)
+                    this.log_call(newnode.get_uri());
+            });
             this.web.resource_load_started.connect ((resource, request) => {
                 if (this.web.uri == resource.uri)
                     resource.finished.connect(this.do_finished);
@@ -299,38 +303,6 @@ namespace RainbowLollipop {
             }
             set {
                 this._title.text = value;
-            }
-        }
-
-        /**
-         * Callback that is being called every time this HistoryTrack's
-         * associated WebView signals a change in the website's loading state
-         */
-        public void do_load_committed(WebKit.LoadEvent e) {
-            if (e == WebKit.LoadEvent.STARTED) {
-                // Ignore loading the current_node of a saved session
-                if (this.web.get_uri() == null || this.web.get_uri() == "")
-                    return;
-
-                // Ignore if the node has the same URL as the
-                // currently displayed website
-                if (this._current_node != null
-                        && this._current_node is SiteNode
-                        && this.web.get_uri() == (this._current_node as SiteNode).url+"/") {
-                    return;
-                }
-                // If the website to be called is the url, the current_node should
-                // simply be set to the current node's previous node
-                Node? prvnode = this._current_node.get_previous();
-                if (prvnode != null && prvnode is SiteNode
-                        && (prvnode as SiteNode).url == this.web.get_uri()) {
-                    if (this._current_node is SiteNode)
-                        (this._current_node as SiteNode).toggle_highlight();
-                    this._current_node = prvnode;
-                    (this._current_node as SiteNode).toggle_highlight();
-                }
-                this.log_call(this.web.get_uri());
-                History.S().log_call(this.web.get_uri());
             }
         }
 
