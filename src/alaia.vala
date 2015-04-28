@@ -429,6 +429,13 @@ namespace RainbowLollipop {
 
             }
             if (htr.link_uri != null) {
+                a = new Gtk.Action("copy-link", _("Copy link"), null, null);
+                a.activate.connect(()=> {
+                    var c = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD);
+                    c.set_text(htr.link_uri,-1);
+                });
+                cm.append(new WebKit.ContextMenuItem(a as Gtk.Action));
+
                 a = new Gtk.Action("open-new-track", _("Open in new Track"), null, null);
                 a.activate.connect(()=> {
                     Application.S().tracklist.add_track_with_url(htr.link_uri);
