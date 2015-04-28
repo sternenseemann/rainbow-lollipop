@@ -244,6 +244,8 @@ namespace RainbowLollipop {
                     if (prv is SiteNode)
                         prv.track.current_node = prv as SiteNode;
                 }
+            } else {
+                this.track.delete_track();
             }
             this.get_parent().remove_child(this);
             this.connector.destroy();
