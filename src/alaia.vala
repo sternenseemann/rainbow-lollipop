@@ -574,6 +574,7 @@ namespace RainbowLollipop {
          */
         public void do_delete() {
             this.save_session();
+            WebKit.WebContext.get_default().clear_cache();
             Gtk.main_quit();
         }
 
