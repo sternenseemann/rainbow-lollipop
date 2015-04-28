@@ -414,10 +414,37 @@ namespace RainbowLollipop {
             });
             cm.append(new WebKit.ContextMenuItem(a as Gtk.Action));
             if (htr.image_uri != null){
-                a = new Gtk.Action("download-image", _("Save image as..."), null, null);
+                a = new Gtk.Action("download-image", _("Save image"), null, null);
                 a.activate.connect(()=> {
                     w.download_uri(htr.image_uri);
-                    stdout.printf("%s\n", htr.image_uri);
+                });
+                cm.append(new WebKit.ContextMenuItem(a as Gtk.Action));
+
+                a = new Gtk.Action("copy-image-url", _("Copy image URL"), null, null);
+                a.activate.connect(()=> {
+                    var c = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD);
+                    c.set_text(htr.image_uri,-1);
+                });
+                cm.append(new WebKit.ContextMenuItem(a as Gtk.Action));
+
+            }
+            if (htr.link_uri != null) {
+                a = new Gtk.Action("open-new-track", _("Open in new Track"), null, null);
+                a.activate.connect(()=> {
+                    Application.S().tracklist.add_track_with_url(htr.link_uri);
+                });
+                cm.append(new WebKit.ContextMenuItem(a as Gtk.Action));
+
+                a = new Gtk.Action("save-link", _("Save link"), null, null);
+                a.activate.connect(()=> {
+                    w.download_uri(htr.link_uri);
+                });
+                cm.append(new WebKit.ContextMenuItem(a as Gtk.Action));
+            }
+            if (htr.media_uri != null) {
+                a = new Gtk.Action("download-media", _("Save media"), null, null);
+                a.activate.connect(()=> {
+                    w.download_uri(htr.media_uri);
                 });
                 cm.append(new WebKit.ContextMenuItem(a as Gtk.Action));
             }

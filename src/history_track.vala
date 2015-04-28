@@ -412,8 +412,10 @@ namespace RainbowLollipop {
          *       Same problem exists in log_error()
          */
         public void log_download(WebKit.Download d) {
-            new DownloadNode(this, d, this._current_node);
-            this.calculate_height();
+            if (Application.S().tracklist.current_track == this) {
+                new DownloadNode(this, d, this._current_node);
+                this.calculate_height();
+            }
         }
 
         /**
