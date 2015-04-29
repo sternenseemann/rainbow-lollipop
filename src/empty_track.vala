@@ -142,6 +142,19 @@ namespace RainbowLollipop {
         }
 
         /**
+         * Checks if the entered string seems to be an URL
+         * Simplified: If the string does not contain any whitespace
+         * and contains a dot somewhere we can consider it to be a url
+         */
+        private bool looks_like_url(string p_url) {
+            string url = p_url;
+            url = url.strip();
+            Regex whitespace = /\s/;
+            Regex dot        = /\./;
+            return !whitespace.match(url) && dot.match(url);
+        }
+
+        /**
          * Returns the surf_directly_to button for focussing
          */
         public Focusable get_go_button() {
@@ -163,16 +176,24 @@ namespace RainbowLollipop {
          * The content of the URL-Entry changes.
          */
         private void do_changed() {
-            Focus.S().focused_object = this.surf_directly_to;
             //Order new hints from hintproviders based on entry-text
             var provided_search_hints = new Gee.ArrayList<AutoCompletionHint>();
             var provided_history_hints = new Gee.ArrayList<AutoCompletionHint>();
             string fragment = this.url_entry.get_text();
+            // Set focus to either string or search
+                
             if (fragment.length > 0){
                 provided_search_hints.add_all(DuckDuckGo.S().get_hints(fragment));
                 provided_search_hints.add_all(Wikipedia.S().get_hints(fragment));
                 provided_history_hints.add_all(History.S().get_hints(fragment));
             }
+
+            // Focus the searchengine if the entered text is no url
+            // Otherwise focus 'Go'-Field
+            if (!this.looks_like_url(fragment) && provided_search_hints.size > 0)
+                Focus.S().focused_object = provided_search_hints[0];
+            else 
+                Focus.S().focused_object = this.surf_directly_to;
 
             //Check which hints have to be dropped
             var search_hints_to_delete = new Gee.ArrayList<AutoCompletionHint>();
