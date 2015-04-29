@@ -574,8 +574,32 @@ namespace RainbowLollipop {
          */
         public void do_delete() {
             this.save_session();
-            WebKit.WebContext.get_default().clear_cache();
+            this.clear_cache();
             Gtk.main_quit();
+        }
+
+        /**
+         * Clears the webkit cache. Only the cache. No cookies, nothing else
+         */
+        private void clear_cache() {
+            Dir cachedir;
+            try {
+                cachedir = Dir.open(Application.get_cache_filename(""));
+            } catch (FileError r) {
+                info("Tried to delete cache, but no cache was found");
+                return;
+            }
+
+            // Cachefiles of webkit only consist of digits
+            GLib.Regex cachefile = /^\d*$/;
+            string name = null;
+            string path = null;
+            while ((name = cachedir.read_name()) != null) {
+                if (cachefile.match(name)) {
+                    path = GLib.Path.build_filename(Application.get_cache_filename(""), name);
+                    FileUtils.remove(path);
+                }
+            }
         }
 
 

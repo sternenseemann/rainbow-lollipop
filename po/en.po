@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rainbow-lollipop 0.0.1\n"
 "Report-Msgid-Bugs-To: rainbow-lollipop-talk@lists.rainbow-lollipop.de\n"
-"POT-Creation-Date: 2015-04-28 16:55+0200\n"
+"POT-Creation-Date: 2015-04-29 13:29+0200\n"
 "PO-Revision-Date: 2015-04-28 15:52+0100\n"
 "Last-Translator: grindhold <grindhold@skarphed.org>\n"
 "Language-Team: English\n"
@@ -109,7 +109,7 @@ msgstr "Could not feed schemeparser. Using default colorscheme\n"
 msgid "Could not find a launcher for file: %s"
 msgstr "Could not find a launcher for file: %s"
 
-#: /home/grindhold/git/alaia/src/alaia.vala:595
+#: /home/grindhold/git/alaia/src/alaia.vala:619
 msgid "Could not initialize GtkClutter"
 msgstr "Could not initialize GtkClutter"
 
