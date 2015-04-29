@@ -108,6 +108,14 @@ namespace RainbowLollipop {
         private Clutter.BoxLayout boxlayout;
 
         /**
+         * This is a stash for urls that have to be loaded after the
+         * User decided to either begin a new session or load an old one
+         * This is usually needed when rainbow lollipop is called with
+         * Urls as commandline arguments and no instance is running yet
+         */
+        private string[] spawn_urls;
+
+        /**
          * Create a new TrackList
          */
         public TrackList(TrackListBackground tbl) {
@@ -153,6 +161,27 @@ namespace RainbowLollipop {
          */
         public EmptyTrack get_empty_track() {
             return this.empty_track;
+        }
+
+        /**
+         * Registers urls to be loaded when the user
+         * finished deciding wheter to restore an old session or to begin
+         * a new one
+         */
+        public void register_spawn_urls(string[] urls) {
+            this.spawn_urls = urls;
+        }
+
+        /**
+         * Load the spawn urls
+         */
+        public void spawn() {
+            if (this.spawn_urls != null) {
+                foreach (string url in this.spawn_urls) {
+                    this.add_track_with_url(url);
+                }
+                this.spawn_urls = null;
+            }
         }
 
         /**

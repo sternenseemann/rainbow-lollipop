@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rainbow-lollipop 0.0.1\n"
 "Report-Msgid-Bugs-To: rainbow-lollipop-talk@lists.rainbow-lollipop.de\n"
-"POT-Creation-Date: 2015-04-29 14:10+0200\n"
+"POT-Creation-Date: 2015-04-29 14:30+0200\n"
 "PO-Revision-Date: 2015-04-28 15:52+0100\n"
 "Last-Translator: grindhold <grindhold@skarphed.org>\n"
 "Language-Team: German\n"
@@ -81,12 +81,12 @@ msgstr "Verbinder-Dicke"
 msgid "Copy URL"
 msgstr "URL Kopieren"
 
-#: /home/grindhold/git/alaia/src/alaia.vala:423
+#: /home/grindhold/git/alaia/src/alaia.vala:424
 #, fuzzy
 msgid "Copy image URL"
 msgstr "URL Kopieren"
 
-#: /home/grindhold/git/alaia/src/alaia.vala:432
+#: /home/grindhold/git/alaia/src/alaia.vala:433
 msgid "Copy link"
 msgstr "Link kopieren"
 
@@ -110,7 +110,7 @@ msgstr ""
 msgid "Could not find a launcher for file: %s"
 msgstr "Es konnte kein Standardprogramm fuer %s gefunden werden."
 
-#: /home/grindhold/git/alaia/src/alaia.vala:619
+#: /home/grindhold/git/alaia/src/alaia.vala:620
 msgid "Could not initialize GtkClutter"
 msgstr "GtkClutter konnte nicht initialisiert werden."
 
@@ -125,7 +125,7 @@ msgstr ""
 "Das Farbschema konnte nicht verarbeitet werden. Benutze Standard-"
 "Farbschema.\n"
 
-#: /home/grindhold/git/alaia/src/alaia.vala:532
+#: /home/grindhold/git/alaia/src/alaia.vala:533
 msgid "Could not parse session json\n"
 msgstr "Das Sitzungs-JSON konnte nicht gelesenwerden.\n"
 
@@ -154,7 +154,7 @@ msgstr "LOG_UPDATE konnte nicht vorbereitet werden: %s"
 msgid "Could not save configuration."
 msgstr "Die Sitzung konnte nicht nach %s gespeichert werden.\n"
 
-#: /home/grindhold/git/alaia/src/alaia.vala:568
+#: /home/grindhold/git/alaia/src/alaia.vala:569
 #, c-format
 msgid "Could not save session to %s\n"
 msgstr "Die Sitzung konnte nicht nach %s gespeichert werden.\n"
@@ -192,11 +192,11 @@ msgstr "Icon-Größe"
 msgid "Go"
 msgstr "Los!"
 
-#: /home/grindhold/git/alaia/src/alaia.vala:397
+#: /home/grindhold/git/alaia/src/alaia.vala:398
 msgid "Go Back"
 msgstr "Zurück"
 
-#: /home/grindhold/git/alaia/src/alaia.vala:405
+#: /home/grindhold/git/alaia/src/alaia.vala:406
 msgid "Go Forward"
 msgstr "Vorwärts"
 
@@ -204,7 +204,7 @@ msgstr "Vorwärts"
 msgid "HTTPSEverywhere initialization thread failed\n"
 msgstr "HTTPSEverywhere initialisierungsthread war nicht erfolgreich\n"
 
-#: /home/grindhold/git/alaia/src/alaia.vala:536
+#: /home/grindhold/git/alaia/src/alaia.vala:537
 msgid "Invalid session json\n"
 msgstr "Ungültiges Sitzungs-JSON\n"
 
@@ -236,7 +236,7 @@ msgstr "Öffnen"
 msgid "Open folder"
 msgstr "Ordner Öffnen"
 
-#: /home/grindhold/git/alaia/src/alaia.vala:439
+#: /home/grindhold/git/alaia/src/alaia.vala:440
 msgid "Open in new Track"
 msgstr "In neuem Track öffnen"
 
@@ -244,19 +244,19 @@ msgstr "In neuem Track öffnen"
 msgid "Password"
 msgstr "Passwort"
 
-#: /home/grindhold/git/alaia/src/alaia.vala:411
+#: /home/grindhold/git/alaia/src/alaia.vala:412
 msgid "Reload"
 msgstr "Neu laden"
 
-#: /home/grindhold/git/alaia/src/alaia.vala:417
+#: /home/grindhold/git/alaia/src/alaia.vala:418
 msgid "Save image"
 msgstr "Bild speichern"
 
-#: /home/grindhold/git/alaia/src/alaia.vala:445
+#: /home/grindhold/git/alaia/src/alaia.vala:446
 msgid "Save link"
 msgstr "Link speichern"
 
-#: /home/grindhold/git/alaia/src/alaia.vala:452
+#: /home/grindhold/git/alaia/src/alaia.vala:453
 msgid "Save media"
 msgstr "Mediendatei speichern"
 
@@ -323,7 +323,7 @@ msgstr "Tracklist-Zustand wurde bisher nicht initialisiert."
 msgid "UI"
 msgstr "Oberflaeche"
 
-#: /home/grindhold/git/alaia/src/alaia.vala:547
+#: /home/grindhold/git/alaia/src/alaia.vala:548
 #, c-format
 msgid "Unknown session member %s\n"
 msgstr "Unbekanntes Sitzungsattribut %s\n"
@@ -365,10 +365,10 @@ msgstr ""
 msgid "sitenode must be object"
 msgstr "SiteNode muss ein Objekt sein."
 
-#: /home/grindhold/git/alaia/src/tracklist.vala:146
+#: /home/grindhold/git/alaia/src/tracklist.vala:154
 msgid "track generation failed\n"
 msgstr "Track-Erstellung fehlgeschlagen\n"
 
-#: /home/grindhold/git/alaia/src/tracklist.vala:138
+#: /home/grindhold/git/alaia/src/tracklist.vala:146
 msgid "tracklist must be array\n"
 msgstr "Trackliste muss ein Array sein\n"

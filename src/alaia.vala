@@ -368,9 +368,10 @@ namespace RainbowLollipop {
             bool init_needed = this.get_windows().length() == 0;
             if (init_needed)
                 initialize();
-            foreach (string url in urls) {
-                this.tracklist.add_track_with_url(url);
-            }
+            this.tracklist.register_spawn_urls(urls);
+            if (!init_needed)
+                this.tracklist.spawn();
+
             // Start Gtk main loop
             if (init_needed)
                 Gtk.main();
