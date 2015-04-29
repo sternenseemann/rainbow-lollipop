@@ -431,7 +431,7 @@ namespace RainbowLollipop {
             uint status = resource.get_response().status_code;
             if (status == 0 )
                 return;
-            if (status ==  200) {
+            if (status == 200 || status == 304) {
                 this.finish_call(this.web.get_favicon());
                 this.title = this.web.title;
             } else {
