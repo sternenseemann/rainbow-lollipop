@@ -388,17 +388,21 @@ namespace RainbowLollipop {
         /**
          * Log a call to a website by creating a new SiteNode and making it the
          * current_node of this HistoryTrack
+         * if the activate parameter is set true, the new node will automatically
+         * be chosen as the new current_node of the track.
          */
-        public void log_call(string uri) {
+        public void log_call(string uri, bool activate=true) {
+            History.S().log_call(uri);
             if (this._current_node is SiteNode &&
-                uri != (this._current_node as SiteNode).url) {
-                History.S().log_call(uri);
+                    uri != (this._current_node as SiteNode).url) {
                 var nn = new SiteNode(this, uri, this._current_node);
-                Application.S().load_indicator.start();
-                (this._current_node as SiteNode).toggle_highlight();
+                if (activate) {
+                    Application.S().load_indicator.start();
+                    (this._current_node as SiteNode).toggle_highlight();
+                    this._current_node = nn;
+                    (this._current_node as SiteNode).toggle_highlight();
+                }
                 (this._current_node as SiteNode).recalculate_y(null);
-                this._current_node = nn;
-                (this._current_node as SiteNode).toggle_highlight();
             }
         }
 

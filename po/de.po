@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rainbow-lollipop 0.0.1\n"
 "Report-Msgid-Bugs-To: rainbow-lollipop-talk@lists.rainbow-lollipop.de\n"
-"POT-Creation-Date: 2015-04-29 14:30+0200\n"
+"POT-Creation-Date: 2015-05-06 10:34+0200\n"
 "PO-Revision-Date: 2015-04-28 15:52+0100\n"
 "Last-Translator: grindhold <grindhold@skarphed.org>\n"
 "Language-Team: German\n"
@@ -81,12 +81,12 @@ msgstr "Verbinder-Dicke"
 msgid "Copy URL"
 msgstr "URL Kopieren"
 
-#: /home/grindhold/git/alaia/src/alaia.vala:424
+#: /home/grindhold/git/alaia/src/alaia.vala:349
 #, fuzzy
 msgid "Copy image URL"
 msgstr "URL Kopieren"
 
-#: /home/grindhold/git/alaia/src/alaia.vala:433
+#: /home/grindhold/git/alaia/src/alaia.vala:358
 msgid "Copy link"
 msgstr "Link kopieren"
 
@@ -110,7 +110,7 @@ msgstr ""
 msgid "Could not find a launcher for file: %s"
 msgstr "Es konnte kein Standardprogramm fuer %s gefunden werden."
 
-#: /home/grindhold/git/alaia/src/alaia.vala:620
+#: /home/grindhold/git/alaia/src/alaia.vala:545
 msgid "Could not initialize GtkClutter"
 msgstr "GtkClutter konnte nicht initialisiert werden."
 
@@ -125,7 +125,7 @@ msgstr ""
 "Das Farbschema konnte nicht verarbeitet werden. Benutze Standard-"
 "Farbschema.\n"
 
-#: /home/grindhold/git/alaia/src/alaia.vala:533
+#: /home/grindhold/git/alaia/src/alaia.vala:458
 msgid "Could not parse session json\n"
 msgstr "Das Sitzungs-JSON konnte nicht gelesenwerden.\n"
 
@@ -154,7 +154,7 @@ msgstr "LOG_UPDATE konnte nicht vorbereitet werden: %s"
 msgid "Could not save configuration."
 msgstr "Die Sitzung konnte nicht nach %s gespeichert werden.\n"
 
-#: /home/grindhold/git/alaia/src/alaia.vala:569
+#: /home/grindhold/git/alaia/src/alaia.vala:494
 #, c-format
 msgid "Could not save session to %s\n"
 msgstr "Die Sitzung konnte nicht nach %s gespeichert werden.\n"
@@ -192,19 +192,19 @@ msgstr "Icon-Größe"
 msgid "Go"
 msgstr "Los!"
 
-#: /home/grindhold/git/alaia/src/alaia.vala:398
+#: /home/grindhold/git/alaia/src/alaia.vala:323
 msgid "Go Back"
 msgstr "Zurück"
 
-#: /home/grindhold/git/alaia/src/alaia.vala:406
+#: /home/grindhold/git/alaia/src/alaia.vala:331
 msgid "Go Forward"
 msgstr "Vorwärts"
 
-#: /home/grindhold/git/alaia/src/alaia.vala:276
+#: /home/grindhold/git/alaia/src/alaia.vala:201
 msgid "HTTPSEverywhere initialization thread failed\n"
 msgstr "HTTPSEverywhere initialisierungsthread war nicht erfolgreich\n"
 
-#: /home/grindhold/git/alaia/src/alaia.vala:537
+#: /home/grindhold/git/alaia/src/alaia.vala:462
 msgid "Invalid session json\n"
 msgstr "Ungültiges Sitzungs-JSON\n"
 
@@ -236,7 +236,7 @@ msgstr "Öffnen"
 msgid "Open folder"
 msgstr "Ordner Öffnen"
 
-#: /home/grindhold/git/alaia/src/alaia.vala:440
+#: /home/grindhold/git/alaia/src/alaia.vala:365
 msgid "Open in new Track"
 msgstr "In neuem Track öffnen"
 
@@ -244,19 +244,19 @@ msgstr "In neuem Track öffnen"
 msgid "Password"
 msgstr "Passwort"
 
-#: /home/grindhold/git/alaia/src/alaia.vala:412
+#: /home/grindhold/git/alaia/src/alaia.vala:337
 msgid "Reload"
 msgstr "Neu laden"
 
-#: /home/grindhold/git/alaia/src/alaia.vala:418
+#: /home/grindhold/git/alaia/src/alaia.vala:343
 msgid "Save image"
 msgstr "Bild speichern"
 
-#: /home/grindhold/git/alaia/src/alaia.vala:446
+#: /home/grindhold/git/alaia/src/alaia.vala:371
 msgid "Save link"
 msgstr "Link speichern"
 
-#: /home/grindhold/git/alaia/src/alaia.vala:453
+#: /home/grindhold/git/alaia/src/alaia.vala:378
 msgid "Save media"
 msgstr "Mediendatei speichern"
 
@@ -323,7 +323,7 @@ msgstr "Tracklist-Zustand wurde bisher nicht initialisiert."
 msgid "UI"
 msgstr "Oberflaeche"
 
-#: /home/grindhold/git/alaia/src/alaia.vala:548
+#: /home/grindhold/git/alaia/src/alaia.vala:473
 #, c-format
 msgid "Unknown session member %s\n"
 msgstr "Unbekanntes Sitzungsattribut %s\n"
