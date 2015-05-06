@@ -83,6 +83,8 @@ public class ZMQWorker {
  
     private static const string NEEDS_DIRECT_INPUT = "ndi";
     private static const string NEEDS_DIRECT_INPUT_RET = "r_ndi";
+    private static const string GET_SCROLL_INFO = "gsi";
+    private static const string GET_SCROLL_INFO_RET = "r_gsi";
     private static const string ERROR = "error";
     private static const string REGISTER = "reg";
     private static const string SEPARATOR = "-";
@@ -128,6 +130,26 @@ public class ZMQWorker {
                 return null;
             }
         }
+        if (input.has_prefix(ZMQWorker.GET_SCROLL_INFO)) {
+            string[] splitted = input.split(ZMQWorker.SEPARATOR);
+            uint64 pageid = uint64.parse(splitted[1]);
+            uint32 callid = int.parse(splitted[2]);
+            if (ZMQWorker.aext.get_page_id() == pageid) {
+                long x = ZMQWorker.aext.get_scroll_position(AlaiaExtension.Orientation.HORIZONTAL);
+                long y = ZMQWorker.aext.get_scroll_position(AlaiaExtension.Orientation.VERTICAL);
+                return ZMQWorker.GET_SCROLL_INFO_RET+
+                       ZMQWorker.SEPARATOR+
+                       "%lld".printf(pageid)+
+                       ZMQWorker.SEPARATOR+
+                       "%l".printf(x)+
+                       ZMQWorker.SEPARATOR+
+                       "%l".printf(y)+
+                       ZMQWorker.SEPARATOR+
+                       "%u".printf(callid);
+            } else {
+                return null;
+            }
+        }
         return ZMQWorker.ERROR;
     }
 }
@@ -161,6 +183,25 @@ public class AlaiaExtension : Object {
             return this.direct_input_tags.contains(active.tag_name);
         else
             return false;
+    }
+
+    /**
+     * Enumerates either a vertical or a horizontal orientation
+     */
+    public enum Orientation {
+        HORIZONTAL,
+        VERTICAL
+    }
+
+    /**
+     * Returns the current scroll position
+     */
+    public long get_scroll_position(Orientation o) {
+        WebKit.DOM.Document doc = this.page.get_dom_document();
+        if (o == Orientation.HORIZONTAL)
+            return doc.default_view.scroll_x;
+        else
+            return doc.default_view.scroll_y;
     }
 
     /**
