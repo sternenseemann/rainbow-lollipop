@@ -330,6 +330,8 @@ namespace RainbowLollipop {
         private NodeTooltip url_tooltip;
         
         private string _url;
+        private long scroll_x;
+        private long scroll_y;
 
         /**
          * Holds the URL of the website that has been called to create this node
@@ -550,6 +552,15 @@ namespace RainbowLollipop {
         private void do_transitions_completed() {
             if (this.opacity == 0x00) {
             }
+        }
+
+        /**
+         * Let's this Node memorize where the scroll position of the
+         * site was.
+         */
+        public void set_scroll_info(long x, long y) {
+            this.scroll_x = x;
+            this.scroll_y = y;
         }
 
         /**

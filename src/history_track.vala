@@ -185,6 +185,20 @@ namespace RainbowLollipop {
         }
 
         /**
+         * Try to obtain the scroll position of the current_node's
+         * webpage and store it into the current_node
+         */
+        public void memorize_scroll_position() {
+            if (this.current_node == null || !(this.current_node is SiteNode))
+                return;
+            this.web.get_scroll_info((arglist)=>{
+                long x = arglist[0].get_long();
+                long y = arglist[1].get_long();
+                (this.current_node as SiteNode).set_scroll_info(x,y);
+            });
+        }
+
+        /**
          * Default constructor for HistoryTrack
          * Creates and initializes track UI
          */
@@ -197,6 +211,7 @@ namespace RainbowLollipop {
                     this.log_call(newnode.get_uri());
             });
             this.web.resource_load_started.connect ((resource, request) => {
+                this.memorize_scroll_position();
                 if (this.web.uri == resource.uri)
                     resource.finished.connect(this.do_finished);
             });

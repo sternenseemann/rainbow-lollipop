@@ -82,6 +82,14 @@ namespace RainbowLollipop {
         }
 
         /**
+         * Asks the web-extension for information about the scroll position of the
+         * current_page
+         */
+        public async void get_scroll_info(IPCCallback cb) {
+            ZMQVent.get_scroll_info(this,cb);
+        }
+
+        /**
          * Returns true if the searchoverlay is currently active for this webview
          */
         public bool is_search_active() {

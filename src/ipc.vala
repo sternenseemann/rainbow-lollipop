@@ -102,6 +102,27 @@ namespace RainbowLollipop {
     }
 
     /**
+     * Wraps callback handling for calls to get_scroll_info
+     */
+    class GetScrollInfoCC : IPCCallbackContext {
+        public GetScrollInfoCC(TrackWebView v, IPCCallback cb) {
+            base(v,cb);
+        }
+
+        public override void execute() {
+            GLib.Value[] cb_args = {this.arguments[0], this.arguments[1]};
+            this.cb(cb_args);
+        }
+
+        public override void failure() {
+            long x = 0;
+            long y = 0;
+            GLib.Value[] cb_args = {x,y};
+            this.cb(cb_args);
+        }
+    }
+
+    /**
      * A callback that is called when an IPC call has finished successfully
      */
     public delegate void IPCCallback(GLib.Value[] argslist);
@@ -142,6 +163,26 @@ namespace RainbowLollipop {
             cbw.add_argument(e);
             ZMQSink.register_callback(callid, cbw);
             string msgstring = IPCProtocol.NEEDS_DIRECT_INPUT+
+                               IPCProtocol.SEPARATOR+
+                               "%lld".printf(page_id)+
+                               IPCProtocol.SEPARATOR+
+                               "%ld".printf(callid);
+            for (int i = 0; i < ZMQVent.current_sites; i++) {
+                var msg = ZMQ.Msg.with_data(msgstring.data);
+                msg.send(sender);
+            }
+        }
+
+        /**
+         * Issues a request to the webviewextension of the given webview in which
+         * it asks for the current scroll position of the page
+         */
+        public static async void get_scroll_info(TrackWebView w, IPCCallback cb) {
+            uint64 page_id = w.get_page_id();
+            uint32 callid = callcounter++;
+            var cbw = new GetScrollInfoCC(w, cb);
+            ZMQSink.register_callback(callid, cbw);
+            string msgstring = IPCProtocol.GET_SCROLL_INFO+
                                IPCProtocol.SEPARATOR+
                                "%lld".printf(page_id)+
                                IPCProtocol.SEPARATOR+
@@ -240,6 +281,21 @@ namespace RainbowLollipop {
                     return;
                 }
                 cbw.add_argument(result);
+                cbw.execute();
+                ZMQSink.callbacks.unset(call_id);
+            }
+            if (input.has_prefix(IPCProtocol.GET_SCROLL_INFO_RET)) {
+                string[] splitted = input.split(IPCProtocol.SEPARATOR);
+                long x = long.parse(splitted[2]);
+                long y = long.parse(splitted[3]);
+                uint32 call_id = int.parse(splitted[4]);
+                IPCCallbackContext? cbw = ZMQSink.callbacks.get(call_id);
+                if (cbw == null) {
+                    ZMQSink.callbacks.unset(call_id);
+                    return;
+                }
+                cbw.add_argument(x);
+                cbw.add_argument(y);
                 cbw.execute();
                 ZMQSink.callbacks.unset(call_id);
             }

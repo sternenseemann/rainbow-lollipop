@@ -134,9 +134,9 @@ public class ZMQWorker {
                        IPCProtocol.SEPARATOR+
                        "%lld".printf(pageid)+
                        IPCProtocol.SEPARATOR+
-                       "%l".printf(x)+
+                       "%li".printf(x)+
                        IPCProtocol.SEPARATOR+
-                       "%l".printf(y)+
+                       "%li".printf(y)+
                        IPCProtocol.SEPARATOR+
                        "%u".printf(callid);
             } else {
