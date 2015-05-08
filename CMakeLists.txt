@@ -86,6 +86,7 @@ if (GEE10)
         "src/download_node.vala"
         "src/config.vala"
         "src/ipc.vala"
+        "src/ipc_protocol.vala"
         "src/session_select.vala"
         "src/authentication_dialog.vala"
         "src/history.vala"
@@ -127,6 +128,7 @@ else()
         "src/download_node.vala"
         "src/config.vala"
         "src/ipc.vala"
+        "src/ipc_protocol.vala"
         "src/session_select.vala"
         "src/authentication_dialog.vala"
         "src/history.vala"
@@ -161,6 +163,7 @@ if (GEE10)
     vala_precompile(VALA_EXTENSION_C
         "src/dummy2.vala"
         "src/alaia_extension.vala"
+        "src/ipc_protocol.vala"
     PACKAGES
         webkit2gtk-web-extension-4.0
         libzmq
@@ -173,6 +176,7 @@ else()
     vala_precompile(VALA_EXTENSION_C
         "src/dummy2.vala"
         "src/alaia_extension.vala"
+        "src/ipc_protocol.vala"
     PACKAGES
         webkit2gtk-web-extension-4.0
         libzmq

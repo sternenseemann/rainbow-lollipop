@@ -218,15 +218,4 @@ namespace RainbowLollipop {
         }
 
     }
-
-    /**
-     * Defines constant parts of the IPC Protocol
-     */
-    public class IPCProtocol : Object {
-        public static const string NEEDS_DIRECT_INPUT = "ndi";
-        public static const string NEEDS_DIRECT_INPUT_RET = "r_ndi";
-        public static const string ERROR = "error";
-        public static const string REGISTER = "reg";
-        public static const string SEPARATOR = "-";
-    }
 }
