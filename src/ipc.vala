@@ -25,49 +25,86 @@ namespace RainbowLollipop {
      * successfully completed IPC call including the callback itself.
      * It is intended to be a universally applicable class but currently
      * it is only able to cover the needs_direct_input-usecase.
-     * TODO: Modify this wrapper and the code in general to be able
-     *       To store arbitrary callback / parameter combinations
      */
-    class IPCCallbackWrapper {
-        private IPCCallback cb;
-        private Gdk.EventKey e;
-        private TrackWebView w;
+    class IPCCallbackContext : GLib.Object {
+        protected IPCCallback cb;
+        protected Gee.ArrayList<GLib.Value?> arguments = new Gee.ArrayList<GLib.Value?>();
+        protected TrackWebView w;
 
         /**
          * Construct a new IPC Callback wrapper
          */
-        public IPCCallbackWrapper(TrackWebView web, IPCCallback cb, Gdk.EventKey e) {
+        public IPCCallbackContext(TrackWebView web, IPCCallback cb) {
             this.cb = cb;
-            this.e = e;
             this.w = web;
         }
 
         /**
-         * Returns the callback function stored in this IPCCallbackWrapper
+         * Adds an argument to the CallbackContext
          */
-        public IPCCallback get_callback() {
-            return this.cb;
+        public void add_argument(GLib.Value v) {
+            this.arguments.add(v);
         }
 
         /**
-         * Returns the Gdk.EventKey stored along this IPCCallbackWrapper
+         * Adds a list of arguments to the CallbackContext
          */
-        public Gdk.EventKey get_event() {
-            return this.e;
+        public void add_arguments(GLib.Value[] vl) {
+            foreach (GLib.Value v in vl)
+                this.arguments.add(v);
         }
 
         /**
-         * Returns the WebView associated with this IPCCallbackWrapper
+         * Implement this for the callbacks behaviour in case of success
          */
-        public TrackWebView get_webview() {
-            return this.w;
+        public virtual void execute() {}
+
+        /**
+         * Implement this for the callbacks behaviour in case of failure
+         * e.g. timeout
+         */
+        public virtual void failure() {}
+    }
+
+    /**
+     * Wraps callback handling for calls to the needs_direct_input function
+     * of webextensions
+     */
+    class NeedsDirectInputCC : IPCCallbackContext {
+        public NeedsDirectInputCC(TrackWebView v, IPCCallback cb) {
+            base(v,cb);
+        }
+
+        public override void execute() {
+            int result = this.arguments[1].get_int();
+            GLib.Value[] cb_args = {this.arguments[0]};
+
+            if (result == 1) {
+                GLib.Idle.add(() => {
+                    this.w.key_press_event(this.arguments[0] as Gdk.EventKey);
+                    return false;
+                });
+            } else {
+                GLib.Idle.add(() => {
+                    this.cb(cb_args);
+                    return false;
+                });
+            }
+        }
+
+        public override void failure() {
+            GLib.Value[] cb_args = {this.arguments[0]};
+            GLib.Idle.add(() => {
+                this.cb(cb_args);
+                return false;
+            });
         }
     }
 
     /**
      * A callback that is called when an IPC call has finished successfully
      */
-    public delegate void IPCCallback(Gdk.EventKey e);
+    public delegate void IPCCallback(GLib.Value[] argslist);
 
     /**
      * The ZMQVent distributes ipc calls to each available WebExtension.
@@ -101,7 +138,8 @@ namespace RainbowLollipop {
             uint64 page_id = w.get_page_id();
             //Create Callback
             uint32 callid = callcounter++;
-            var cbw = new IPCCallbackWrapper(w, cb, e);
+            var cbw = new NeedsDirectInputCC(w, cb);
+            cbw.add_argument(e);
             ZMQSink.register_callback(callid, cbw);
             string msgstring = IPCProtocol.NEEDS_DIRECT_INPUT+
                                IPCProtocol.SEPARATOR+
@@ -135,7 +173,7 @@ namespace RainbowLollipop {
      * executed.
      */
     class ZMQSink {
-        private static Gee.HashMap<uint32, IPCCallbackWrapper> callbacks;
+        private static Gee.HashMap<uint32, IPCCallbackContext> callbacks;
         private static ZMQ.Context ctx;
         private static ZMQ.Socket receiver;
 
@@ -147,12 +185,12 @@ namespace RainbowLollipop {
          * If the sink does not receive any response in time, a default action will
          * be triggered and the callback will be forgotten
          */
-        public static void register_callback(uint32 callid, IPCCallbackWrapper cbw) {
+        public static void register_callback(uint32 callid, IPCCallbackContext cbw) {
             ZMQSink.callbacks.set(callid, cbw);
             Timeout.add(500,()=>{
-                IPCCallbackWrapper? _cbw = ZMQSink.callbacks.get(callid);
+                IPCCallbackContext? _cbw = ZMQSink.callbacks.get(callid);
                 if (_cbw != null) {
-                    _cbw.get_callback()(_cbw.get_event());
+                    cbw.failure();
                     ZMQSink.callbacks.unset(callid);
                 }
                 return false;
@@ -163,7 +201,7 @@ namespace RainbowLollipop {
          * Initializes the sink
          */
         public static void init() {
-            ZMQSink.callbacks = new Gee.HashMap<uint32, IPCCallbackWrapper>();
+            ZMQSink.callbacks = new Gee.HashMap<uint32, IPCCallbackContext>();
             ZMQSink.ctx = new ZMQ.Context();
             ZMQSink.receiver = ZMQ.Socket.create(ctx, ZMQ.SocketType.PULL);
             ZMQSink.receiver.bind("tcp://127.0.0.1:"+Config.c.ipc_sink_port.to_string());
@@ -196,22 +234,13 @@ namespace RainbowLollipop {
                 string[] splitted = input.split(IPCProtocol.SEPARATOR);
                 int result = int.parse(splitted[2]);
                 uint32 call_id = int.parse(splitted[3]);
-                IPCCallbackWrapper? cbw = ZMQSink.callbacks.get(call_id);
+                IPCCallbackContext? cbw = ZMQSink.callbacks.get(call_id);
                 if (cbw == null) {
                     ZMQSink.callbacks.unset(call_id);
                     return;
                 }
-                if (result == 1) {
-                    GLib.Idle.add(() => {
-                        cbw.get_webview().key_press_event(cbw.get_event());
-                        return false;
-                    });
-                } else {
-                    GLib.Idle.add(() => {
-                        cbw.get_callback()(cbw.get_event());
-                        return false;
-                    });
-                }
+                cbw.add_argument(result);
+                cbw.execute();
                 ZMQSink.callbacks.unset(call_id);
             }
             return;

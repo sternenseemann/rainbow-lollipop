@@ -103,6 +103,11 @@ namespace RainbowLollipop {
      * or the vimperator plugin for mozilla
      */
     class DefaultInputHandler : GLib.Object, IInputHandler {
+        public void do_key_press_event_wrap(GLib.Value[] v) {
+            Gdk.EventKey e = v[0] as Gdk.EventKey;
+            this.do_key_press_event(e);
+        }
+
         public bool preprocess_key_press_event(Gdk.EventKey e) {
             if (Application.S().state is NormalState) {
                 var t = Application.S().tracklist.current_track;
@@ -113,7 +118,7 @@ namespace RainbowLollipop {
                         break;
                     case Gdk.Key.Tab:
                         if (t != null)
-                            twv.needs_direct_input(do_key_press_event,e);
+                            twv.needs_direct_input(do_key_press_event_wrap,e);
                         else
                             do_key_press_event(e);
                         break;
