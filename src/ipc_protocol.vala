@@ -28,6 +28,7 @@ namespace RainbowLollipop {
         public static const string NEEDS_DIRECT_INPUT_RET = "r_ndi";
         public static const string GET_SCROLL_INFO = "gsi";
         public static const string GET_SCROLL_INFO_RET = "r_gsi";
+        public static const string SET_SCROLL_INFO = "ssi";
         public static const string ERROR = "error";
         public static const string REGISTER = "reg";
         public static const string SEPARATOR = "-";

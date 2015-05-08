@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rainbow-lollipop 0.0.1\n"
 "Report-Msgid-Bugs-To: rainbow-lollipop-talk@lists.rainbow-lollipop.de\n"
-"POT-Creation-Date: 2015-05-08 13:55+0200\n"
+"POT-Creation-Date: 2015-05-08 16:46+0200\n"
 "PO-Revision-Date: 2015-04-28 15:52+0100\n"
 "Last-Translator: grindhold <grindhold@skarphed.org>\n"
 "Language-Team: English\n"
@@ -37,13 +37,13 @@ msgstr ""
 msgid "%s must be Value"
 msgstr "%s must be Value"
 
-#: /home/grindhold/git/alaia/src/site_node.vala:423
+#: /home/grindhold/git/alaia/src/site_node.vala:429
 #, c-format
 msgid "%s must be array"
 msgstr "%s must be array"
 
-#: /home/grindhold/git/alaia/src/site_node.vala:413
-#: /home/grindhold/git/alaia/src/site_node.vala:418
+#: /home/grindhold/git/alaia/src/site_node.vala:419
+#: /home/grindhold/git/alaia/src/site_node.vala:424
 #, c-format
 msgid "%s must be value"
 msgstr "%s must be value"
@@ -278,7 +278,7 @@ msgstr "Security"
 msgid "SessiondialogState has not been intialized."
 msgstr "SessiondialogState has not been intialized."
 
-#: /home/grindhold/git/alaia/src/ipc.vala:252
+#: /home/grindhold/git/alaia/src/ipc.vala:271
 msgid "Sink broke down\n"
 msgstr "Sink broke down\n"
 
@@ -332,7 +332,7 @@ msgstr "Username"
 msgid "Using default config\n"
 msgstr "Using default config\n"
 
-#: /home/grindhold/git/alaia/src/site_node.vala:427
+#: /home/grindhold/git/alaia/src/site_node.vala:433
 #, c-format
 msgid "invalid field in node onject: %s\n"
 msgstr "invalid field in node onject: %s\n"
@@ -341,7 +341,7 @@ msgstr "invalid field in node onject: %s\n"
 msgid "new session"
 msgstr "new session"
 
-#: /home/grindhold/git/alaia/src/site_node.vala:438
+#: /home/grindhold/git/alaia/src/site_node.vala:444
 msgid "node creation failed\n"
 msgstr "node creation failed\n"
 
@@ -353,7 +353,7 @@ msgstr ""
 "restore\n"
 "session"
 
-#: /home/grindhold/git/alaia/src/site_node.vala:403
+#: /home/grindhold/git/alaia/src/site_node.vala:409
 msgid "sitenode must be object"
 msgstr "sitenode must be object"
 

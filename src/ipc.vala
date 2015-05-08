@@ -194,6 +194,25 @@ namespace RainbowLollipop {
         }
 
         /**
+         * Tells the webprocess to to scroll its view
+         * to a specific position
+         */
+        public static async void set_scroll_info(TrackWebView w, long x, long y) {
+            uint64 page_id = w.get_page_id();
+            string msgstring = IPCProtocol.SET_SCROLL_INFO+
+                               IPCProtocol.SEPARATOR+
+                               "%lld".printf(page_id)+
+                               IPCProtocol.SEPARATOR+
+                               "%li".printf(x)+
+                               IPCProtocol.SEPARATOR+
+                               "%li".printf(y);
+            for (int i = 0; i < ZMQVent.current_sites; i++) {
+                var msg = ZMQ.Msg.with_data(msgstring.data);
+                msg.send(sender);
+            }
+        }
+
+        /**
          * Increments the counter of the webextensions that have to be provided with messages
          */
         public static void register_site() {

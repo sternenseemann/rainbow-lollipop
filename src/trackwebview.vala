@@ -90,6 +90,13 @@ namespace RainbowLollipop {
         }
 
         /**
+         * Tells the webviews webprocess to scroll to the given positionö
+         */
+        public async void set_scroll_info(long x, long y) {
+            ZMQVent.set_scroll_info(this, x, y);
+        }
+
+        /**
          * Returns true if the searchoverlay is currently active for this webview
          */
         public bool is_search_active() {

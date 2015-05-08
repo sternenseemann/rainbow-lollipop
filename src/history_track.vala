@@ -71,8 +71,11 @@ namespace RainbowLollipop {
                     (this._current_node as SiteNode).toggle_highlight();
                 this.reload_needed = this._current_node != value;
                 this._current_node = value;
-                if (this._current_node is SiteNode)
-                    (this._current_node as SiteNode).toggle_highlight();
+                if (this._current_node is SiteNode) {
+                    SiteNode cn = this._current_node as SiteNode;
+                    cn.toggle_highlight();
+                    this.web.set_scroll_info(cn.scrollinfo.x, cn.scrollinfo.y);
+                }
             }
         }
         private Node? _current_node;

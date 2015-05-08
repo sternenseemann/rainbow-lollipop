@@ -330,8 +330,13 @@ namespace RainbowLollipop {
         private NodeTooltip url_tooltip;
         
         private string _url;
-        private long scroll_x;
-        private long scroll_y;
+
+        public struct ScrollInfo {
+            long x;
+            long y;
+        }
+        private ScrollInfo m_scrollinfo = ScrollInfo();
+        public ScrollInfo scrollinfo {get{return this.m_scrollinfo;}}
 
         /**
          * Holds the URL of the website that has been called to create this node
@@ -348,6 +353,7 @@ namespace RainbowLollipop {
          */
         public SiteNode(HistoryTrack track, string url, Node? par) {
             base(track, par);
+            this.m_scrollinfo.x = this.m_scrollinfo.y = 0;
             this._url = url;
 
             var default_fav_path = Application.get_data_filename("nofav.png");
@@ -559,8 +565,8 @@ namespace RainbowLollipop {
          * site was.
          */
         public void set_scroll_info(long x, long y) {
-            this.scroll_x = x;
-            this.scroll_y = y;
+            this.m_scrollinfo.x = x;
+            this.m_scrollinfo.y = y;
         }
 
         /**

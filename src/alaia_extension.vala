@@ -143,6 +143,16 @@ public class ZMQWorker {
                 return null;
             }
         }
+        if (input.has_prefix(IPCProtocol.SET_SCROLL_INFO)) {
+            string[] splitted = input.split(IPCProtocol.SEPARATOR);
+            uint64 pageid = uint64.parse(splitted[1]);
+            long x = long.parse(splitted[2]);
+            long y = long.parse(splitted[3]);
+            if (ZMQWorker.aext.get_page_id() == pageid) {
+                ZMQWorker.aext.set_scroll_position(x,y);
+            }
+            return null;
+        }
         return IPCProtocol.ERROR;
     }
 }
@@ -195,6 +205,17 @@ public class AlaiaExtension : Object {
             return doc.default_view.scroll_x;
         else
             return doc.default_view.scroll_y;
+    }
+
+    /**
+     * Scrolls to the given location
+     * TODO: finish implementing when scroll_to method is available
+     *       in the stable webkit API
+     */
+    public void set_scroll_position(long x, long y) {
+        WebKit.DOM.Document doc = this.page.get_dom_document();
+        info ("Here we should scroll to x %li y %li",x,y);
+        //doc.default_view.scroll_to(x,y);
     }
 
     /**
