@@ -323,6 +323,8 @@ namespace RainbowLollipop {
                 n.delete_node(false);
             }
             prv.childnodes.remove(this);
+            if (this.contains(Focus.S()))
+                this.remove_child(Focus.S());
             this.connector.destroy();
             this.destroy();
             prv.recalculate_y(null);
@@ -330,12 +332,16 @@ namespace RainbowLollipop {
                 if (prv == null) {
                     //This was the root node. the track is not necessary anymore, delete it.
                     this.track.delete_track();
+                    //Focus current_node of next track
+                    Focus.S().focused_object = this.get_down_focusable();
                 } else {
                     //Recalculate the tracks height in case there is some free space now
                     this.track.calculate_height();
                     if (need_new_current_node && prv is SiteNode) {
                         this.track.current_node = prv as SiteNode;
                     }
+                    //Focus previous
+                    Focus.S().focused_object = this.get_left_focusable();
                 }
             }
         }
