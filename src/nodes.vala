@@ -156,7 +156,7 @@ namespace RainbowLollipop {
         /**
          * Reference to the node that spawned this node
          */
-        private Node? previous;
+        private weak Node? previous;
         /**
          * Contains all nodes that have been spawned from this node
          */
