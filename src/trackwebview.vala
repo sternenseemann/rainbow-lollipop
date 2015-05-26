@@ -30,7 +30,7 @@ namespace RainbowLollipop {
          * Stores a reference to the HistoryTrack that is associated with
          * this WebView
          */
-        public HistoryTrack track{ get;set; }
+        public weak HistoryTrack track{ get;set; }
         private SearchWidget search;
         private bool searchstate;
 
