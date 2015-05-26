@@ -56,10 +56,19 @@ namespace RainbowLollipop {
          * Handles mouse events that we need to override webkits default behaviour
          * for. At the moment these are:
          *  - Links being clicked with the middle mousebutton
+         *  - Links being clicked regularly with the left mousebutton
+         *    TODO: find out if this is really necessary somewhen. It works and
+         *          fixes issue #57 but i find it a bit cumbersome
          */
         public bool do_button_press_event(Gdk.EventButton e) {
             if (e.button == Gdk.BUTTON_MIDDLE && this._last_link != null) {
                 this.track.log_call(this._last_link, false);
+                return true;
+            }
+            else if (e.button == Gdk.BUTTON_PRIMARY && this._last_link != null
+                                                    && this._last_link != "") {
+                stdout.printf("link clicked %s foo\n", this._last_link);
+                this.load_uri(this._last_link);
                 return true;
             }
             return false;
