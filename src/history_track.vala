@@ -353,7 +353,8 @@ namespace RainbowLollipop {
             switch(this.clickaction.get_button()) {
                 case 3:
                     Application.S().context.set_context(this,null);
-                    Application.S().context.popup(null,null,null,3,0);
+                    Application.S().context.popup(null,null,null,
+                                                  3,Gtk.get_current_event_time());
                     break;
             }
         }
