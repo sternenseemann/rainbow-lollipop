@@ -353,7 +353,8 @@ namespace RainbowLollipop {
             switch (this.clickaction.get_button()) {
                 case 3: //Right mousebutton
                     Application.S().context.set_context(this.track,this);
-                    Application.S().context.popup(null,null,null,3,0);
+                    Application.S().context.popup(null,null,null,
+                                                  3,Gtk.get_current_event_time());
                     break;
             }
             this.track.clickaction.release(); //TODO: ugly fix.. there has to be a better way
